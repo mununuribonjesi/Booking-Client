@@ -1,4 +1,4 @@
-import {SETBARBER ,SETSERVICE,SETSLOT ,SETTOTAL} from './actionTypes'
+import {SETBARBER ,SETSERVICE,SETSLOT ,SETTOTAL,SETBARBERID} from './actionTypes'
 
 export const setBarber = (barber) => ({
     type: SETBARBER,
@@ -21,3 +21,13 @@ export const setTotal = (total) => ({
     data:total
 
 })
+
+export const setBarberId = (barberId) => ({
+    type: SETBARBERID,
+    data:barberId
+})
+
+
+
+
+

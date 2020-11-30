@@ -1,23 +1,58 @@
 import React, { Component } from 'react';
 import {Keyboard,Image,FlatList, Text, View,StyleSheet, TextInput,TouchableHighlight, TouchableWithoutFeedback,TouchableOpacity, Alert, KeyboardAvoidingView,Dimensions} from 'react-native';
 import { FontAwesome,FontAwesome5,MaterialIcons,Ionicons,AntDesign,Octicons } from '@expo/vector-icons';
-import { Card, ListItem, Button, Icon,Avatar,Badge} from 'react-native-elements'
-import {OrderContext} from '../provider/OrderProvider';
-import {setBarber} from './store/actions'
+import {ListItem,Avatar} from 'react-native-elements'
+import {setBarber,setBarberId} from './store/actions'
 import {connect} from  'react-redux';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from 'react-native-axios';
 class BookScreen extends Component
 {
     constructor(props) {
         super(props);
         
         this.state = {
-          username: '',
-          password: '',
-          stickyHeaderIndices: []
+          stylists:[]
         };  
       }
 
-       data = [
+
+
+      async componentDidMount()
+      {
+
+          const token = await AsyncStorage.getItem('token');
+
+          const response = await axios({
+            method: 'get',
+            url: 'https://f62edfbf3607.ngrok.io/api/barbers',
+            headers:{
+              'Authorization':`Bearer ${token}`
+            }
+          });
+          
+          try {
+
+      
+            if (response.status === 200) {
+             
+              const stylists = response.data.stylists;
+
+              this.setState({stylists:stylists})
+            
+            }
+      
+          } catch (error) {
+            console.log('There has been a problem with your fetch operation: ' + error.message);
+            throw error;
+          }
+        }
+
+
+
+      
+
+       /*data = [
           { key:1,Name:"Captain",email:'jmae@gmail.com',avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg'},
           { key:2,Name:"J",email:'jmae@gmail.com',avatar_url:'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'},
           { key:3,Name:"fred",email:'jmae@gmail.com',avatar_url:'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'},
@@ -33,7 +68,7 @@ class BookScreen extends Component
           { key:13,Name:"James",email:'jmae@gmail.com',avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg'},
           { key:14,Name:"carl",email:'jmae@gmail.com',avatar_url:'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'},
           { key:15,Name:"fred",email:'jmae@gmail.com',avatar_url:'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'},
-      ]
+      ]*/
 
        ListHeader = () => {
         //View to set in Header
@@ -63,19 +98,14 @@ class BookScreen extends Component
             </Text>
           </View>
         <FlatList
-          data={this.data}
+          data={this.state.stylists}
           keyExtractor={(item,index)=> index.toString()}
           renderItem={({ item }) => (
 <TouchableOpacity
-  onPress={() =>{this.props.setBarber(item.Name),this.props.navigation.navigate('ServicesScreen')}}
+  onPress={() =>{this.props.setBarber(item.Name),this.props.setBarberId(item._id),this.props.navigation.navigate('ServicesScreen')}}
 >
-            <ListItem 
-        
-            
-            
-            style={styles.list} key={item.key} bottomDivider>
-
-            <Avatar size={100} source={{uri: item.avatar_url}} />
+            <ListItem             
+            style={styles.list} key={item._id} bottomDivider>
             <ListItem.Content>
             <View styles={styles.list}>
               <ListItem.Title>{item.Name}</ListItem.Title>
@@ -83,7 +113,7 @@ class BookScreen extends Component
             </ListItem.Content>
             <TouchableOpacity
          style={styles.button}
-         onPress={() => {this.props.setBarber(item.Name),this.props.navigation.navigate('ServicesScreen')}}
+         onPress={() => {this.props.setBarber(item.Name),this.props.setBarberId(item._id),this.props.navigation.navigate('ServicesScreen')}}
        >
          <Text>Book Now</Text>
  </TouchableOpacity>
@@ -188,8 +218,6 @@ const styles = StyleSheet.create({
   const mapStatetoProps  = (state) =>
   {
 
-    console.log(state);
-
     return {
       orders: state.orderReducer
     }
@@ -200,6 +228,7 @@ const styles = StyleSheet.create({
 
     return {
     setBarber: (data) => dispatch(setBarber(data)),
+    setBarberId: (data) => dispatch(setBarberId(data))
     }
 
   }

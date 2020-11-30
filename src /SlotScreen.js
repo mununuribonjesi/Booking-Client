@@ -4,6 +4,8 @@ import Calendar from 'react-native-calendar-datepicker';
 import Moment from 'moment';
 import {setSlot} from './store/actions';
 import {connect} from  'react-redux';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from 'react-native-axios';
 
 class SlotScreen extends Component {
   constructor(props) {
@@ -20,6 +22,43 @@ class SlotScreen extends Component {
     };
 
   }
+
+
+  async componentDidMount()
+  {     
+
+      const token = await AsyncStorage.getItem('token');
+
+      const response = await axios({
+        method: 'get',
+        url: 'https://f62edfbf3607.ngrok.io/api/timeSlots',
+        params: {
+          'barberId': this.props.barberId,
+        },
+        headers:{
+          'Authorization':`Bearer ${token}`
+        }
+      });
+      
+      try {
+
+  
+        if (response.status === 200) {
+         
+          const data = response.data.skills;
+
+          this.setState({data:data});
+
+        
+        }
+  
+      } catch (error) {
+        console.log('There has been a problem with your fetch operation: ' + error.message);
+        throw error;
+      } 
+  }
+
+
 
   apiSlots = [
     { key: 1, startTime: "9:00", isCheck: false, endtime: "9:30", date: "2020-11-28" },
@@ -229,10 +268,9 @@ const styles = StyleSheet.create({
 const mapStatetoProps  = (state) =>
 {
 
-  console.log(state);
-
   return {
-    orders: state.orderReducer
+    orders: state.orderReducer,
+    barberId: state.orderReducer.barberId.toString()
   }
 }
 

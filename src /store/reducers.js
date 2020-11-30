@@ -1,10 +1,11 @@
-import {SETBARBER,SETSERVICE,SETSLOT ,SETTOTAL} from './actionTypes'
+import {SETBARBER,SETBARBERID,SETSERVICE,SETSLOT ,SETTOTAL} from './actionTypes'
 
 const initialState = {
     service:[],
     barber:'',
     slot:[],
-    total:0
+    total:0,
+    barberId:''
 }
 
 const orderReducer = (state = initialState,action) =>
@@ -14,6 +15,10 @@ const orderReducer = (state = initialState,action) =>
         case SETBARBER:
             return{...state,
             barber:state.barber = action.data
+            }
+        case SETBARBERID:
+            return{...state,
+            barberId:state.barberId = action.data
             }
         case SETSERVICE:
             return {...state,

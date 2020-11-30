@@ -4,6 +4,8 @@ import { FontAwesome,FontAwesome5,MaterialIcons,Ionicons,AntDesign,Octicons,Scro
 import { Card,CheckBox, ListItem, Button, Icon,Avatar,Badge} from 'react-native-elements';
 import {setService,setTotal} from './store/actions'
 import {connect} from  'react-redux';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from 'react-native-axios';
 
 
 class ServicesScreen extends Component
@@ -17,33 +19,53 @@ class ServicesScreen extends Component
           stickyHeaderIndices: [],
           ischecked:[],
           total:0.00,
-          services:[]
+          services:[],
+          data:[]
         };
-    
-    
       }
 
 
-
-      data = [
-        { key:1,Name:"Hair Cut",isCheck:false,Price:10.00,email:'jmae@gmail.com',avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg'},
-        { key:2,Name:"Dye",isCheck:false,Price:20.00,email:'jmae@gmail.com',avatar_url:'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'},
-        { key:3,Name:"Dreads",isCheck:false,Price:15.00,email:'jmae@gmail.com',avatar_url:'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'},
-        { key:4,Name:"Eye Brows",isCheck:false,Price:10.00,email:'jmae@gmail.com',avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg'},
-        { key:5,Name:"Shape UP",isCheck:false,Price:5.00,email:'jmae@gmail.com',avatar_url:'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'},
-        { key:6,Name:"Relaxer",isCheck:false,Price:15.00,email:'jmae@gmail.com',avatar_url:'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'},
-        { key:7,Name:"Shape UP",isCheck:false,Price:5.00,email:'jmae@gmail.com',avatar_url:'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'},
-        { key:8,Name:"Relaxer",isCheck:false,Price:15.00,email:'jmae@gmail.com',avatar_url:'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'},
-    ]
-
-
       async componentDidMount()
-      {
-          let bools = [...this.state.ischecked]
-          
-          this.data.forEach(ckb => {
+      {     
 
-          bools.push(ckb.isCheck)
+          const token = await AsyncStorage.getItem('token');
+
+          const response = await axios({
+            method: 'get',
+            url: 'https://f62edfbf3607.ngrok.io/api/barberskills',
+            params: {
+              'barberId': this.props.barberId,
+            },
+            headers:{
+              'Authorization':`Bearer ${token}`
+            }
+          });
+          
+          try {
+
+      
+            if (response.status === 200) {
+             
+              const data = response.data.skills;
+
+              this.setState({data:data});
+
+            
+            }
+      
+          } catch (error) {
+            console.log('There has been a problem with your fetch operation: ' + error.message);
+            throw error;
+          } 
+
+
+          let bools = [...this.state.ischecked]
+
+          data = [...this.state.data]
+          
+          data.forEach(ckb => {
+
+          bools.push(false);
           
         });
 
@@ -76,16 +98,16 @@ class ServicesScreen extends Component
 
           var selected = [...this.state.services]
 
-          selected.push({Name:this.data[index].Name,Price:this.data[index].Price});
+          selected.push({Name:this.state.data[index].Name,Price:this.state.data[index].Price});
 
-          this.setState({total:this.state.total + this.data[index].Price,services:selected});
+          this.setState({total:this.state.total + this.state.data[index].Price,services:selected});
 
          }
          else
          {
             var selected = [...this.state.services];
 
-            var Name = this.data[index].Name
+            var Name = this.state.data[index].Name
 
             selected = selected.filter(function(obj)
               {
@@ -93,7 +115,7 @@ class ServicesScreen extends Component
                 return obj.Name !== Name
               })
 
-            this.setState({total:this.state.total - this.data[index].Price,services:selected});
+            this.setState({total:this.state.total - this.state.data[index].Price,services:selected});
          }
 
          this.setState({ischecked:checkboxes})    
@@ -115,7 +137,7 @@ class ServicesScreen extends Component
             </View>
          
           <FlatList
-            data={this.data}
+            data={this.state.data}
             keyExtractor={(item,index)=> index.toString()}
             renderItem={({ item, index }) => (
 
@@ -125,7 +147,7 @@ class ServicesScreen extends Component
 
                 style={styles.list} key={item.key}>
 
-                <CheckBox style={this.data[index].isCheck}
+                <CheckBox 
                   checked={this.state.ischecked[index]}
                   onPress={() => this.isCheckBox(index)}
                   checkedColor='black'
@@ -215,11 +237,9 @@ const styles = StyleSheet.create({
 
 const mapStatetoProps  = (state) =>
 {
-
-  console.log(state);
-
   return {
-    orders: state.orderReducer
+    orders: state.orderReducer,
+    barberId: state.orderReducer.barberId.toString()
   }
 }
 
