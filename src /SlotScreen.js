@@ -18,7 +18,8 @@ class SlotScreen extends Component {
       date: new Date(),
       ischecked: [],
       availableTimeSlots: [],
-      selectedSlot: []
+      selectedSlot: [],
+      data:[]
     };
 
   }
@@ -27,11 +28,13 @@ class SlotScreen extends Component {
   async componentDidMount()
   {     
 
+      this.onChangeDate(this.state.date)
+    
       const token = await AsyncStorage.getItem('token');
 
       const response = await axios({
         method: 'get',
-        url: 'https://48e150a17437.ngrok.io/api/timeSlots',
+        url: 'https://24d5e361a273.ngrok.io/api/timeSlots',
         params: {
           'barberId': this.props.barberId,
         },
@@ -45,12 +48,21 @@ class SlotScreen extends Component {
   
         if (response.status === 200) {
          
-          const data = response.data.skills;
+          const data = response.data.availability;
 
-          this.setState({data:data});
+          var availability = [];
 
-        
+          data.forEach(av => {
+
+            availability.push({key:av._id,startTime:av.startTime,endTime:av.endTime,date:av.date,isCheck:false})
+    
+          });
+
+          availability.sort((a,b) => (a.startTime > b.startTime )?1:-1);
+          this.setState({data:availability});
+
         }
+
   
       } catch (error) {
         console.log('There has been a problem with your fetch operation: ' + error.message);
@@ -58,18 +70,6 @@ class SlotScreen extends Component {
       } 
   }
 
-
-
-  apiSlots = [
-    { key: 1, startTime: "9:00", isCheck: false, endtime: "9:30", date: "2020-11-28" },
-    { key: 2, startTime: "9:30", isCheck: false, endtime: "10:00", date: "2020-11-28" },
-    { key: 3, startTime: "10:00", isCheck: false, endtime: "10:30", date: "2020-11-29" },
-    { key: 4, startTime: "10:30", isCheck: false, endtime: "11:00", date: "2020-11-29" },
-    { key: 5, startTime: "9:00", isCheck: false, endtime: "9:30", date: "2020-11-29" },
-    { key: 6, startTime: "9:30", isCheck: false, endtime: "10:00", date: "2020-11-29" },
-    { key: 7, startTime: "9:00", isCheck: false, endtime: "9:30", date: "2020-11-30" },
-    { key: 8, startTime: "9:30", isCheck: false, endtime: "10:00", date: "2020-11-30" },
-  ]
 
 
   FlatListItemSeparator = () => {
@@ -103,18 +103,13 @@ class SlotScreen extends Component {
   }
 
 
-  async componentDidMount() {
-    this.onChangeDate(this.state.date)
-  }
-
-
   onChangeDate(date) {
 
     var selectedDate = Moment(new Date(date)).format("YYYY-MM-DD");
 
     var timeSlots = [];
 
-    this.apiSlots.forEach(element => {
+    this.state.data.forEach(element => {
 
       if (element.date === selectedDate) {
         timeSlots.push(element);
@@ -141,7 +136,6 @@ class SlotScreen extends Component {
           <Calendar
             onChange={(date) => this.onChangeDate(date)}
             selected={this.state.date}
-            // We use Moment.js to give the minimum and maximum dates.
             minDate={Moment().startOf('day')}
             maxDate={Moment().add(10, 'years').startOf('day')}
           />
@@ -170,7 +164,7 @@ class SlotScreen extends Component {
                 ]}
               >
                 <Text style={styles.logoText}>
-                  {item.startTime + " - " + item.endtime}
+                  {item.startTime + " - " + item.endTime}
 
                 </Text>
 

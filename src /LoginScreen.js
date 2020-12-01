@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'react-native-axios';
-import { Keyboard, Button, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, Alert, KeyboardAvoidingView } from 'react-native';
+import { Keyboard, Button, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -25,12 +25,11 @@ class LoginScreen extends Component {
     }
   }
 
-
   async onLogin() {
 
     const response = await axios({
       method: 'post',
-      url: 'https://f37db5e706f5.ngrok.io/api/login',
+      url: 'https://32e5acd853b0.ngrok.io/api/login',
       data: {
         'email': this.state.username,
         'password': this.state.password
@@ -58,36 +57,45 @@ class LoginScreen extends Component {
   render() {
 
     return (
-      <KeyboardAvoidingView style={styles.containerView} behavior="padding">
+    <View style={styles.containerView}> 
+      <KeyboardAvoidingView behavior="padding">
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.loginFormView}>
-            <View style={styles.loginFormView}>
-              <Text style={styles.logoText}>Muni Book</Text>
+            <View style={styles.logoView}> 
+              <Text style={styles.logoText}>Muni Book</Text>         
+              </View> 
               <TextInput
                 value={this.state.username}
                 onChangeText={(username) => this.setState({ username })}
                 placeholder={'Username'}
+                placeholderTextColor='black'
                 style={styles.loginFormTextInput}
                 placeholderColor="#3897f1"
               />
               <TextInput
                 value={this.state.password}
+                placeholderTextColor='black'
                 onChangeText={(password) => this.setState({ password })}
                 placeholder={'Password'}
                 secureTextEntry={true}
                 placeholderColor="#c4c3cb"
                 style={styles.loginFormTextInput}
               />
-
-              <Button
-                title={'Login'}
-                style={styles.loginButton}
+              <TouchableOpacity
                 onPress={this.onLogin.bind(this)}
-              />
-            </View>
+              >
+
+                <View style={styles.loginButton}> 
+               <Text style={styles.buttonText}>           
+                 Login            
+               </Text>
+               </View>
+              </TouchableOpacity>
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+      </View>
+  
     );
   }
 }
@@ -98,20 +106,26 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   containerView: {
     flex: 1,
-    backgroundColor: '#fff44f'
+    backgroundColor: '#fff44f',
+    height:'100%',
   },
-  loginScreenContainer: {
-    flex: 1,
+
+  logoView:{
+
+    height:'30%',
+    marginTop:50
+
   },
+
   logoText: {
     fontSize: 85,
     fontWeight: "800",
-    marginTop: 150,
     marginBottom: 50,
     textAlign: 'center',
+    color:'black'
   },
   loginFormView: {
-    flex: 1
+    height:'100%',
   },
   loginFormTextInput: {
     height: 43,
@@ -123,15 +137,33 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     marginLeft: 15,
     marginRight: 15,
-    marginTop: 5,
     marginBottom: 5,
 
   },
+
+  buttonText:{
+    color:'white',
+    fontSize:20,
+    textAlign:'center',
+    fontWeight:'600'
+  },
+
+  loginView:{
+
+    width:'100%'
+
+  },
+
   loginButton: {
-    backgroundColor: '#3897f1',
+    backgroundColor: 'black',
     borderRadius: 5,
     height: 45,
     marginTop: 10,
+    textAlign:'center',
+    justifyContent:'center',
+    width:'50%',
+    alignSelf:'center'
+
   },
   fbLoginButton: {
     height: 45,

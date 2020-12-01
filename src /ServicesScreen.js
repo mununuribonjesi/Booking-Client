@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
-import {Keyboard,Image,FlatList, Text, View,StyleSheet, TextInput,TouchableHighlight, TouchableWithoutFeedback,TouchableOpacity, Alert, KeyboardAvoidingView,Dimensions} from 'react-native';
-import { FontAwesome,FontAwesome5,MaterialIcons,Ionicons,AntDesign,Octicons,ScrollView } from '@expo/vector-icons';
-import { Card,CheckBox, ListItem, Button, Icon,Avatar,Badge} from 'react-native-elements';
+import {FlatList, Text, View,StyleSheet,TouchableOpacity} from 'react-native';
+import {CheckBox, ListItem} from 'react-native-elements';
 import {setService,setTotal} from './store/actions'
 import {connect} from  'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 
-
 class ServicesScreen extends Component
 {
     constructor(props) {
         super(props);
-        
+
         this.state = {
           username: '',
           password: '',
@@ -24,15 +22,13 @@ class ServicesScreen extends Component
         };
       }
 
-
       async componentDidMount()
       {     
 
           const token = await AsyncStorage.getItem('token');
-
           const response = await axios({
             method: 'get',
-            url: 'https://48e150a17437.ngrok.io/api/barberskills',
+            url: 'https://24d5e361a273.ngrok.io/api/barberskills',
             params: {
               'barberId': this.props.barberId,
             },
@@ -47,10 +43,7 @@ class ServicesScreen extends Component
             if (response.status === 200) {
              
               const data = response.data.skills;
-
-              this.setState({data:data});
-
-            
+              this.setState({data:data});  
             }
       
           } catch (error) {
@@ -59,17 +52,17 @@ class ServicesScreen extends Component
           } 
 
 
-          let bools = [...this.state.ischecked]
+          let checklist = [...this.state.ischecked]
 
           data = [...this.state.data]
           
           data.forEach(ckb => {
 
-          bools.push(false);
+            checklist.push(false);
           
         });
 
-        this.setState({ischecked:bools})
+        this.setState({ischecked:checklist})
       }
 
 
@@ -129,12 +122,14 @@ class ServicesScreen extends Component
 
       <View styles={styles.container}>
 
-        <View style={styles.Body}>
-          <View> 
+<View style={styles.subHeader}>
           <Text style={styles.textStyle}>
             Choose Service
             </Text>
-            </View>
+        </View>
+
+        <View style={styles.Body}>
+         
          
           <FlatList
             data={this.state.data}
@@ -163,9 +158,11 @@ class ServicesScreen extends Component
 
             )}
           />
+          
           <Text style={styles.textStyle}>
             {"£" + (this.state.total) + ".00"}
           </Text>
+
         </View>
   
         <View style={styles.Footer}>
@@ -199,6 +196,11 @@ const styles = StyleSheet.create({
       height:'100%',
       flex:1
     },
+
+    subHeader: {
+      backgroundColor: '#fff44f',
+      height: '10%'
+    },
   
     textStyle: {
         textAlign: 'center',
@@ -208,8 +210,8 @@ const styles = StyleSheet.create({
       },
       Body:{
 
-        backgroundColor:'#fff44f',
-        height:'85%'
+        backgroundColor:'white',
+        height:'75%'
       },
 
       Footer:{

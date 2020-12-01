@@ -1,15 +1,10 @@
-import React, { Component, useState } from 'react';
-import { Keyboard, Image, FlatList, Modal, Text, View, KeyboardAvoidingView, StyleSheet, TextInput, TouchableHighlight, TouchableWithoutFeedback, TouchableOpacity, Alert, Dimensions } from 'react-native';
-import { FontAwesome, FontAwesome5, MaterialIcons, Ionicons, AntDesign, Octicons } from '@expo/vector-icons';
-import { Card, ListItem, CheckBox, Button, Icon, Avatar, Badge, withTheme } from 'react-native-elements';
-import DatePicker from 'react-native-date-picker'
-import Calendar from 'react-native-calendar-datepicker';
+import React, { Component } from 'react';
+import {FlatList, Text, View, KeyboardAvoidingView, StyleSheet,TouchableOpacity, Dimensions } from 'react-native';
+import {ListItem} from 'react-native-elements';
 import Moment from 'moment'
 import { connect } from 'react-redux';
-import { CreditCardInput, LiteCreditCardInput } from "react-native-credit-card-fullpage-form";
+import { CreditCardInput} from "react-native-credit-card-fullpage-form";
 import RBSheet from "react-native-raw-bottom-sheet";
-
-
 
 class CheckoutScreen extends Component {
   constructor(props) {
@@ -19,7 +14,6 @@ class CheckoutScreen extends Component {
       placeholders: { number: "XXXX XXXX XXXX XXXX", expiry: "MM/YY", cvc: "CVC" },
       labels: { number: "CARD NUMBER", expiry: "EXPIRY", cvc: "CVC/CCV" }
     }
-    
 
   };
 
@@ -32,10 +26,7 @@ class CheckoutScreen extends Component {
   }
 
 
-
-
   renderItem = ({ item }) => {
-
 
     return (
       <View>
