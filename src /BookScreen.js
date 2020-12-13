@@ -19,7 +19,7 @@ class BookScreen extends Component {
 
     const response = await axios({
       method: 'get',
-      url: 'https://24d5e361a273.ngrok.io/api/barbers',
+      url: 'https://21c9547db6d8.ngrok.io/api/barbers',
       headers: {
         'Authorization': `Bearer ${token}`
       }

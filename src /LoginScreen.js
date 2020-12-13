@@ -29,7 +29,7 @@ class LoginScreen extends Component {
 
     const response = await axios({
       method: 'post',
-      url: 'https://32e5acd853b0.ngrok.io/api/login',
+      url: 'https://bc7ad3610603.ngrok.io/api/login',
       data: {
         'email': this.state.username,
         'password': this.state.password

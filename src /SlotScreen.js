@@ -1,7 +1,7 @@
 import React, { Component} from 'react';
 import { FlatList, Text, View, StyleSheet,TouchableOpacity} from 'react-native';
 import Calendar from 'react-native-calendar-datepicker';
-import Moment from 'moment';
+import Moment, { duration } from 'moment';
 import {setSlot} from './store/actions';
 import {connect} from  'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -19,7 +19,8 @@ class SlotScreen extends Component {
       ischecked: [],
       availableTimeSlots: [],
       selectedSlot: [],
-      data:[]
+      data:[],
+      duration:'60'
     };
 
   }
@@ -28,13 +29,12 @@ class SlotScreen extends Component {
   async componentDidMount()
   {     
 
-      this.onChangeDate(this.state.date)
     
       const token = await AsyncStorage.getItem('token');
 
       const response = await axios({
         method: 'get',
-        url: 'https://24d5e361a273.ngrok.io/api/timeSlots',
+        url: 'https://21c9547db6d8.ngrok.io/api/timeSlots',
         params: {
           'barberId': this.props.barberId,
         },
@@ -48,20 +48,77 @@ class SlotScreen extends Component {
   
         if (response.status === 200) {
          
-          const data = response.data.availability;
+          var data = response.data.availability.sort((a,b) => (a.startTime > b.startTime )?1:-1);          ;
 
           var availability = [];
 
-          data.forEach(av => {
+          var excludeSt = [];
 
-            availability.push({key:av._id,startTime:av.startTime,endTime:av.endTime,date:av.date,isCheck:false})
+          data.forEach(av=> {
+
+
+           var time = Moment(av.startTime,'HH:mm');
+           var newTime = Moment(time).add(60,'m').format('HH:mm');
+           var checkst = Moment(time).add(30,'m').format('HH:mm');
+
+
+           var timeException = [];
+           var newdata = [];
+ 
+
+           timeException = data.filter(function(x)
+           {
+             return x.startTime === checkst.toString() && x.date === av.date;
+           });
+
+           if(Object.keys(timeException).length !== 0 )
+           {
+              excludeSt.push({_id:timeException[0]._id,startTime:timeException[0].startTime});
+           }
+          
+          
+           newdata = data.filter(function(x)
+           {
+             return x.endTime === newTime.toString() && x.date === av.date;
+           });
+
+
+          const fst = excludeSt.filter(function(x)
+          {
+            return x._id === av._id && x.startTime === av.startTime;
+
+          });
+
+          console.log(fst);
+
+
+
+
+
+
+            if(Object.keys(newdata).length !== 0 )
+            {
+
+              var et = newdata[0].endTime;
+              
+
+              if(fst.startTime !== av.startTime)
+              {
+
+                  availability.push({key:av._id,startTime:av.startTime,endTime:et,date:av.date,isCheck:false})
+         
+              }
+          
+          }
     
           });
 
-          availability.sort((a,b) => (a.startTime > b.startTime )?1:-1);
           this.setState({data:availability});
 
         }
+
+
+      this.onChangeDate(this.state.date)
 
   
       } catch (error) {
@@ -90,8 +147,6 @@ class SlotScreen extends Component {
     var timeSlots = [...this.state.availableTimeSlots];
     
     var slots = [];
-
-    console.log(timeSlots[index])
 
     timeSlots.forEach(element => {
                  

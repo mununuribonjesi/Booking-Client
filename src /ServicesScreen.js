@@ -28,7 +28,7 @@ class ServicesScreen extends Component
           const token = await AsyncStorage.getItem('token');
           const response = await axios({
             method: 'get',
-            url: 'https://24d5e361a273.ngrok.io/api/barberskills',
+            url: 'https://21c9547db6d8.ngrok.io/api/barberskills',
             params: {
               'barberId': this.props.barberId,
             },
