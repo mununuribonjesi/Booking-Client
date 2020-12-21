@@ -19,7 +19,7 @@ class BookScreen extends Component {
 
     const response = await axios({
       method: 'get',
-      url: 'https://9f71eb990ba3.ngrok.io/api/barbers',
+      url: 'https://368cfaca1e2f.ngrok.io/api/barbers',
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -64,6 +64,7 @@ class BookScreen extends Component {
         </View>
         <FlatList
           data={this.state.stylists}
+          keyExtractor={(x,i) => i.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => { this.props.setBarber(item.Name), this.props.setBarberId(item._id), this.props.navigation.navigate('ServicesScreen') }}

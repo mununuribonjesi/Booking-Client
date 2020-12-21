@@ -50,7 +50,7 @@ class CheckoutScreen extends Component {
           <ListItem.Content>
           </ListItem.Content>
           <Text style={styles.rightText}>
-            {item.slot.startTime} - {item.slot.endtime}
+            {item.slot.startTime} - {item.slot.endTime}
           </Text>
         </ListItem>
         {item.service.map((s) => (

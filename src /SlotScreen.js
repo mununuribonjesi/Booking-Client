@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import { FlatList, Text, View, StyleSheet,TouchableOpacity} from 'react-native';
+import { FlatList, Text, View, StyleSheet,TouchableOpacity, LogBox} from 'react-native';
 import Calendar from 'react-native-calendar-datepicker';
 import Moment from 'moment';
 import {setSlot} from './store/actions';
@@ -24,76 +24,75 @@ class SlotScreen extends Component {
     };
 
   }
-
-    
+  
   async componentDidMount()
   {    
 
-    var workHours = await this.getWorkHours();
-    var bookings = await this.getAppointments();
-    var duration = this.props.services[0].Duration;
-
-    console.log(workHours[0].startTime);
-    console.log(workHours[0].endTime);
-
-    var inputDataFormat = "HH:mm:ss";
-    var outputFormat = "HH:mm";
-  
-    var tmp = Moment(duration, inputDataFormat);
-    var dif = tmp - Moment().startOf("day");
-  
-    var startIntervalTime = Moment(workHours[0].startTime, inputDataFormat).add(-dif, "ms");
-    var endIntervalTime = Moment(workHours[0].startTime, inputDataFormat);
-    var finishTime = Moment(workHours[0].endTime, inputDataFormat);
-    var obj = [];
-
-    while (startIntervalTime < finishTime) {
-  
-          var siT = new Date(Date.parse(startIntervalTime));
-  
-          var eiT = new Date(Date.parse(endIntervalTime));
-  
-          var  x = bookings.filter(function(p)
-          {
-            var st = new Date(Date.parse(Moment(p.startTime,"HH:mm")))
-            var et = new Date(Date.parse(Moment(p.endTime,"HH:mm")))
-             
-             return st.getTime() < eiT && et.getTime() > siT
-          })
-  
-          if(x.length == 0)
-          {
-            obj.push({
-                startTime: startIntervalTime.format(outputFormat),
-                endTime: endIntervalTime.format(outputFormat),
-            }); 
-          }
-  
-    startIntervalTime.add(dif, "ms");
-    endIntervalTime.add(dif, "ms");
-
+    var date = Moment(new Date()).format("YYYY-MM-DD");
+    await this.generateSlots(date);
   }
 
-  console.log(obj);
 
+
+
+generateSlots = async (date) =>
+{
+
+  var workHours = await this.getWorkHours(date);
+  console.log(workHours);
+  var bookings = await this.getAppointments(date);
+  var duration = this.props.services[0].Duration;
+
+  var inputDataFormat = "HH:mm:ss";
+  var outputFormat = "HH:mm";
+
+  var tmp = Moment(duration, inputDataFormat);
+  var dif = tmp - Moment().startOf("day");
+
+  var startIntervalTime = Moment(workHours[0].startTime, inputDataFormat);
+  var endIntervalTime = Moment(workHours[0].startTime, inputDataFormat).add(+dif, "ms");
+  var finishTime = Moment(workHours[0].endTime, inputDataFormat);
+  var createdSlots = [];
+
+  while (startIntervalTime < finishTime) {
+
+        var siT = new Date(Date.parse(startIntervalTime));
+
+        var eiT = new Date(Date.parse(endIntervalTime));
+
+        var  x = bookings.filter(function(p)
+        {
+          var st = new Date(Date.parse(Moment(p.startTime,"HH:mm")))
+          var et = new Date(Date.parse(Moment(p.endTime,"HH:mm")))
+           
+           return st.getTime() < eiT && et.getTime() > siT
+        })
+
+        if(x.length == 0)
+        {
+          createdSlots.push({
+              startTime: startIntervalTime.format(outputFormat),
+              endTime: endIntervalTime.format(outputFormat),
+              date:date
+          }); 
+        }
+
+  startIntervalTime.add(dif, "ms");
+  endIntervalTime.add(dif, "ms");
+}
+this.setState({availableTimeSlots:createdSlots})
 }
 
-
-
-
-
-
-
-  getAppointments = async () => {
-
+  getAppointments = async (date) => {
 
     const token = await AsyncStorage.getItem('token');
   
       const response = await axios({
         method: 'get',
-        url: 'https://9f71eb990ba3.ngrok.io/api/appointments',
+        url: 'https://368cfaca1e2f.ngrok.io/api/appointments',
         params: {
           'barberId': this.props.barberId,
+          'date':date
         },
         headers:{
           'Authorization':`Bearer ${token}`
@@ -112,21 +111,19 @@ class SlotScreen extends Component {
         return response.status
       }
 
-
-
   }
   
 
-  getWorkHours = async () => {
+  getWorkHours = async (date) => {
     
-  
       const token = await AsyncStorage.getItem('token');
   
       const response = await axios({
         method: 'get',
-        url: 'https://9f71eb990ba3.ngrok.io/api/workHours',
+        url: 'https://368cfaca1e2f.ngrok.io/api/workHours',
         params: {
           'barberId': this.props.barberId,
+          'date':date
         },
         headers:{
           'Authorization':`Bearer ${token}`
@@ -145,67 +142,9 @@ class SlotScreen extends Component {
         return response.status
       }
   
-
     }
-  
-  
-  
-  
-  generateSlots()
-  {
-
-    var inputDataFormat = "HH:mm:ss";
-    var outputFormat = "HH:mm";
-  
-    var tmp = moment(value.interval, inputDataFormat);
-    var dif = tmp - moment().startOf("day");
-  
-    var startIntervalTime = moment(value.startTime, inputDataFormat).add(-dif, "ms");
-    var endIntervalTime = moment(value.startTime, inputDataFormat);
-    var finishTime = moment(value.endTime, inputDataFormat);
-    var obj = [];
-    var ad = new Date();
-    
-    while (startIntervalTime < finishTime) {
-  
-          var siT = new Date(Date.parse(startIntervalTime));
-  
-          var eiT = new Date(Date.parse(endIntervalTime));
-  
-          var  x = appointments.filter(function(p)
-          {
-            var st = new Date(Date.parse(moment(p.startTime,"HH:mm")))
-            var et = new Date(Date.parse(moment(p.endTime,"HH:mm")))
-             
-             return st.getTime() < eiT && et.getTime() > siT
-          })
-  
-          if(x.length == 0)
-          {
-            obj.push({
-                startTime: startIntervalTime.format(outputFormat),
-                endTime: endIntervalTime.format(outputFormat),
-            }); 
-          }
-  
-    startIntervalTime.add(dif, "ms");
-    endIntervalTime.add(dif, "ms");
-  }
-  
 
 
-
-
-
-
-
-
-
-
-
-
-
-  }
 
 
   FlatListItemSeparator = () => {
@@ -241,6 +180,8 @@ class SlotScreen extends Component {
 
     var selectedDate = Moment(new Date(date)).format("YYYY-MM-DD");
 
+    this.generateSlots(selectedDate);
+
     var timeSlots = [];
 
     this.state.data.forEach(element => {
@@ -258,7 +199,9 @@ class SlotScreen extends Component {
 
   }
 
+
   render() {
+    LogBox.ignoreAllLogs(true);
     return (
 
 
@@ -288,7 +231,7 @@ class SlotScreen extends Component {
           <FlatList
 
             data={this.state.availableTimeSlots}
-            keyExtractor={(item,index)=> index.toString()}
+            keyExtractor={(x,i) => i.toString()}
             ItemSeparatorComponent={this.FlatListItemSeparator}
             ListFooterComponent={this.FlatListItemSeparator}
             renderItem={({ item, index }) => (
