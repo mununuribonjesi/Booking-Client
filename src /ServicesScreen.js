@@ -28,7 +28,7 @@ class ServicesScreen extends Component
           const token = await AsyncStorage.getItem('token');
           const response = await axios({
             method: 'get',
-            url: 'https://21c9547db6d8.ngrok.io/api/barberskills',
+            url: 'https://9f71eb990ba3.ngrok.io/api/barberskills',
             params: {
               'barberId': this.props.barberId,
             },
@@ -91,7 +91,7 @@ class ServicesScreen extends Component
 
           var selected = [...this.state.services]
 
-          selected.push({Name:this.state.data[index].Name,Price:this.state.data[index].Price});
+          selected.push({Name:this.state.data[index].Name,Price:this.state.data[index].Price,Duration:this.state.data[index].Duration});
 
           this.setState({total:this.state.total + this.state.data[index].Price,services:selected});
 
@@ -108,10 +108,14 @@ class ServicesScreen extends Component
                 return obj.Name !== Name
               })
 
-            this.setState({total:this.state.total - this.state.data[index].Price,services:selected});
+            this.setState({total:this.state.total - this.state.data[index].Price});
+
+            this.setState({services:selected});
+          
          }
 
-         this.setState({ischecked:checkboxes})    
+         this.setState({ischecked:checkboxes})  
+         
       }
     
 

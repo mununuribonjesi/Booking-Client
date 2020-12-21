@@ -11,10 +11,8 @@ import OurTeamScreen from "./src /OurTeamScreen";
 import ServicesScreen from "./src /ServicesScreen";
 import AboutUsScreen from "./src /AboutUsScreen";
 import BsHeader from "./shared/BsHeader";
-import { Ionicons } from '@expo/vector-icons';
 import SlotScreen from "./src /SlotScreen";
 import CheckoutScreen from "./src /checkoutScreen";
-import {OrderProvider} from "./provider/OrderProvider";
 import {Provider} from "react-redux";
 import configureStore from './src /store/store';
 
