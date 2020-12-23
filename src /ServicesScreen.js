@@ -117,35 +117,27 @@ class ServicesScreen extends Component
 
         let checkboxes = [...this.state.ischecked]
 
+
+        for (i = 0; i < checkboxes.length; i++) {
+        
+          checkboxes[i] = false;
+        }
+        
+     
+
          checkboxes[index] = !checkboxes[index];
+
 
         
          if(checkboxes[index]===true)
          {
 
-          var selected = [...this.state.services]
+          var selected = [];
 
           selected.push({Name:this.state.data[index].Name,Price:this.state.data[index].Price,Duration:this.state.data[index].Duration,skillId:this.state.data[index]._id});
 
-          this.setState({total:this.state.total + this.state.data[index].Price,services:selected});
+          this.setState({total:this.state.data[index].Price,services:selected});
 
-         }
-         else
-         {
-            var selected = [...this.state.services];
-
-            var Name = this.state.data[index].Name
-
-            selected = selected.filter(function(obj)
-              {
-
-                return obj.Name !== Name
-              })
-
-            this.setState({total:this.state.total - this.state.data[index].Price});
-
-            this.setState({services:selected});
-          
          }
 
          this.setState({ischecked:checkboxes})  
