@@ -1,11 +1,12 @@
 import React, { Component} from 'react';
-import { FlatList, Text, View, StyleSheet,TouchableOpacity, LogBox} from 'react-native';
+import { FlatList, Text, View, StyleSheet,TouchableOpacity, LogBox,ActivityIndicator} from 'react-native';
 import Calendar from 'react-native-calendar-datepicker';
 import Moment from 'moment';
 import {setSlot} from './store/actions';
 import {connect} from  'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
+
 
 class SlotScreen extends Component {
   constructor(props) {
@@ -20,7 +21,9 @@ class SlotScreen extends Component {
       availableTimeSlots: [],
       selectedSlot: [],
       data:[],
-      duration:'60'
+      duration:'60',
+      confirm:false,
+      isGeneratingSlots:false
     };
 
   }
@@ -37,9 +40,9 @@ class SlotScreen extends Component {
 
 generateSlots = async (date) =>
 {
-
-  var workHours = await this.getWorkHours(date);
-  console.log(workHours);
+  this.setState({isGeneratingSlots:true})
+  var workHours = [];
+  workHours = await this.getWorkHours(date);
   var bookings = await this.getAppointments(date);
   var duration = this.props.services[0].Duration;
 
@@ -80,7 +83,8 @@ generateSlots = async (date) =>
   startIntervalTime.add(dif, "ms");
   endIntervalTime.add(dif, "ms");
 }
-this.setState({availableTimeSlots:createdSlots})
+
+this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
 }
 
   getAppointments = async (date) => {
@@ -89,7 +93,7 @@ this.setState({availableTimeSlots:createdSlots})
   
       const response = await axios({
         method: 'get',
-        url: 'https://831acad717ea.ngrok.io/api/appointments',
+        url: 'https://425bfb71cdff.ngrok.io/api/appointments',
         params: {
           'barberId': this.props.barberId,
           'date':date
@@ -120,7 +124,7 @@ this.setState({availableTimeSlots:createdSlots})
   
       const response = await axios({
         method: 'get',
-        url: 'https://831acad717ea.ngrok.io/api/workHours',
+        url: 'https://425bfb71cdff.ngrok.io/api/workHours',
         params: {
           'barberId': this.props.barberId,
           'date':date
@@ -131,7 +135,8 @@ this.setState({availableTimeSlots:createdSlots})
       });
   
   
-      if (response.status === 200)
+      console.log(response);
+      if (response.status === 200 && response.data != undefined)
       {
   
         return response.data.time
@@ -172,11 +177,12 @@ this.setState({availableTimeSlots:createdSlots})
     });
 
     slots[index] = !slots[index]; 
-    this.setState({ischecked:slots,selectedSlot:timeSlots[index]});
+    this.setState({ischecked:slots,selectedSlot:timeSlots[index],confirm:true});
   }
 
 
   onChangeDate(date) {
+    
 
     var selectedDate = Moment(new Date(date)).format("YYYY-MM-DD");
 
@@ -192,10 +198,7 @@ this.setState({availableTimeSlots:createdSlots})
 
     })
      
-    var ad = Date.parse()
-
-    ad.hou
-    this.setState({ date: date, availableTimeSlots: timeSlots,ischecked:[] });
+    this.setState({ date: date, availableTimeSlots: timeSlots,ischecked:[],confirm:false});
 
   }
 
@@ -226,8 +229,30 @@ this.setState({availableTimeSlots:createdSlots})
             Available Slots
             </Text>
         </View>
+        
+
+
+
 
         <View style={styles.slots}>
+
+        {this.state.isGeneratingSlots == true ?
+
+<View style={[styles.container, styles.horizontal]}>
+          <ActivityIndicator size="large" color="#00ff00" />
+          </View>
+        
+       : [
+        (this.state.availableTimeSlots.length == 0 ?
+        <Text style={styles.logoText}>
+                          
+                          No Available Slots !!!
+
+                </Text>
+
+          :
+
+          
           <FlatList
 
             data={this.state.availableTimeSlots}
@@ -243,20 +268,23 @@ this.setState({availableTimeSlots:createdSlots})
                   { backgroundColor: this.state.ischecked[index] ? '#00ff00' : '#FFFFFF' }
                 ]}
               >
+
                 <Text style={styles.logoText}>
                   {item.startTime + " - " + item.endTime}
-
                 </Text>
-
+            
               </TouchableOpacity>
 
 
             )}
           />
+        )
+]
+  }
         </View>
         <View style={styles.Footer}>
 
-
+        {this.state.confirm &&
           <TouchableOpacity
             onPress={() =>{ this.props.navigation.navigate('CheckoutScreen'),this.props.setSlot(this.state.selectedSlot)}}
           >
@@ -265,7 +293,7 @@ this.setState({availableTimeSlots:createdSlots})
               Confirm
           </Text>
           </TouchableOpacity>
-
+        }
         </View>
 
       </View>
@@ -336,6 +364,12 @@ const styles = StyleSheet.create({
 
 
   },
+
+  horizontal: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10
+  }
 })
 
 

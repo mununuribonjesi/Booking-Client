@@ -6,6 +6,25 @@ import {styles} from '../styles/BarberCstyles';
 
 const BarberComponent = (props) => {
 
+  const navigationString = () =>
+  {
+
+    var screen = ''
+
+    if(props.isGetByService)
+    {
+      screen = 'SlotScreen'
+    }
+
+    else
+    {
+      screen= 'ServicesScreen'
+    }
+
+    return screen
+
+  }
+
   return (
     <View styles={styles.list}>
     <View style={styles.headerFooterStyle}>
@@ -18,7 +37,7 @@ const BarberComponent = (props) => {
       keyExtractor={(x,i) => i.toString()}
       renderItem={({ item }) => (
         <TouchableOpacity
-          onPress={() => { props.setBarber(item.Name), props.setBarberId(item._id), props.navigation.navigate('ServicesScreen',{isGetByService:props.isGetByService})}}
+          onPress={() => { props.setBarber(item.Name), props.setBarberId(item._id), props.navigation.navigate(navigationString(),{isGetByService:props.isGetByService})}}
         >
           <ListItem
             style={styles.list} key={item._id} bottomDivider>
@@ -29,7 +48,7 @@ const BarberComponent = (props) => {
             </ListItem.Content>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => { props.setBarber(item.Name), props.setBarberId(item._id), props.navigation.navigate('ServicesScreen',{isGetByService:props.isGetByService})}}
+              onPress={() => { props.setBarber(item.Name), props.setBarberId(item._id), props.navigation.navigate(navigationString(),{isGetByService:props.isGetByService})}}
             >
               <Text>Book Now</Text>
             </TouchableOpacity>

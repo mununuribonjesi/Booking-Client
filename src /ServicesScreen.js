@@ -65,7 +65,7 @@ class ServicesScreen extends Component
         {
           response = await axios({
             method: 'get',
-            url: 'https://831acad717ea.ngrok.io/api/skills',
+            url: 'https://425bfb71cdff.ngrok.io/api/skills',
             params: {
 
             },
@@ -79,7 +79,7 @@ class ServicesScreen extends Component
         {
          response = await axios({
           method: 'get',
-          url: 'https://831acad717ea.ngrok.io/api/barberskills',
+          url: 'https://425bfb71cdff.ngrok.io/api/barberskills',
           params: {
             'barberId': this.props.barberId,
           },
@@ -122,13 +122,9 @@ class ServicesScreen extends Component
         
           checkboxes[i] = false;
         }
-        
-     
-
+      
          checkboxes[index] = !checkboxes[index];
-
-
-        
+      
          if(checkboxes[index]===true)
          {
 
@@ -140,22 +136,15 @@ class ServicesScreen extends Component
 
          }
 
-         this.setState({ischecked:checkboxes})  
-         
+         this.setState({ischecked:checkboxes})        
       }
     
 
     render()
     {
-
-
-
         const isGetByService = this.isGetByService();
 
         console.log(isGetByService)
-
-
-
 
     return (
 
