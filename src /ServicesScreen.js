@@ -28,7 +28,7 @@ class ServicesScreen extends Component
           const token = await AsyncStorage.getItem('token');
           const response = await axios({
             method: 'get',
-            url: 'https://368cfaca1e2f.ngrok.io/api/barberskills',
+            url: 'https://5b62e75b6995.ngrok.io/api/barberskills',
             params: {
               'barberId': this.props.barberId,
             },
@@ -170,7 +170,7 @@ class ServicesScreen extends Component
         </View>
   
         <View style={styles.Footer}>
-          {this.state.total > 0 &&
+          {(this.state.total > 0 && this.props.isGetByService) &&
         
           <TouchableOpacity
           onPress={() =>{this.props.setTotal(this.state.total),this.props.setService(this.state.services), this.props.navigation.navigate('SlotScreen')}}

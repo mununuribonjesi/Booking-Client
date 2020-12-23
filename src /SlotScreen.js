@@ -89,7 +89,7 @@ this.setState({availableTimeSlots:createdSlots})
   
       const response = await axios({
         method: 'get',
-        url: 'https://368cfaca1e2f.ngrok.io/api/appointments',
+        url: 'https://5b62e75b6995.ngrok.io/api/appointments',
         params: {
           'barberId': this.props.barberId,
           'date':date
@@ -120,7 +120,7 @@ this.setState({availableTimeSlots:createdSlots})
   
       const response = await axios({
         method: 'get',
-        url: 'https://368cfaca1e2f.ngrok.io/api/workHours',
+        url: 'https://5b62e75b6995.ngrok.io/api/workHours',
         params: {
           'barberId': this.props.barberId,
           'date':date

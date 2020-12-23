@@ -12,6 +12,8 @@ class HomeScreen extends Component {
     this.state = {
       username: '',
       password: '',
+      isService: true,
+      notService:false
     };
 
 
@@ -48,7 +50,7 @@ class HomeScreen extends Component {
 
         <TouchableOpacity 
             onPress={() =>
-              this.props.navigation.navigate("BookScreen")
+              this.props.navigation.navigate("BookScreen",)
             }
   style={styles.iconWrapper
   }
@@ -65,7 +67,7 @@ class HomeScreen extends Component {
   <TouchableOpacity 
   style={styles.iconWrapper
   }
-  onPress={() => this.props.navigation.navigate('ServicesScreen')}
+  onPress={() => this.props.navigation.navigate('ServicesScreen',{isGetBySevice:this.state.isService})}
   >
   <FontAwesome5 name="hand-holding-heart" size={40} color="black" />
   <Text style={styles.itemtext}>Services</Text>
