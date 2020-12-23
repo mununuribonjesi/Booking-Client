@@ -25,36 +25,25 @@ class ServicesScreen extends Component
       async componentDidMount()
       {     
 
-          const token = await AsyncStorage.getItem('token');
-          const response = await axios({
-            method: 'get',
-            url: 'https://5b62e75b6995.ngrok.io/api/barberskills',
-            params: {
-              'barberId': this.props.barberId,
-            },
-            headers:{
-              'Authorization':`Bearer ${token}`
-            }
-          });
-          
-          try {
 
-      
+        var response = await this.getServices();
+  
             if (response.status === 200) {
              
               const data = response.data.skills;
               this.setState({data:data});  
             }
-      
-          } catch (error) {
-            console.log('There has been a problem with your fetch operation: ' + error.message);
-            throw error;
-          } 
 
+            else 
+            {
+              return response.status
+            }
+      
+  
 
           let checklist = [...this.state.ischecked]
 
-          data = [...this.state.data]
+          var data = [...this.state.data]
           
           data.forEach(ckb => {
 
@@ -63,6 +52,51 @@ class ServicesScreen extends Component
         });
 
         this.setState({ischecked:checklist})
+      }
+
+
+      async getServices()
+      {
+        var response;
+
+        const token = await AsyncStorage.getItem('token');
+
+        if(this.isGetByService())
+        {
+          response = await axios({
+            method: 'get',
+            url: 'https://831acad717ea.ngrok.io/api/skills',
+            params: {
+
+            },
+            headers:{
+              'Authorization':`Bearer ${token}`
+            }
+          });
+        }
+
+        else
+        {
+         response = await axios({
+          method: 'get',
+          url: 'https://831acad717ea.ngrok.io/api/barberskills',
+          params: {
+            'barberId': this.props.barberId,
+          },
+          headers:{
+            'Authorization':`Bearer ${token}`
+          }
+        });
+      }
+        
+      return response;
+    }
+
+
+      isGetByService()
+      {
+
+        return this.props.navigation.state.params.isGetByService;
       }
 
 
@@ -91,7 +125,7 @@ class ServicesScreen extends Component
 
           var selected = [...this.state.services]
 
-          selected.push({Name:this.state.data[index].Name,Price:this.state.data[index].Price,Duration:this.state.data[index].Duration});
+          selected.push({Name:this.state.data[index].Name,Price:this.state.data[index].Price,Duration:this.state.data[index].Duration,skillId:this.state.data[index]._id});
 
           this.setState({total:this.state.total + this.state.data[index].Price,services:selected});
 
@@ -121,6 +155,16 @@ class ServicesScreen extends Component
 
     render()
     {
+
+
+
+        const isGetByService = this.isGetByService();
+
+        console.log(isGetByService)
+
+
+
+
     return (
 
 
@@ -152,6 +196,7 @@ class ServicesScreen extends Component
                   checkedColor='black'
                   size={40}
                   ListFooterComponent={() => this.ListHeader()}
+                  disabled={!this.state.ischecked[index]}
                 />
                 <ListItem.Content>
                   <ListItem.Title><Text style={styles.logoText}>{item.Name}</Text></ListItem.Title>
@@ -170,7 +215,7 @@ class ServicesScreen extends Component
         </View>
   
         <View style={styles.Footer}>
-          {(this.state.total > 0 && this.props.isGetByService) &&
+          {(this.state.total > 0 && !isGetByService) &&
         
           <TouchableOpacity
           onPress={() =>{this.props.setTotal(this.state.total),this.props.setService(this.state.services), this.props.navigation.navigate('SlotScreen')}}
@@ -181,6 +226,23 @@ class ServicesScreen extends Component
           </Text>
           </TouchableOpacity>
     }
+
+{(this.state.total > 0 && isGetByService) &&
+        
+        <TouchableOpacity
+        onPress={() =>{this.props.setTotal(this.state.total),this.props.setService(this.state.services), this.props.navigation.navigate('BookScreen',{
+          isGetByService:isGetByService
+        })}}
+        >
+
+        <Text style={styles.FooterText}>
+          Continue
+        </Text>
+        </TouchableOpacity>
+  }
+
+
+
         </View>
     
    </View>

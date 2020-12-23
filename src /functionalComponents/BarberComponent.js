@@ -18,7 +18,7 @@ const BarberComponent = (props) => {
       keyExtractor={(x,i) => i.toString()}
       renderItem={({ item }) => (
         <TouchableOpacity
-          onPress={() => { props.setBarber(item.Name), props.setBarberId(item._id), props.navigation.navigate('ServicesScreen',{isGetByService:false})}}
+          onPress={() => { props.setBarber(item.Name), props.setBarberId(item._id), props.navigation.navigate('ServicesScreen',{isGetByService:props.isGetByService})}}
         >
           <ListItem
             style={styles.list} key={item._id} bottomDivider>
@@ -29,7 +29,7 @@ const BarberComponent = (props) => {
             </ListItem.Content>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => { props.setBarber(item.Name), props.setBarberId(item._id), props.navigation.navigate('ServicesScreen',{isGetByService:false})}}
+              onPress={() => { props.setBarber(item.Name), props.setBarberId(item._id), props.navigation.navigate('ServicesScreen',{isGetByService:props.isGetByService})}}
             >
               <Text>Book Now</Text>
             </TouchableOpacity>

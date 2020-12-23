@@ -17,29 +17,58 @@ class BookScreen extends Component {
 
   async componentDidMount() {
 
-    const token = await AsyncStorage.getItem('token');
 
-    const response = await axios({
-      method: 'get',
-      url: 'https://5b62e75b6995.ngrok.io/api/barbers',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+     var response = await this.getBarbers();     
 
-    try {
+     console.log(response.data);
 
       if (response.status === 200) {
 
           const stylists = response.data.stylists;
           this.setState({ stylists: stylists })
       }
-
-    } catch (error) {
-      console.log('There has been a problem with your fetch operation: ' + error.message);
-      throw error;
-    }
   }
+
+
+  async getBarbers()
+  {
+    const token = await AsyncStorage.getItem('token');
+
+      var response;
+
+      if(this.props.navigation.state.params.isGetByService)
+      {
+        var service = Object.values(this.props.service);
+
+        var skillId = service[0].skillId.toString();
+  
+        response = await axios({
+          method: 'get',
+          url: 'https://831acad717ea.ngrok.io/api/skilledBarbers',
+          params: {
+            'skillId':skillId.toString()
+          },
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+          
+        });
+
+      }
+      else
+  {
+     response = await axios({
+      method: 'get',
+      url: 'https://831acad717ea.ngrok.io/api/barbers',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+      
+    });
+  }
+
+  return response;
+}
 
   render() {
     return (
@@ -49,6 +78,7 @@ class BookScreen extends Component {
     navigation={this.props.navigation}
     setBarber={this.props.setBarber}
     setBarberId={this.props.setBarberId}
+    isGetByService={this.props.navigation.state.params.isGetByService}
     />
     )
   }}
@@ -56,8 +86,10 @@ class BookScreen extends Component {
 
 const mapStatetoProps = (state) => {
 
+
   return {
-    orders: state.orderReducer
+    orders: state.orderReducer,
+    service:state.orderReducer.service
   }
 }
 
