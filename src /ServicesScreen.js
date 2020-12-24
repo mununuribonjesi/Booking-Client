@@ -65,7 +65,7 @@ class ServicesScreen extends Component
         {
           response = await axios({
             method: 'get',
-            url: 'https://425bfb71cdff.ngrok.io/api/skills',
+            url: 'https://4fbe77da1b17.ngrok.io/api/skills',
             params: {
 
             },
@@ -79,7 +79,7 @@ class ServicesScreen extends Component
         {
          response = await axios({
           method: 'get',
-          url: 'https://425bfb71cdff.ngrok.io/api/barberskills',
+          url: 'https://4fbe77da1b17.ngrok.io/api/barberskills',
           params: {
             'barberId': this.props.barberId,
           },

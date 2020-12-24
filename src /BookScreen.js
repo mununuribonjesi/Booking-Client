@@ -44,7 +44,7 @@ class BookScreen extends Component {
   
         response = await axios({
           method: 'get',
-          url: 'https://425bfb71cdff.ngrok.io/api/skilledBarbers',
+          url: 'https://4fbe77da1b17.ngrok.io/api/skilledBarbers',
           params: {
             'skillId':skillId.toString()
           },
@@ -59,7 +59,7 @@ class BookScreen extends Component {
   {
      response = await axios({
       method: 'get',
-      url: 'https://425bfb71cdff.ngrok.io/api/barbers',
+      url: 'https://4fbe77da1b17.ngrok.io/api/barbers',
       headers: {
         'Authorization': `Bearer ${token}`
       }

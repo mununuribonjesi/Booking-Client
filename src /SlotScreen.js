@@ -48,9 +48,15 @@ generateSlots = async (date) =>
 
   var inputDataFormat = "HH:mm:ss";
   var outputFormat = "HH:mm";
-
   var tmp = Moment(duration, inputDataFormat);
   var dif = tmp - Moment().startOf("day");
+
+  var openTime;
+  var closingTime;
+
+  console.log(workHours.length);
+  if(workHours.length > 0 || workHours === 'undefined')
+  {
 
   var startIntervalTime = Moment(workHours[0].startTime, inputDataFormat);
   var endIntervalTime = Moment(workHours[0].startTime, inputDataFormat).add(+dif, "ms");
@@ -83,7 +89,7 @@ generateSlots = async (date) =>
   startIntervalTime.add(dif, "ms");
   endIntervalTime.add(dif, "ms");
 }
-
+  }
 this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
 }
 
@@ -93,7 +99,7 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
   
       const response = await axios({
         method: 'get',
-        url: 'https://425bfb71cdff.ngrok.io/api/appointments',
+        url: 'https://4fbe77da1b17.ngrok.io/api/appointments',
         params: {
           'barberId': this.props.barberId,
           'date':date
@@ -115,6 +121,8 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
         return response.status
       }
 
+      console.log(response)
+
   }
   
 
@@ -124,7 +132,7 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
   
       const response = await axios({
         method: 'get',
-        url: 'https://425bfb71cdff.ngrok.io/api/workHours',
+        url: 'https://4fbe77da1b17.ngrok.io/api/workHours',
         params: {
           'barberId': this.props.barberId,
           'date':date
@@ -136,7 +144,7 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
   
   
       console.log(response);
-      if (response.status === 200 && response.data != undefined)
+      if (response.status === 200)
       {
   
         return response.data.time
@@ -243,16 +251,14 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
           </View>
         
        : [
-        (this.state.availableTimeSlots.length == 0 ?
+        (!this.state.availableTimeSlots ?
         <Text style={styles.logoText}>
                           
                           No Available Slots !!!
 
                 </Text>
 
-          :
-
-          
+          :     
           <FlatList
 
             data={this.state.availableTimeSlots}

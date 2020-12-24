@@ -36,7 +36,12 @@ BookScreen:{
   },
 },
 AppointmentScreen:{
-  screen:AppointmentScreen
+  screen:AppointmentScreen,
+  navigationOptions: {
+    headerTitle:() => <BsHeader />,
+    headerShown:true,
+
+  },
 },
 
 GalleryScreen:{
@@ -92,7 +97,7 @@ HomeScreen: {
 
 const Navigation = createStackNavigator(screens,
   {
-    initialRouteName:'LoginScreen',
+    initialRouteName:'HomeScreen',
 
       defaultNavigationOptions:{
       headerStyle: {backgroundColor:'black', height:100},
