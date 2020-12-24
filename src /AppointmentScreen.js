@@ -2,13 +2,7 @@ import React, { Component } from 'react';
 import {FlatList, Text, View,StyleSheet,TouchableOpacity} from 'react-native';
 import Tab from './functionalComponents/AppointmentComponent';
 import {ListItem} from 'react-native-elements';
-import Moment from 'moment'
-
-
-
-
-
-
+import Moment from 'moment';
 
 class AppointmentScreen extends Component
 {

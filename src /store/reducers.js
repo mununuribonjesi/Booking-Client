@@ -1,4 +1,4 @@
-import {SETBARBER,SETBARBERID,SETSERVICE,SETSLOT ,SETTOTAL} from './actionTypes'
+import {SETBARBER,SETBARBERID,SETSERVICE,SETSLOT,SETTOTAL,SETUSERID} from './actionTypes'
 
 const initialState = {
     service:[],
@@ -6,6 +6,10 @@ const initialState = {
     slot:[],
     total:0,
     barberId:''
+}
+
+const userState = {
+    userId:''
 }
 
 const orderReducer = (state = initialState,action) =>
@@ -37,4 +41,20 @@ const orderReducer = (state = initialState,action) =>
     }
 }
 
-export default orderReducer
+const userReducer = (state = userState,action) =>
+{
+    switch(action.type)
+    {
+        case SETUSERID:
+            {
+                return{...state,
+                    userId:state.userId = action.data
+                }
+            }
+            default:
+                return state
+
+    }
+}
+
+export default {orderReducer,userReducer}
