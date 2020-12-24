@@ -29,6 +29,7 @@
     "react-native-credit-card-fullpage-form": "^1.0.0",
     "react-native-customize-selected-date": "^1.0.1",
     "react-native-date-picker": "^3.2.5",
+    "react-native-dotenv": "^2.4.3",
     "react-native-elements": "^3.0.0-alpha.1",
     "react-native-gesture-handler": "~1.7.0",
     "react-native-input-credit-card": "^0.5.5",

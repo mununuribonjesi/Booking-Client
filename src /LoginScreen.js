@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import axios from 'react-native-axios';
 import { Keyboard, Button, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setUserId} from './store/actions'
+import { setUserId} from './store/actions';
 import { connect } from 'react-redux';
+import config from '../config';
 
 
 class LoginScreen extends Component {
@@ -31,7 +32,7 @@ class LoginScreen extends Component {
 
     const response = await axios({
       method: 'post',
-      url: 'https://de1cfbd2c165.ngrok.io/api/login',
+      url: config.Authentication_URL+'/api/login',
       data: {
         'email': this.state.username,
         'password': this.state.password

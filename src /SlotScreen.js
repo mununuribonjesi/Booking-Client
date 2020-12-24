@@ -6,6 +6,7 @@ import {setSlot} from './store/actions';
 import {connect} from  'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
+import config from '../config';
 
 
 class SlotScreen extends Component {
@@ -99,7 +100,7 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
   
       const response = await axios({
         method: 'get',
-        url: 'https://4fbe77da1b17.ngrok.io/api/appointments',
+        url: config.Availability_URL+'/api/appointments',
         params: {
           'barberId': this.props.barberId,
           'date':date
@@ -132,7 +133,7 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
   
       const response = await axios({
         method: 'get',
-        url: 'https://4fbe77da1b17.ngrok.io/api/workHours',
+        url: config.Availability_URL+'/api/workHours',
         params: {
           'barberId': this.props.barberId,
           'date':date

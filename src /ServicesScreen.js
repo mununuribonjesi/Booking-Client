@@ -5,6 +5,7 @@ import {setService,setTotal} from './store/actions'
 import {connect} from  'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
+import config from '../config';
 
 class ServicesScreen extends Component
 {
@@ -65,7 +66,7 @@ class ServicesScreen extends Component
         {
           response = await axios({
             method: 'get',
-            url: 'https://4fbe77da1b17.ngrok.io/api/skills',
+            url: config.Availability_URL+'/api/skills',
             params: {
 
             },
@@ -79,7 +80,7 @@ class ServicesScreen extends Component
         {
          response = await axios({
           method: 'get',
-          url: 'https://4fbe77da1b17.ngrok.io/api/barberskills',
+          url: config.Availability_URL+'/api/barberskills',
           params: {
             'barberId': this.props.barberId,
           },

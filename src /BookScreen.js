@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import BarberComponent from './functionalComponents/BarberComponent';
-
+import config from '../config';
 class BookScreen extends Component {
   constructor(props) {
     super(props);
@@ -44,7 +44,7 @@ class BookScreen extends Component {
   
         response = await axios({
           method: 'get',
-          url: 'https://4fbe77da1b17.ngrok.io/api/skilledBarbers',
+          url: config.Availability_URL +'/api/skilledBarbers',
           params: {
             'skillId':skillId.toString()
           },
@@ -59,7 +59,7 @@ class BookScreen extends Component {
   {
      response = await axios({
       method: 'get',
-      url: 'https://4fbe77da1b17.ngrok.io/api/barbers',
+      url: config.Availability_URL +'/api/barbers',
       headers: {
         'Authorization': `Bearer ${token}`
       }
