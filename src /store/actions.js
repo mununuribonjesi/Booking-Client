@@ -11,7 +11,7 @@ export const setService = (service) => ({
 })
 
 
-export const setService = (userId) => ({
+export const setUserId = (userId) => ({
     type: SETUSERID,
     data:userId,
 })

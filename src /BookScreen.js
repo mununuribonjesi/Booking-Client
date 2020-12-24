@@ -86,7 +86,7 @@ class BookScreen extends Component {
 
 const mapStatetoProps = (state) => {
 
-
+console.log(state);
   return {
     orders: state.orderReducer,
     service:state.orderReducer.service

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import axios from 'react-native-axios';
 import { Keyboard, Button, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setUserId} from './store/actions'
+import { connect } from 'react-redux';
 
 
 class LoginScreen extends Component {
@@ -43,6 +45,11 @@ class LoginScreen extends Component {
       if (response.status === 200 && token) {
         this.setState({ isAuthenticated: true });
         this.setToken(token);
+        var user = response.data.user;
+        var userId = user._id;
+
+        console.log(userId);
+        this.props.setUserId(userId);
         this.props.navigation.navigate('HomeScreen');
         //const value = await AsyncStorage.getItem('token')
       }
@@ -101,7 +108,26 @@ class LoginScreen extends Component {
 }
 
 
-export default LoginScreen;
+const mapStatetoProps = (state) => {
+
+  console.log(state);
+    return {
+      orders: state.orderReducer,
+      service:state.orderReducer.service
+    }
+  }
+  
+  const mapDispatchToProps = (dispatch) => {
+  
+    return {
+      setUserId: (data) => dispatch(setUserId(data))
+    }
+  
+  }
+  
+  export default connect(mapStatetoProps, mapDispatchToProps)(LoginScreen);
+
+  
 
 const styles = StyleSheet.create({
   containerView: {
