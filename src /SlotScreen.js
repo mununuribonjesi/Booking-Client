@@ -8,7 +8,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import config from '../config';
 
-
 class SlotScreen extends Component {
   constructor(props) {
     super(props);
@@ -100,7 +99,7 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
   
       const response = await axios({
         method: 'get',
-        url: config.Availability_URL+'/api/appointments',
+        url: config.Availability_URL +'/api/appointments',
         params: {
           'barberId': this.props.barberId,
           'date':date
@@ -133,7 +132,7 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
   
       const response = await axios({
         method: 'get',
-        url: config.Availability_URL+'/api/workHours',
+        url: config.Availability_URL +'/api/workHours',
         params: {
           'barberId': this.props.barberId,
           'date':date
@@ -252,14 +251,16 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
           </View>
         
        : [
-        (!this.state.availableTimeSlots ?
+        (this.state.availableTimeSlots ?
         <Text style={styles.logoText}>
                           
                           No Available Slots !!!
 
                 </Text>
 
-          :     
+          :
+
+          
           <FlatList
 
             data={this.state.availableTimeSlots}

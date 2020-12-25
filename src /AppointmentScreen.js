@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
-import {FlatList, Text, View,StyleSheet,TouchableOpacity} from 'react-native';
+import {FlatList, Text, View,StyleSheet,TouchableOpacity,Dimensions} from 'react-native';
 import Tab from './functionalComponents/AppointmentComponent';
 import {ListItem} from 'react-native-elements';
 import Moment from 'moment';
+import config from '../config';
+import axios from 'react-native-axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setBarber, setBarberId } from './store/actions'
+import { connect } from 'react-redux';
+import { TabView, SceneMap } from 'react-native-tab-view';
 
 class AppointmentScreen extends Component
 {
@@ -11,15 +17,52 @@ class AppointmentScreen extends Component
         super(props);
 
         this.state = {
-          username: '',
-          password: '',
-          stickyHeaderIndices: [],
-          ischecked:[],
-          total:0.00,
-          services:[],
-          data:[]
+          upcomingAppointments:[],
+          index:0  
         };
       }
+
+
+      async componentDidMount() {
+
+
+        var response = await this.getCustomerAppointments();     
+   
+        var customerAppointments = response.data.customerApp;
+
+         if (response.status === 200) {
+
+          this.setState({upcomingAppointments:customerAppointments});
+
+          console.log(Object.values(this.state.upcomingAppointments));
+   
+
+         }
+     }
+
+
+
+
+      async getCustomerAppointments()
+      {
+        const token = await AsyncStorage.getItem('token');
+        var response;
+
+         response = await axios({
+          method: 'get',
+          url: config.Availability_URL +'/api/customerAppointments',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          params: {
+            'customerId':this.props.userId.toString()
+          }
+          
+        });
+      
+    
+      return response;
+    }
 
 
 
@@ -36,31 +79,24 @@ class AppointmentScreen extends Component
   }
 
 
-    upcomingAppointments =[{
-          skill:"haircut",startTime:"9:00",endTime:"10:00",barber:"callum",date:"2020-12-25",total:20
-      },{
-      skill:"Dreads",startTime:"9:00",endTime:"10:00",barber:"John",date:"2020-12-26",total:50
-  }]
-
-    recentAppointments =[{
-        skill:"haircut",startTime:"9:00",endTime:"10:00",barber:"james",date:"2020-12-24",total:50
-    }]
-
-
+  setIndex(index)
+  {
+    this.setState({index:index});
+  }
 
     FirstRoute = () => (
       <FlatList style={styles.FlatList}
-        data={Object.values(this.upcomingAppointments)}
+        data={Object.values(this.state.upcomingAppointments)}
         ItemSeparatorComponent={this.FlatListItemSeparator}
         ListFooterComponent={this.FlatListItemSeparator}
         keyExtractor={(item, index) => index.toString()}
         renderItem={this.renderAppointment}
       />)
     
-    
+
     
     SecondRoute = () => (<FlatList style={styles.FlatList}
-        data={Object.values(this.recentAppointments)}
+        data={Object.values(this.state.upcomingAppointments)}
         ItemSeparatorComponent={this.FlatListItemSeparator}
         ListFooterComponent={this.FlatListItemSeparator}
         keyExtractor={(item, index) => index.toString()}
@@ -78,6 +114,13 @@ class AppointmentScreen extends Component
               <ListItem.Content>
               </ListItem.Content>
               <Text style={styles.rightText}>{item.barber}
+              </Text>
+            </ListItem>
+            <ListItem style={styles}>
+              <ListItem.Title style={styles.leftText}>Service:</ListItem.Title>
+              <ListItem.Content>
+              </ListItem.Content>
+              <Text style={styles.rightText}>{item.skill}
               </Text>
             </ListItem>
             <ListItem >
@@ -98,13 +141,13 @@ class AppointmentScreen extends Component
             </ListItem>
             
             <ListItem>
-              <ListItem.Title style={styles.leftText}>Total:</ListItem.Title>
+              <ListItem.Title style={styles.leftText}>Price:</ListItem.Title>
               <ListItem.Content>
     
               </ListItem.Content>
               <Text style={styles.rightText}>
     
-                £{item.total.toFixed(2)}
+                £{item.price.toFixed(2)}
     
               </Text>
             </ListItem>
@@ -118,8 +161,19 @@ class AppointmentScreen extends Component
     {
 
 
-        const firstRoute = this.FirstRoute;
-        const secondRoute = this.SecondRoute;
+      const renderScene = SceneMap({
+        first: this.FirstRoute,
+        second:this.SecondRoute,
+      });
+
+      const routes= [
+        { key: 'first', title: 'Upcoming' },
+        { key: 'second', title: 'Recent' },
+      ];
+
+      const index = this.state.index;
+
+      const initialLayout = { width: Dimensions.get('window').width };
      
     return (
 
@@ -132,12 +186,12 @@ class AppointmentScreen extends Component
                 </View>
         
                 <View style={styles.Body}>
-                 <Tab 
-
-                 FirstRoute =  {firstRoute}
-                 SecondRoute = {secondRoute}          
-                 
-                 /> 
+                <TabView
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      onIndexChange={(index) => this.setIndex(index)}
+      initialLayout={initialLayout}
+    />
                   <Text style={styles.textStyle}>
 
                   </Text>
@@ -215,4 +269,14 @@ const styles = StyleSheet.create({
     },
   })
 
-export default AppointmentScreen
+const mapStatetoProps = (state) => {
+
+    return {
+      userId: state.orderReducer.userId,
+    }
+  }
+  
+  
+
+  
+  export default connect(mapStatetoProps)(AppointmentScreen);
