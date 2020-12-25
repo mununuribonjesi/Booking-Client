@@ -31,23 +31,27 @@ class AppointmentScreen extends Component
    
         var customerAppointments = response.data.customerApp;
 
+      console.log(customerAppointments);
         
-       var upcomingAppointments = customerAppointments.filter(ca => {
-        
-          var endDate = Moment(ca.date+'T'+ca.endTime);
-          var currentDate = Moment();
+       var upcomingAppointments = customerAppointments.filter(ua => {
+      
+        var str = ua.endTime;
+        var parts = str.slice(0, -1).split('T');
+        var dateComponent = parts[0];
+        var timeComponent = parts[1];
 
-          return endDate > currentDate
+        return Moment(dateComponent+'T'+timeComponent) > Moment()
         
         });
 
 
-        var recentAppointments = customerAppointments.filter(ca => {
-        
-          var endDate = Moment(ca.date+'T'+ca.endTime);
-          var currentDate = Moment();
-
-          return endDate < currentDate
+        var recentAppointments = customerAppointments.filter(ra => {
+          var str = ra.endTime;
+          var parts = str.slice(0, -1).split('T');
+          var dateComponent = parts[0];
+          var timeComponent = parts[1];
+  
+          return Moment(dateComponent+'T'+timeComponent) < Moment()
         });
 
 
@@ -78,7 +82,6 @@ class AppointmentScreen extends Component
           
         });
       
-    
       return response;
     }
 
@@ -154,7 +157,7 @@ class AppointmentScreen extends Component
               <ListItem.Content>
               </ListItem.Content>
               <Text style={styles.rightText}>
-                {item.startTime} - {item.endTime}
+              {Moment(new Date(item.startTime)).format("HH:mm")} - {Moment(new Date(item.endTime)).format("HH:mm")} 
               </Text>
             </ListItem>
             
@@ -169,8 +172,7 @@ class AppointmentScreen extends Component
     
               </Text>
             </ListItem>
-    
-    
+            
           </View>)
       }
 

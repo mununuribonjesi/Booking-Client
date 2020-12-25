@@ -1,9 +1,9 @@
-import React, { Component} from 'react';
-import { FlatList, Text, View, StyleSheet,TouchableOpacity, LogBox,ActivityIndicator} from 'react-native';
+import React, { Component } from 'react';
+import { FlatList, Text, View, StyleSheet, TouchableOpacity, LogBox, ActivityIndicator } from 'react-native';
 import Calendar from 'react-native-calendar-datepicker';
 import Moment from 'moment';
-import {setSlot} from './store/actions';
-import {connect} from  'react-redux';
+import { setSlot } from './store/actions';
+import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import config from '../config';
@@ -20,142 +20,127 @@ class SlotScreen extends Component {
       ischecked: [],
       availableTimeSlots: [],
       selectedSlot: [],
-      data:[],
-      duration:'60',
-      confirm:false,
-      isGeneratingSlots:false
+      data: [],
+      duration: '60',
+      confirm: false,
+      isGeneratingSlots: false
     };
 
   }
-  
-  async componentDidMount()
-  {    
 
+  async componentDidMount() {
     var date = Moment(new Date()).format("YYYY-MM-DD");
     await this.generateSlots(date);
   }
 
+  generateSlots = async (date) => {
+    this.setState({ isGeneratingSlots: true })
+    var workHours = [];
+    workHours = await this.getWorkHours(date);
+    var bookings = await this.getAppointments(date);
+    var duration = this.props.services[0].Duration;
+
+    var inputDataFormat = "HH:mm:ss";
+    var outputFormat = "HH:mm";
+    var tmp = Moment(duration, inputDataFormat);
+    var dif = tmp - Moment().startOf("day");
+
+
+    if (workHours.length > 0) {
+
+      var startIntervalTime = Moment(new Date(workHours[0].startTime), inputDataFormat);
 
 
 
-generateSlots = async (date) =>
-{
-  this.setState({isGeneratingSlots:true})
-  var workHours = [];
-  workHours = await this.getWorkHours(date);
-  var bookings = await this.getAppointments(date);
-  var duration = this.props.services[0].Duration;
+      var endIntervalTime = Moment(new Date(workHours[0].startTime), inputDataFormat).add(+dif, "ms");
+      var finishTime = Moment(new Date(workHours[0].endTime), inputDataFormat);
+      var createdSlots = [];
 
-  var inputDataFormat = "HH:mm:ss";
-  var outputFormat = "HH:mm";
-  var tmp = Moment(duration, inputDataFormat);
-  var dif = tmp - Moment().startOf("day");
-
-  var openTime;
-  var closingTime;
-
-  console.log(workHours.length);
-  if(workHours.length > 0 || workHours === 'undefined')
-  {
-
-  var startIntervalTime = Moment(workHours[0].startTime, inputDataFormat);
-  var endIntervalTime = Moment(workHours[0].startTime, inputDataFormat).add(+dif, "ms");
-  var finishTime = Moment(workHours[0].endTime, inputDataFormat);
-  var createdSlots = [];
-
-  while (startIntervalTime < finishTime) {
+      while (startIntervalTime < finishTime) {
 
         var siT = new Date(Date.parse(startIntervalTime));
 
-        var eiT = new Date(Date.parse(endIntervalTime));
+        var b = bookings.filter(function (bookings) {
+          var startTime = Moment(new Date(bookings.startTime), inputDataFormat);
+          var endTime = Moment(new Date(bookings.endTime), inputDataFormat);
 
-        var  b = bookings.filter(function(p)
-        {
-          var st = new Date(Date.parse(Moment(p.startTime,"HH:mm")))
-          var et = new Date(Date.parse(Moment(p.endTime,"HH:mm")))
-           
-           return st.getTime() < eiT && et.getTime() > siT
+          return startTime < endIntervalTime && endTime > startIntervalTime
         })
 
-        if(b.length == 0)
-        {
+        if (b.length == 0 && startIntervalTime >= Moment() ) {
           createdSlots.push({
-              startTime: startIntervalTime.format(outputFormat),
-              endTime: endIntervalTime.format(outputFormat),
-              date:date
-          }); 
+            startTime: startIntervalTime.format(outputFormat),
+            endTime: endIntervalTime.format(outputFormat),
+            date: date
+          });
         }
 
-  startIntervalTime.add(dif, "ms");
-  endIntervalTime.add(dif, "ms");
-}
+        startIntervalTime.add(dif, "ms");
+        endIntervalTime.add(dif, "ms");
+      }
+    }
+    this.setState({ availableTimeSlots: createdSlots, isGeneratingSlots: false })
   }
-this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
-}
 
   getAppointments = async (date) => {
 
     const token = await AsyncStorage.getItem('token');
-  
-      const response = await axios({
-        method: 'get',
-        url: config.Availability_URL +'/api/appointments',
-        params: {
-          'barberId': this.props.barberId,
-          'date':date
-        },
-        headers:{
-          'Authorization':`Bearer ${token}`
-        }
-      });
-  
-  
-      if (response.status === 200)
-      {
-  
-        return response.data.bookings
+
+    const response = await axios({
+      method: 'get',
+      url: config.Availability_URL + '/api/appointments',
+      params: {
+        'barberId': this.props.barberId,
+        'date': date
+      },
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
-  
-      else 
-      {  
-        return response.status
-      }
+    });
+
+
+    if (response.status === 200) {
+
+      return response.data.bookings
+    }
+
+    else {
+      return response.status
+    }
 
   }
-  
+
 
   getWorkHours = async (date) => {
 
     console.log(date);
-    
-      const token = await AsyncStorage.getItem('token');
-  
-      const response = await axios({
-        method: 'get',
-        url: config.Availability_URL +'/api/workHours',
-        params: {
-          'barberId': this.props.barberId,
-          'date':date
-        },
-        headers:{
-          'Authorization':`Bearer ${token}`
-        }
-      });
-  
-  
 
-      if (response.status === 200)
-      {
-  
-        return response.data.time
+    const token = await AsyncStorage.getItem('token');
+
+    const response = await axios({
+      method: 'get',
+      url: config.Availability_URL + '/api/workHours',
+      params: {
+        'barberId': this.props.barberId,
+        'date': date
+      },
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
-  
-      else 
-      {  
-        return response.status
-      }
-  
+    });
+
+
+
+    if (response.status === 200) {
+
+      return response.data.time
     }
+
+    else {
+      return response.status
+    }
+
+  }
 
 
 
@@ -176,21 +161,21 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
   isCheckBox(index) {
 
     var timeSlots = [...this.state.availableTimeSlots];
-    
+
     var slots = [];
 
     timeSlots.forEach(element => {
-                 
-          slots.push(element.isCheck);  
+
+      slots.push(element.isCheck);
     });
 
-    slots[index] = !slots[index]; 
-    this.setState({ischecked:slots,selectedSlot:timeSlots[index],confirm:true});
+    slots[index] = !slots[index];
+    this.setState({ ischecked: slots, selectedSlot: timeSlots[index], confirm: true });
   }
 
 
   onChangeDate(date) {
-    
+
 
     var selectedDate = Moment(new Date(date)).format("YYYY-MM-DD");
 
@@ -205,8 +190,8 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
       }
 
     })
-     
-    this.setState({ date: date, availableTimeSlots: timeSlots,ischecked:[],confirm:false});
+
+    this.setState({ date: date, availableTimeSlots: timeSlots, ischecked: [], confirm: false });
 
   }
 
@@ -237,71 +222,72 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
             Available Slots
             </Text>
         </View>
-        
+
 
 
 
 
         <View style={styles.slots}>
 
-        {this.state.isGeneratingSlots == true ?
+          {this.state.isGeneratingSlots == true ?
 
-<View style={[styles.container, styles.horizontal]}>
-          <ActivityIndicator size="large" color="#00ff00" />
-          </View>
-        
-       : [
-        (!this.state.availableTimeSlots ?
-        <Text style={styles.logoText}>
-                          
-                          No Available Slots !!!
+            <View style={[styles.container, styles.horizontal]}>
+              <ActivityIndicator size="large" color="#00ff00" />
+            </View>
 
-                </Text>
-
-          :
-
-          
-          <FlatList
-
-            data={this.state.availableTimeSlots}
-            keyExtractor={(x,i) => i.toString()}
-            ItemSeparatorComponent={this.FlatListItemSeparator}
-            ListFooterComponent={this.FlatListItemSeparator}
-            renderItem={({ item, index }) => (
-
-              <TouchableOpacity
-                onPress={() => this.isCheckBox(index)}
-
-                style={[
-                  { backgroundColor: this.state.ischecked[index] ? '#00ff00' : '#FFFFFF' }
-                ]}
-              >
-
+            : [
+              (!this.state.availableTimeSlots || this.state.availableTimeSlots.length === 0?
+                
                 <Text style={styles.logoText}>
-                  {item.startTime + " - " + item.endTime}
+
+                  No Available Slots !!!
+
                 </Text>
-            
-              </TouchableOpacity>
+
+                :
 
 
-            )}
-          />
-        )
-]
-  }
+                <FlatList
+
+                  data={this.state.availableTimeSlots}
+                  keyExtractor={(x, i) => i.toString()}
+                  ItemSeparatorComponent={this.FlatListItemSeparator}
+                  ListFooterComponent={this.FlatListItemSeparator}
+                  renderItem={({ item, index }) => (
+
+                    <TouchableOpacity
+                      onPress={() => this.isCheckBox(index)}
+
+                      style={[
+                        { backgroundColor: this.state.ischecked[index] ? '#00ff00' : '#FFFFFF' }
+                      ]}
+                    >
+
+                      <Text style={styles.logoText}>
+                        {item.startTime + " - " + item.endTime}
+                      </Text>
+
+                    </TouchableOpacity>
+
+
+                  )}
+                />
+              )
+            ]
+          }
         </View>
         <View style={styles.Footer}>
 
-        {this.state.confirm &&
-          <TouchableOpacity
-            onPress={() =>{ this.props.navigation.navigate('CheckoutScreen'),this.props.setSlot(this.state.selectedSlot)}}
-          >
+          {this.state.confirm &&
+            <TouchableOpacity
+              onPress={() => { this.props.navigation.navigate('CheckoutScreen'), this.props.setSlot(this.state.selectedSlot) }}
+            >
 
-            <Text style={styles.FooterText}>
-              Confirm
+              <Text style={styles.FooterText}>
+                Confirm
           </Text>
-          </TouchableOpacity>
-        }
+            </TouchableOpacity>
+          }
         </View>
 
       </View>
@@ -381,8 +367,7 @@ const styles = StyleSheet.create({
 })
 
 
-const mapStatetoProps  = (state) =>
-{
+const mapStatetoProps = (state) => {
 
   return {
     orders: state.orderReducer,
@@ -391,17 +376,16 @@ const mapStatetoProps  = (state) =>
   }
 }
 
-const mapDispatchToProps = (dispatch) =>
-{ 
+const mapDispatchToProps = (dispatch) => {
   return {
-  setSlot: (data) => dispatch(setSlot(data))
+    setSlot: (data) => dispatch(setSlot(data))
 
   }
 
 }
 
 
-export default connect(mapStatetoProps,mapDispatchToProps) (SlotScreen);
+export default connect(mapStatetoProps, mapDispatchToProps)(SlotScreen);
 
 
 
