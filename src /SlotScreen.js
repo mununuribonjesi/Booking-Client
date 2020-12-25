@@ -121,12 +121,12 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
         return response.status
       }
 
-      console.log(response)
-
   }
   
 
   getWorkHours = async (date) => {
+
+    console.log(date);
     
       const token = await AsyncStorage.getItem('token');
   
@@ -143,7 +143,7 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
       });
   
   
-      console.log(response);
+
       if (response.status === 200)
       {
   
@@ -251,7 +251,7 @@ this.setState({availableTimeSlots:createdSlots,isGeneratingSlots:false})
           </View>
         
        : [
-        (this.state.availableTimeSlots ?
+        (!this.state.availableTimeSlots ?
         <Text style={styles.logoText}>
                           
                           No Available Slots !!!
