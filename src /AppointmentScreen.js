@@ -18,6 +18,7 @@ class AppointmentScreen extends Component
 
         this.state = {
           upcomingAppointments:[],
+          recentAppointments:[],
           index:0  
         };
       }
@@ -30,13 +31,30 @@ class AppointmentScreen extends Component
    
         var customerAppointments = response.data.customerApp;
 
+        
+       var upcomingAppointments = customerAppointments.filter(ca => {
+        
+          var endDate = Moment(ca.date+'T'+ca.endTime);
+          var currentDate = Moment();
+
+          return endDate > currentDate
+        
+        });
+
+
+        var recentAppointments = customerAppointments.filter(ca => {
+        
+          var endDate = Moment(ca.date+'T'+ca.endTime);
+          var currentDate = Moment();
+
+          return endDate < currentDate
+        });
+
+
+
          if (response.status === 200) {
 
-          this.setState({upcomingAppointments:customerAppointments});
-
-          console.log(Object.values(this.state.upcomingAppointments));
-   
-
+          this.setState({upcomingAppointments:upcomingAppointments,recentAppointments:recentAppointments});
          }
      }
 
@@ -96,7 +114,7 @@ class AppointmentScreen extends Component
 
     
     SecondRoute = () => (<FlatList style={styles.FlatList}
-        data={Object.values(this.state.upcomingAppointments)}
+        data={Object.values(this.state.recentAppointments)}
         ItemSeparatorComponent={this.FlatListItemSeparator}
         ListFooterComponent={this.FlatListItemSeparator}
         keyExtractor={(item, index) => index.toString()}

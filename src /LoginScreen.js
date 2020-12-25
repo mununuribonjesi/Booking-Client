@@ -48,8 +48,6 @@ class LoginScreen extends Component {
         this.setToken(token);
         var user = response.data.user;
         var userId = user._id;
-
-        console.log(userId);
         this.props.setUserId(userId);
         this.props.navigation.navigate('HomeScreen');
         //const value = await AsyncStorage.getItem('token')
@@ -111,7 +109,6 @@ class LoginScreen extends Component {
 
 const mapStatetoProps = (state) => {
 
-  console.log(state);
     return {
       orders: state.orderReducer,
       service:state.orderReducer.service

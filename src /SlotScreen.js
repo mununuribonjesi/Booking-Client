@@ -69,7 +69,7 @@ generateSlots = async (date) =>
 
         var eiT = new Date(Date.parse(endIntervalTime));
 
-        var  x = bookings.filter(function(p)
+        var  b = bookings.filter(function(p)
         {
           var st = new Date(Date.parse(Moment(p.startTime,"HH:mm")))
           var et = new Date(Date.parse(Moment(p.endTime,"HH:mm")))
@@ -77,7 +77,7 @@ generateSlots = async (date) =>
            return st.getTime() < eiT && et.getTime() > siT
         })
 
-        if(x.length == 0)
+        if(b.length == 0)
         {
           createdSlots.push({
               startTime: startIntervalTime.format(outputFormat),

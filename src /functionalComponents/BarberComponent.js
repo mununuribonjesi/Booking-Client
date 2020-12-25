@@ -50,7 +50,7 @@ const BarberComponent = (props) => {
               style={styles.button}
               onPress={() => { props.setBarber(item.Name), props.setBarberId(item._id), props.navigation.navigate(navigationString(),{isGetByService:props.isGetByService})}}
             >
-              <Text>Book Now</Text>
+              <Text style={styles.bookText}>Book Now</Text>
             </TouchableOpacity>
           </ListItem>
         </TouchableOpacity>

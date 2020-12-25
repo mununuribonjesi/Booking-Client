@@ -37,10 +37,13 @@ export const styles = StyleSheet.create({
   
     button: {
       alignItems: 'center',
-      backgroundColor: '#fff44f',
+      backgroundColor: '#00ff00',
       padding: 10,
     },
   
+    bookText:{
+      color:'black'
+    },
 
   
     iconWrapper: {
