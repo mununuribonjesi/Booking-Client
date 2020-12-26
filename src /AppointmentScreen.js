@@ -10,6 +10,7 @@ import { setBarber, setBarberId } from './store/actions'
 import { connect } from 'react-redux';
 import { TabView, SceneMap } from 'react-native-tab-view';
 
+
 class AppointmentScreen extends Component
 {
 
@@ -26,15 +27,9 @@ class AppointmentScreen extends Component
 
       async componentDidMount() {
 
-
         var response = await this.getCustomerAppointments();     
-   
         var customerAppointments = response.data.customerApp;
-
-      console.log(customerAppointments);
-        
-       var upcomingAppointments = customerAppointments.filter(ua => {
-      
+        var upcomingAppointments = customerAppointments.filter(ua => {
         var str = ua.endTime;
         var parts = str.slice(0, -1).split('T');
         var dateComponent = parts[0];
@@ -44,25 +39,22 @@ class AppointmentScreen extends Component
         
         });
 
-
         var recentAppointments = customerAppointments.filter(ra => {
-          var str = ra.endTime;
-          var parts = str.slice(0, -1).split('T');
-          var dateComponent = parts[0];
-          var timeComponent = parts[1];
+        var str = ra.endTime;
+        var parts = str.slice(0, -1).split('T');
+        var dateComponent = parts[0];
+        var timeComponent = parts[1];
   
-          return Moment(dateComponent+'T'+timeComponent) < Moment()
+        return Moment(dateComponent+'T'+timeComponent) < Moment()
+        
         });
 
-
-
-         if (response.status === 200) {
+        if (response.status === 200) {
 
           this.setState({upcomingAppointments:upcomingAppointments,recentAppointments:recentAppointments});
-         }
+         
+        }
      }
-
-
 
 
       async getCustomerAppointments()
@@ -230,64 +222,58 @@ class AppointmentScreen extends Component
                     Book Now 
                   </Text>
                   </TouchableOpacity>
-
                 </View>
-            
            </View>
-
     )
-    }
-
-    
+    }   
 }
 
+export const styles = StyleSheet.create({
+  container: {
+    justifyContent:'center',
+    height:'100%',
+    flex:1
+  },
 
+  subHeader: {
+    backgroundColor: '#fff44f',
+    height: '10%'
+  },
 
+  textStyle: {
+      textAlign: 'center',
+      color: 'black',
+      fontSize: 40,
+      padding: 7
+    },
+    Body:{
 
-const styles = StyleSheet.create({
-    container: {
-      justifyContent:'center',
-      height:'100%',
-      flex:1
+      backgroundColor:'white',
+      height:'75%'
     },
 
-    subHeader: {
-      backgroundColor: '#fff44f',
-      height: '10%'
-    },
-  
-    textStyle: {
-        textAlign: 'center',
-        color: 'black',
-        fontSize: 40,
-        padding: 7
-      },
-      Body:{
-
-        backgroundColor:'white',
-        height:'75%'
-      },
-
-      Footer:{
-        backgroundColor:'black',
-        height:'15%'
-
-      },
-
-      FooterText:
-      {
-        color:'white',
-        marginTop:25,
-        fontSize: 40,
-        textAlign: 'center',
-        
-      },
-    logoText: {
-      fontSize: 20,
-      fontWeight: "800",
+    Footer:{
+      backgroundColor:'black',
+      height:'15%'
 
     },
-  })
+
+    FooterText:
+    {
+      color:'white',
+      marginTop:25,
+      fontSize: 40,
+      textAlign: 'center',
+      
+    },
+  logoText: {
+    fontSize: 20,
+    fontWeight: "800",
+
+  },
+})
+
+
 
 const mapStatetoProps = (state) => {
 

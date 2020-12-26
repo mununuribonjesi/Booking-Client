@@ -1,178 +1,144 @@
 import React, { Component } from 'react';
-import {FlatList, Text, View,StyleSheet,TouchableOpacity} from 'react-native';
-import {CheckBox, ListItem} from 'react-native-elements';
-import {setService,setTotal} from './store/actions'
-import {connect} from  'react-redux';
+import { FlatList, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { CheckBox, ListItem } from 'react-native-elements';
+import { setService, setTotal } from './store/actions'
+import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import config from '../config';
 
-class ServicesScreen extends Component
-{
-    constructor(props) {
-        super(props);
 
-        this.state = {
-          username: '',
-          password: '',
-          stickyHeaderIndices: [],
-          ischecked:[],
-          total:0.00,
-          services:[],
-          data:[]
-        };
-      }
+class ServicesScreen extends Component {
+  constructor(props) {
+    super(props);
 
-      async componentDidMount()
-      {     
+    this.state = {
+      ischecked: [],
+      total: 0.00,
+      services: [],
+      data: []
+    };
+  }
 
+  async componentDidMount() {
 
-        var response = await this.getServices();
-  
-            if (response.status === 200) {
-             
-              const data = response.data.skills;
-              this.setState({data:data});  
-            }
+    var response = await this.getServices();
+    if (response.status === 200) {
 
-            else 
-            {
-              return response.status
-            }
-      
-  
-
-          let checklist = [...this.state.ischecked]
-
-          var data = [...this.state.data]
-          
-          data.forEach(ckb => {
-
-            checklist.push(false);
-          
-        });
-
-        this.setState({ischecked:checklist})
-      }
-
-
-      async getServices()
-      {
-        var response;
-
-        const token = await AsyncStorage.getItem('token');
-
-        if(this.isGetByService())
-        {
-          response = await axios({
-            method: 'get',
-            url: config.Availability_URL+'/api/skills',
-            params: {
-
-            },
-            headers:{
-              'Authorization':`Bearer ${token}`
-            }
-          });
-        }
-
-        else
-        {
-         response = await axios({
-          method: 'get',
-          url: config.Availability_URL+'/api/barberskills',
-          params: {
-            'barberId': this.props.barberId,
-          },
-          headers:{
-            'Authorization':`Bearer ${token}`
-          }
-        });
-      }
-        
-      return response;
+      const data = response.data.skills;
+      this.setState({ data: data });
     }
 
+    else {
+      return response.status
+    }
 
-      isGetByService()
-      {
+    let checklist = [...this.state.ischecked]
+    var data = [...this.state.data]
 
-        return this.props.navigation.state.params.isGetByService;
-      }
+    data.forEach(ckb => {
 
+      checklist.push(false);
 
-       ListHeader = () => {
-        //View to set in Header
-        return (
-
-          <View style={styles.headerFooterStyle}>
-            <Text style={styles.textStyle}>
-                Select Barber
-            </Text>
-          </View>
-
-        );
-      };
-
-      isCheckBox(index){
-
-        let checkboxes = [...this.state.ischecked]
+    });
+    this.setState({ ischecked: checklist })
+  }
 
 
-        for (i = 0; i < checkboxes.length; i++) {
-        
-          checkboxes[i] = false;
+  async getServices() {
+    var response;
+    const token = await AsyncStorage.getItem('token');
+
+    if (this.isGetByService()) {
+      response = await axios({
+        method: 'get',
+        url: config.Availability_URL + '/api/skills',
+        params: {
+
+        },
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-      
-         checkboxes[index] = !checkboxes[index];
-      
-         if(checkboxes[index]===true)
-         {
+      });
+    }
 
-          var selected = [];
+    else {
+      response = await axios({
+        method: 'get',
+        url: config.Availability_URL + '/api/barberskills',
+        params: {
+          'barberId': this.props.barberId,
+        },
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+    }
 
-          selected.push({Name:this.state.data[index].Name,Price:this.state.data[index].Price,Duration:this.state.data[index].Duration,skillId:this.state.data[index]._id});
+    return response;
+  }
 
-          this.setState({total:this.state.data[index].Price,services:selected});
 
-         }
+  isGetByService() {
+    return this.props.navigation.state.params.isGetByService;
+  }
 
-         this.setState({ischecked:checkboxes})        
-      }
-    
+  ListHeader = () => {
+    return (
 
-    render()
-    {
-        const isGetByService = this.isGetByService();
+      <View style={styles.headerFooterStyle}>
+        <Text style={styles.textStyle}>
+          Select Barber
+            </Text>
+      </View>
 
-        console.log(isGetByService)
+    );
+  };
+
+  isCheckBox(index) {
+
+    let checkboxes = [...this.state.ischecked]
+
+    for (i = 0; i < checkboxes.length; i++) {
+
+      checkboxes[i] = false;
+
+    }
+
+    checkboxes[index] = !checkboxes[index];
+
+    if (checkboxes[index] === true) {
+
+      var selected = [];
+      selected.push({ Name: this.state.data[index].Name, Price: this.state.data[index].Price, Duration: this.state.data[index].Duration, skillId: this.state.data[index]._id });
+      this.setState({ total: this.state.data[index].Price, services: selected });
+
+    }
+
+    this.setState({ ischecked: checkboxes })
+  }
+
+
+  render() {
+    const isGetByService = this.isGetByService();
 
     return (
 
-
       <View styles={styles.container}>
-
-<View style={styles.subHeader}>
+        <View style={styles.subHeader}>
           <Text style={styles.textStyle}>
             Choose Service
             </Text>
         </View>
-
         <View style={styles.Body}>
-         
-         
           <FlatList
             data={this.state.data}
-            keyExtractor={(item,index)=> index.toString()}
+            keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => (
-
               <ListItem
                 onPress={() => this.isCheckBox(index)}
-
-
                 style={styles.list} key={item.key}>
-
-                <CheckBox 
+                <CheckBox
                   checked={this.state.ischecked[index]}
                   onPress={() => this.isCheckBox(index)}
                   checkedColor='black'
@@ -186,123 +152,98 @@ class ServicesScreen extends Component
                   ><Text> {"£" + item.Price + '.00'}</Text></ListItem.Title>
                 </ListItem.Content>
               </ListItem>
-
             )}
           />
-          
           <Text style={styles.textStyle}>
             {"£" + (this.state.total) + ".00"}
           </Text>
-
         </View>
-  
         <View style={styles.Footer}>
           {(this.state.total > 0 && !isGetByService) &&
-        
-          <TouchableOpacity
-          onPress={() =>{this.props.setTotal(this.state.total),this.props.setService(this.state.services), this.props.navigation.navigate('SlotScreen')}}
-          >
-
-          <Text style={styles.FooterText}>
-            Continue
+            <TouchableOpacity
+              onPress={() => { this.props.setTotal(this.state.total), this.props.setService(this.state.services), this.props.navigation.navigate('SlotScreen') }}
+            >
+              <Text style={styles.FooterText}>
+                Continue
           </Text>
-          </TouchableOpacity>
-    }
-
-{(this.state.total > 0 && isGetByService) &&
-        
-        <TouchableOpacity
-        onPress={() =>{this.props.setTotal(this.state.total),this.props.setService(this.state.services), this.props.navigation.navigate('BookScreen',{
-          isGetByService:isGetByService
-        })}}
-        >
-
-        <Text style={styles.FooterText}>
-          Continue
+            </TouchableOpacity>
+          }
+          {(this.state.total > 0 && isGetByService) &&
+            <TouchableOpacity
+              onPress={() => {
+                this.props.setTotal(this.state.total), this.props.setService(this.state.services), this.props.navigation.navigate('BookScreen', {
+                  isGetByService: isGetByService
+                })
+              }}
+            >
+              <Text style={styles.FooterText}>
+                Continue
         </Text>
-        </TouchableOpacity>
-  }
-
-
-
+            </TouchableOpacity>
+          }
         </View>
-    
-   </View>
-
-   
+      </View>
     )
-    }
-
-
-    
+  }
 }
 
+export const styles  = StyleSheet.create({
+  container: {
+    justifyContent:'center',
+    height:'100%',
+    flex:1
+  },
 
-const styles = StyleSheet.create({
-    container: {
-      justifyContent:'center',
-      height:'100%',
-      flex:1
+  subHeader: {
+    backgroundColor: '#fff44f',
+    height: '10%'
+  },
+
+  textStyle: {
+      textAlign: 'center',
+      color: 'black',
+      fontSize: 40,
+      padding: 7
+    },
+    Body:{
+
+      backgroundColor:'white',
+      height:'75%'
     },
 
-    subHeader: {
-      backgroundColor: '#fff44f',
-      height: '10%'
-    },
-  
-    textStyle: {
-        textAlign: 'center',
-        color: 'black',
-        fontSize: 40,
-        padding: 7
-      },
-      Body:{
-
-        backgroundColor:'white',
-        height:'75%'
-      },
-
-      Footer:{
-        backgroundColor:'black',
-        height:'15%'
-
-      },
-
-      FooterText:
-      {
-        color:'white',
-        marginTop:25,
-        fontSize: 40,
-        textAlign: 'center',
-        
-      },
-    logoText: {
-      fontSize: 20,
-      fontWeight: "800",
+    Footer:{
+      backgroundColor:'black',
+      height:'15%'
 
     },
-  })
 
+    FooterText:
+    {
+      color:'white',
+      marginTop:25,
+      fontSize: 40,
+      textAlign: 'center',
+      
+    },
+  logoText: {
+    fontSize: 20,
+    fontWeight: "800",
 
+  },
+})
 
-const mapStatetoProps  = (state) =>
-{
+const mapStatetoProps = (state) => {
   return {
     orders: state.orderReducer,
     barberId: state.orderReducer.barberId.toString()
   }
 }
 
-const mapDispatchToProps = (dispatch) =>
-{ 
-
+const mapDispatchToProps = (dispatch) => {
   return {
-  setService: (data) => dispatch(setService(data)),
-  setTotal: (data) => dispatch(setTotal(data))
-  
+    setService: (data) => dispatch(setService(data)),
+    setTotal: (data) => dispatch(setTotal(data))
   }
-
 }
 
-
-export default connect(mapStatetoProps,mapDispatchToProps) (ServicesScreen);
+export default connect(mapStatetoProps, mapDispatchToProps)(ServicesScreen);

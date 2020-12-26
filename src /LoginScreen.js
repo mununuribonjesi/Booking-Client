@@ -106,27 +106,6 @@ class LoginScreen extends Component {
   }
 }
 
-
-const mapStatetoProps = (state) => {
-
-    return {
-      orders: state.orderReducer,
-      service:state.orderReducer.service
-    }
-  }
-  
-  const mapDispatchToProps = (dispatch) => {
-  
-    return {
-      setUserId: (data) => dispatch(setUserId(data))
-    }
-  
-  }
-  
-  export default connect(mapStatetoProps, mapDispatchToProps)(LoginScreen);
-
-  
-
 const styles = StyleSheet.create({
   containerView: {
     flex: 1,
@@ -196,3 +175,29 @@ const styles = StyleSheet.create({
   },
 });
 
+
+
+
+
+const mapStatetoProps = (state) => {
+
+    return {
+      orders: state.orderReducer,
+      service:state.orderReducer.service
+    }
+  }
+  
+  const mapDispatchToProps = (dispatch) => {
+  
+    return {
+      setUserId: (data) => dispatch(setUserId(data))
+    }
+  
+  }
+
+
+  
+  
+  export default connect(mapStatetoProps, mapDispatchToProps)(LoginScreen);
+
+  

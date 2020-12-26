@@ -7,21 +7,18 @@ import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import config from '../config';
+import styles from './styles/SlotCstyles'
 
 class SlotScreen extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      username: '',
-      password: '',
-      stickyHeaderIndices: [],
       date: new Date(),
       ischecked: [],
       availableTimeSlots: [],
       selectedSlot: [],
       data: [],
-      duration: '60',
       confirm: false,
       isGeneratingSlots: false
     };
@@ -33,7 +30,9 @@ class SlotScreen extends Component {
     await this.generateSlots(date);
   }
 
+  //generate slots for date selected
   generateSlots = async (date) => {
+
     this.setState({ isGeneratingSlots: true })
     var workHours = [];
     workHours = await this.getWorkHours(date);
@@ -45,30 +44,25 @@ class SlotScreen extends Component {
     var tmp = Moment(duration, inputDataFormat);
     var dif = tmp - Moment().startOf("day");
 
-
     if (workHours.length > 0) {
 
       var startIntervalTime = Moment(new Date(workHours[0].startTime), inputDataFormat);
-
-
-
       var endIntervalTime = Moment(new Date(workHours[0].startTime), inputDataFormat).add(+dif, "ms");
       var finishTime = Moment(new Date(workHours[0].endTime), inputDataFormat);
       var createdSlots = [];
 
       while (startIntervalTime < finishTime) {
 
-        var siT = new Date(Date.parse(startIntervalTime));
-
         var b = bookings.filter(function (bookings) {
+
           var startTime = Moment(new Date(bookings.startTime), inputDataFormat);
           var endTime = Moment(new Date(bookings.endTime), inputDataFormat);
 
           return startTime < endIntervalTime && endTime > startIntervalTime
         })
 
-        if (b.length == 0 && startIntervalTime >= Moment() ) {
-          createdSlots.push({
+        if (b.length == 0 && startIntervalTime >= Moment()) {
+            createdSlots.push({
             startTime: startIntervalTime.format(outputFormat),
             endTime: endIntervalTime.format(outputFormat),
             date: date
@@ -79,8 +73,10 @@ class SlotScreen extends Component {
         endIntervalTime.add(dif, "ms");
       }
     }
+
     this.setState({ availableTimeSlots: createdSlots, isGeneratingSlots: false })
   }
+
 
   getAppointments = async (date) => {
 
@@ -98,7 +94,6 @@ class SlotScreen extends Component {
       }
     });
 
-
     if (response.status === 200) {
 
       return response.data.bookings
@@ -107,13 +102,10 @@ class SlotScreen extends Component {
     else {
       return response.status
     }
-
   }
 
 
   getWorkHours = async (date) => {
-
-    console.log(date);
 
     const token = await AsyncStorage.getItem('token');
 
@@ -129,10 +121,7 @@ class SlotScreen extends Component {
       }
     });
 
-
-
     if (response.status === 200) {
-
       return response.data.time
     }
 
@@ -141,9 +130,6 @@ class SlotScreen extends Component {
     }
 
   }
-
-
-
 
   FlatListItemSeparator = () => {
     return (
@@ -157,11 +143,9 @@ class SlotScreen extends Component {
     );
   }
 
-
   isCheckBox(index) {
 
     var timeSlots = [...this.state.availableTimeSlots];
-
     var slots = [];
 
     timeSlots.forEach(element => {
@@ -176,30 +160,23 @@ class SlotScreen extends Component {
 
   onChangeDate(date) {
 
-
     var selectedDate = Moment(new Date(date)).format("YYYY-MM-DD");
-
     this.generateSlots(selectedDate);
-
     var timeSlots = [];
-
     this.state.data.forEach(element => {
 
       if (element.date === selectedDate) {
         timeSlots.push(element);
       }
-
     })
 
     this.setState({ date: date, availableTimeSlots: timeSlots, ischecked: [], confirm: false });
-
+  
   }
-
 
   render() {
     LogBox.ignoreAllLogs(true);
     return (
-
 
       <View styles={styles.container}>
         <View style={styles.subHeader}>
@@ -223,10 +200,6 @@ class SlotScreen extends Component {
             </Text>
         </View>
 
-
-
-
-
         <View style={styles.slots}>
 
           {this.state.isGeneratingSlots == true ?
@@ -236,17 +209,14 @@ class SlotScreen extends Component {
             </View>
 
             : [
-              (!this.state.availableTimeSlots || this.state.availableTimeSlots.length === 0?
-                
+              (!this.state.availableTimeSlots || this.state.availableTimeSlots.length === 0 ?
+
                 <Text style={styles.logoText}>
 
                   No Available Slots !!!
 
                 </Text>
-
                 :
-
-
                 <FlatList
 
                   data={this.state.availableTimeSlots}
@@ -268,8 +238,6 @@ class SlotScreen extends Component {
                       </Text>
 
                     </TouchableOpacity>
-
-
                   )}
                 />
               )
@@ -277,12 +245,10 @@ class SlotScreen extends Component {
           }
         </View>
         <View style={styles.Footer}>
-
           {this.state.confirm &&
             <TouchableOpacity
               onPress={() => { this.props.navigation.navigate('CheckoutScreen'), this.props.setSlot(this.state.selectedSlot) }}
             >
-
               <Text style={styles.FooterText}>
                 Confirm
           </Text>
@@ -294,81 +260,7 @@ class SlotScreen extends Component {
     )
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-    height: '100%',
-    flex: 1,
-    backgroundColor: 'white'
-  },
-  list: {
-    justifyContent: 'center'
-  },
-  textStyle: {
-    textAlign: 'center',
-    color: 'black',
-    fontSize: 40,
-    padding: 7
-  },
-  subHeader: {
-
-    backgroundColor: '#fff44f',
-    height: '10%'
-  },
-
-  Calendar: {
-    height: '40%'
-
-  },
-
-  Footer: {
-    backgroundColor: 'black',
-    height: '15%'
-
-  },
-
-  slotHeader: {
-    backgroundColor: '#fff44f',
-    height: '10%'
-
-  },
-
-  slots: {
-    backgroundColor: 'white',
-    height: '25%',
-    justifyContent: 'center'
-
-  },
-
-  FooterText:
-  {
-    color: 'white',
-    marginTop: 25,
-    fontSize: 40,
-    textAlign: 'center',
-
-  },
-  logoText: {
-    fontSize: 30,
-    fontWeight: "800",
-    textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 44
-
-
-  },
-
-  horizontal: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 10
-  }
-})
-
-
 const mapStatetoProps = (state) => {
-
   return {
     orders: state.orderReducer,
     barberId: state.orderReducer.barberId.toString(),
@@ -379,11 +271,8 @@ const mapStatetoProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setSlot: (data) => dispatch(setSlot(data))
-
   }
-
 }
-
 
 export default connect(mapStatetoProps, mapDispatchToProps)(SlotScreen);
 
