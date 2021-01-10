@@ -3,6 +3,7 @@ import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import LoginScreen from "./src /LoginScreen";
 import HomeScreen from "./src /HomeScreen";
 import Header from './shared/header';
+import StripePaymentScreen from './src /StripePaymentScreen';
 import React from 'react';
 import AppointmentScreen from "./src /AppointmentScreen";
 import BookScreen from "./src /BookScreen";
@@ -15,7 +16,6 @@ import SlotScreen from "./src /SlotScreen";
 import CheckoutScreen from "./src /checkoutScreen";
 import {Provider} from "react-redux";
 import configureStore from './src /store/store';
-
 const store = configureStore;
 
 
@@ -60,6 +60,18 @@ CheckoutScreen:{
   },
   
 },
+
+
+StripePaymentScreen:{
+  screen:StripePaymentScreen,
+  navigationOptions: {
+    headerTitle:() => <BsHeader />,
+    headerShown:true,
+
+  },
+  
+},
+
 
 SlotScreen:{
   screen:SlotScreen,
