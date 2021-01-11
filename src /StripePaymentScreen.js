@@ -3,6 +3,7 @@ import { FlatList, Text, View, KeyboardAvoidingView, StyleSheet, TouchableOpacit
 import { ListItem } from 'react-native-elements';
 import Moment from 'moment'
 import { connect } from 'react-redux';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import ExpoStripePurchase from 'expo-stripe-webview';
 import axios from 'react-native-axios';
 import config from '../config';
@@ -24,14 +25,42 @@ class StripePaymentScreen extends Component {
 
 async onPaymentSuccess(token,total){
 
+
+  const authToken = await AsyncStorage.getItem('token');
+  const slot = this.props.orders.slot;
+  const skill = Object.values(this.props.orders.service);
+  const barber = this.props.barber;
+
   const response = await axios({
     method: 'post',
-    url: config.Stripe_URL+'/api/payment',
+    url:'https://77d731428228.ngrok.io/api/payment',
     data: {
-      token:token,
-      total:total
+      'token':token,
+      'total':total,
+      'name':barber,
+      'startTime':slot.startTime,
+      'endTime':slot.endTime,
+      'date':slot.date,
+      'skill':skill[0].Name
+    },
+    headers: {
+      'Authorization': `Bearer ${authToken}`
     }
   });
+
+  try {
+
+    console.log(response);
+
+    if (response.status === 200 && token) {
+      this.props.navigation.navigate('AppointmentScreen');
+      //const value = await AsyncStorage.getItem('token')
+    }
+
+  } catch (error) {
+    console.log('There has been a problem with your fetch operation: ' + error.message);
+    throw error;
+  }
 
 }
 
@@ -92,6 +121,10 @@ async onPaymentSuccess(token,total){
     const total = this.props.orders.total * 100;
     const skill = Object.values(this.props.orders.service);
 
+
+
+
+
     return (
         <ExpoStripePurchase
         publicKey="pk_test_r8rYKYySFEUY1JbMdRKRpcl7"
@@ -103,7 +136,7 @@ async onPaymentSuccess(token,total){
         allowRememberMe={true}
         prepopulatedEmail="clever_email@clever.com"
         onClose={this.onClose}
-        onPaymentSuccess={(token) => this.onPaymentSuccess(token,total)}
+        onPaymentSuccess={async (token) => this.onPaymentSuccess(token,total)}
         style={{width: windowWidth * 3, alignSelf: 'center'}} />
     )
   }
