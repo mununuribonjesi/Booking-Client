@@ -5,6 +5,7 @@ import Moment from 'moment'
 import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ExpoStripePurchase from 'expo-stripe-webview';
+import {Ionicons } from '@expo/vector-icons';
 import axios from 'react-native-axios';
 import config from '../config';
 import {
@@ -93,9 +94,19 @@ async onPaymentSuccess(token,total){
 
 }
 
-closeError()
+closeError = () =>
 {
     this.setState({error:false})
+    this.props.navigation.navigate('CheckoutScreen');
+
+}
+
+goHome = () =>
+{
+  
+  this.setState({error:false})
+  this.props.navigation.navigate('HomeScreen');
+
 }
 
 
@@ -113,9 +124,7 @@ closeError()
 
     return (
 
-      <View style={styles.container[
-        { backgroundColor: this.state.isLoading ? 'black' : 'white' }
-      ]} > 
+      <View style={styles.container}> 
 
       {this.state.isLoading == true ?
 
@@ -135,6 +144,20 @@ closeError()
         style={{width: windowWidth * 2.5, alignSelf: 'center'}} />
         ]
       }
+
+
+
+      <SCLAlert
+      show={this.state.error}
+      onRequestClose={this.closeError}
+      theme="info"
+      title="Info"
+      subtitle="Opps Somethings when wrong with the payment"
+      headerIconComponent={<Ionicons name="ios-thumbs-down" size={32} color="white" />}
+    >
+      <SCLAlertButton theme="info" onPress={this.closeError}>Try Again</SCLAlertButton>
+      <SCLAlertButton theme="default" onPress={this.goHome}>Cancel</SCLAlertButton>
+    </SCLAlert>
       </View>
       
     )
@@ -155,6 +178,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       height: '100%',
       flex: 1,
+
       textAlign: 'left'
   
     },
