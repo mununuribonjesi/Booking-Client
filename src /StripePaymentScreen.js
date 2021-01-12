@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList, Text, View, KeyboardAvoidingView, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { FlatList, Text, View, KeyboardAvoidingView, StyleSheet, TouchableOpacity,Button, Dimensions,ActivityIndicator } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import Moment from 'moment'
 import { connect } from 'react-redux';
@@ -7,33 +7,57 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ExpoStripePurchase from 'expo-stripe-webview';
 import axios from 'react-native-axios';
 import config from '../config';
+import {
+  BarIndicator,
+  PacmanIndicator
+} from 'react-native-indicators';
+
+import { ScreenStackHeaderConfig } from 'react-native-screens';
+import {
+  SCLAlert,
+  SCLAlertButton
+} from 'react-native-scl-alert'
+
 class StripePaymentScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       visible: true,
       placeholders: { number: "XXXX XXXX XXXX XXXX", expiry: "MM/YY", cvc: "CVC" },
-      labels: { number: "CARD NUMBER", expiry: "EXPIRY", cvc: "CVC/CCV" }
+      labels: { number: "CARD NUMBER", expiry: "EXPIRY", cvc: "CVC/CCV" },
+      isLoading:false,
+      error:false,
+      isBack:true
     }
   };
 
 
 
   onClose = () => {
-    this.props.navigation.navigate('CheckoutScreen')
+
+    if(this.state.isBack)
+    {
+      this.props.navigation.navigate('CheckoutScreen')
+    }
+    else
+    {
+
+    }
 }
 
 async onPaymentSuccess(token,total){
 
+  this.setState({isBack:false});
+  this.setState({isLoading:true});
 
   const authToken = await AsyncStorage.getItem('token');
   const slot = this.props.orders.slot;
   const skill = Object.values(this.props.orders.service);
-  const barber = this.props.barber;
+  const barber = this.props.orders.barber;
 
   const response = await axios({
     method: 'post',
-    url:'https://77d731428228.ngrok.io/api/payment',
+    url:config.Stripe_URL+'/api/payment',
     data: {
       'token':token,
       'total':total,
@@ -47,14 +71,19 @@ async onPaymentSuccess(token,total){
       'Authorization': `Bearer ${authToken}`
     }
   });
+  this.setState({isLoading:false});
 
   try {
-
-    console.log(response);
 
     if (response.status === 200 && token) {
       this.props.navigation.navigate('AppointmentScreen');
       //const value = await AsyncStorage.getItem('token')
+    }
+    else
+    {
+
+      this.setState({error:true});
+
     }
 
   } catch (error) {
@@ -64,80 +93,50 @@ async onPaymentSuccess(token,total){
 
 }
 
+closeError()
+{
+    this.setState({error:false})
+}
+
 
   onChangeForm = (form) => {
     console.log(form)
   }
 
-  renderItem = ({ item }) => {
-    return (
-      <View>
-        <ListItem style={styles}>
-          <ListItem.Title style={styles.leftText}>Barber:</ListItem.Title>
-          <ListItem.Content>
-          </ListItem.Content>
-          <Text style={styles.rightText}>{item.barber}
-          </Text>
-        </ListItem>
-        <ListItem >
-          <ListItem.Title style={styles.leftText}>Date:</ListItem.Title>
-          <ListItem.Content >
-          </ListItem.Content>
-          <Text style={styles.rightText}>
-            {Moment(new Date(item.slot.date)).format("ddd DD MMM YYYY")}
-          </Text>
-        </ListItem>
-        <ListItem bottomDivider>
-          <ListItem.Title style={styles.leftText}>Slot:</ListItem.Title>
-          <ListItem.Content>
-          </ListItem.Content>
-          <Text style={styles.rightText}>
-            {item.slot.startTime} - {item.slot.endTime}
-          </Text>
-        </ListItem>
-        {item.service.map((s) => (
-          <ListItem style={styles}>
-            <ListItem.Title style={styles.leftText}>x1  {s.Name}</ListItem.Title>
-            <ListItem.Content>
-            </ListItem.Content>
-            <Text style={styles.rightText}>£{s.Price.toFixed(2)}
-            </Text>
-          </ListItem>
-        ))
-        }
-        <ListItem topDivider>
-          <ListItem.Title style={styles.leftText}>Total:</ListItem.Title>
-          <ListItem.Content>
-          </ListItem.Content>
-          <Text style={styles.rightText}>
-            £{item.total.toFixed(2)}
-          </Text>
-        </ListItem>
-      </View>)
-  }
+
+  
   render() {
 
     const windowWidth = Dimensions.get('window').width;
     const total = this.props.orders.total * 100;
     const skill = Object.values(this.props.orders.service);
 
-
-
-
-
     return (
+
+      <View style={styles.container[
+        { backgroundColor: this.state.isLoading ? 'black' : 'white' }
+      ]} > 
+
+      {this.state.isLoading == true ?
+
+        <View style={[styles.container, styles.horizontal]}>
+        <PacmanIndicator size={80} color="#fff44f" />
+      </View>
+
+        :[
         <ExpoStripePurchase
-        publicKey="pk_test_r8rYKYySFEUY1JbMdRKRpcl7"
+        publicKey={config.STRIPE_KEY}
         amount={total}
         imageUrl="www.clever-image-url.com"
-        storeName="Clever Store Name"
         description={skill[0].Name}
         currency="GBP"
-        allowRememberMe={true}
-        prepopulatedEmail="clever_email@clever.com"
         onClose={this.onClose}
         onPaymentSuccess={async (token) => this.onPaymentSuccess(token,total)}
-        style={{width: windowWidth * 3, alignSelf: 'center'}} />
+        style={{width: windowWidth * 2.5, alignSelf: 'center'}} />
+        ]
+      }
+      </View>
+      
     )
   }
 }
@@ -156,7 +155,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       height: '100%',
       flex: 1,
-      backgroundColor: 'white',
       textAlign: 'left'
   
     },
