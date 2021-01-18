@@ -50,26 +50,24 @@ class HomeScreen extends Component {
 
         <TouchableOpacity 
             onPress={() =>
-              this.props.navigation.navigate("BookScreen",{
+              this.props.navigation.navigate("LocationScreen",{
                 isGetByService:false
               })
             }
   style={styles.iconWrapper
-  }
-
-
-  >
+  }>
     
   <FontAwesome name="calendar-plus-o" size={40} color="black" />
   <Text style={styles.itemtext}>Book Appt</Text>
   </TouchableOpacity>
-
   </View>
+
+
   <View style={styles.item}>
   <TouchableOpacity 
   style={styles.iconWrapper
   }
-  onPress={() => this.props.navigation.navigate('ServicesScreen',{
+  onPress={() => this.props.navigation.navigate('LocationScreen',{
     isGetByService:true
   })}
   >
@@ -77,6 +75,9 @@ class HomeScreen extends Component {
   <Text style={styles.itemtext}>Services</Text>
   </TouchableOpacity>
   </View>
+
+
+  
 
   <View style={styles.item}>
   <TouchableOpacity 

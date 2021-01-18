@@ -1,4 +1,5 @@
-import { SETBARBER, SETBARBERID, SETSERVICE, SETSLOT, SETTOTAL, SETUSERID } from './actionTypes'
+import { ActivityIndicatorComponent } from 'react-native'
+import { SETBARBER, SETBARBERID, SETSERVICE, SETSLOT, SETTOTAL, SETUSERID,SETORGANISATIONID} from './actionTypes'
 
 const initialState = {
     service: [],
@@ -6,7 +7,8 @@ const initialState = {
     slot: [],
     total: 0,
     barberId: '',
-    userId: ''
+    userId: '',
+    organisationId:''
 }
 
 const userState = {
@@ -41,12 +43,16 @@ const orderReducer = (state = initialState, action) => {
                 total: state.total = action.data
             }
         case SETUSERID:     
-                return {
-                    ...state,
+            return {
+                ...state,
                     userId: state.userId = action.data
-                }
+            }
+        case SETORGANISATIONID:
+            return {
+                ...state, 
+                    organisationId: state.organisationId = action.data
+            }
             
-
         default: // need this for default case
             return state
     }

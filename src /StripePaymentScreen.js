@@ -9,8 +9,15 @@ import {Ionicons } from '@expo/vector-icons';
 import axios from 'react-native-axios';
 import config from '../config';
 import {
+  BallIndicator,
   BarIndicator,
-  PacmanIndicator
+  DotIndicator,
+  MaterialIndicator,
+  PacmanIndicator,
+  PulseIndicator,
+  SkypeIndicator,
+  UIActivityIndicator,
+  WaveIndicator,
 } from 'react-native-indicators';
 
 import { ScreenStackHeaderConfig } from 'react-native-screens';
@@ -128,8 +135,8 @@ goHome = () =>
 
       {this.state.isLoading == true ?
 
-        <View style={[styles.container, styles.horizontal]}>
-        <PacmanIndicator size={80} color="#fff44f" />
+        <View style={styles.loading}>
+        <UIActivityIndicator size={80} color="black" />
       </View>
 
         :[
@@ -144,8 +151,6 @@ goHome = () =>
         style={{width: windowWidth * 2.5, alignSelf: 'center'}} />
         ]
       }
-
-
 
       <SCLAlert
       show={this.state.error}
@@ -278,6 +283,15 @@ const styles = StyleSheet.create({
     FlatList: {
       marginTop: 40
   
+    },
+    loading: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      alignItems: 'center',
+      justifyContent: 'center'
     },
   
     rightText: {

@@ -6,6 +6,17 @@ import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import config from '../config';
+import {
+  BallIndicator,
+  BarIndicator,
+  DotIndicator,
+  MaterialIndicator,
+  PacmanIndicator,
+  PulseIndicator,
+  SkypeIndicator,
+  UIActivityIndicator,
+  WaveIndicator,
+} from 'react-native-indicators';
 
 
 class ServicesScreen extends Component {
@@ -16,12 +27,14 @@ class ServicesScreen extends Component {
       ischecked: [],
       total: 0.00,
       services: [],
-      data: []
+      data: [],
+      isLoading:false
     };
   }
 
   async componentDidMount() {
-
+    
+    this.setState({isLoading:true})
     var response = await this.getServices();
     if (response.status === 200) {
 
@@ -42,19 +55,21 @@ class ServicesScreen extends Component {
 
     });
     this.setState({ ischecked: checklist })
+    this.setState({isLoading:false})
   }
 
 
   async getServices() {
     var response;
     const token = await AsyncStorage.getItem('token');
+    var organisationId = this.props.orders.organisationId
 
     if (this.isGetByService()) {
       response = await axios({
         method: 'get',
         url: config.Availability_URL + '/api/skills',
         params: {
-
+          'organisationId':organisationId
         },
         headers: {
           'Authorization': `Bearer ${token}`
@@ -99,7 +114,7 @@ class ServicesScreen extends Component {
 
     let checkboxes = [...this.state.ischecked]
 
-    for (i = 0; i < checkboxes.length; i++) {
+    for (var i = 0; i < checkboxes.length; i++) {
 
       checkboxes[i] = false;
 
@@ -110,8 +125,8 @@ class ServicesScreen extends Component {
     if (checkboxes[index] === true) {
 
       var selected = [];
-      selected.push({ Name: this.state.data[index].Name, Price: this.state.data[index].Price, Duration: this.state.data[index].Duration, skillId: this.state.data[index]._id });
-      this.setState({ total: this.state.data[index].Price, services: selected });
+      selected.push({ Name: this.state.data[index].name, Price: this.state.data[index].price, Duration: this.state.data[index].duration, skillId: this.state.data[index]._id });
+      this.setState({ total: this.state.data[index].price, services: selected });
 
     }
 
@@ -123,6 +138,15 @@ class ServicesScreen extends Component {
     const isGetByService = this.isGetByService();
 
     return (
+
+        
+      (this.state.isLoading == true ?
+
+
+        <View style={styles.loading}>
+        <UIActivityIndicator size={80} color="black" />
+      </View>
+  :[
 
       <View styles={styles.container}>
         <View style={styles.subHeader}>
@@ -147,9 +171,9 @@ class ServicesScreen extends Component {
                   disabled={!this.state.ischecked[index]}
                 />
                 <ListItem.Content>
-                  <ListItem.Title><Text style={styles.logoText}>{item.Name}</Text></ListItem.Title>
+                  <ListItem.Title><Text style={styles.logoText}>{item.name}</Text></ListItem.Title>
                   <ListItem.Title
-                  ><Text> {"£" + item.Price + '.00'}</Text></ListItem.Title>
+                  ><Text> {"£" + item.price + '.00'}</Text></ListItem.Title>
                 </ListItem.Content>
               </ListItem>
             )}
@@ -161,7 +185,7 @@ class ServicesScreen extends Component {
         <View style={styles.Footer}>
           {(this.state.total > 0 && !isGetByService) &&
             <TouchableOpacity
-              onPress={() => { this.props.setTotal(this.state.total), this.props.setService(this.state.services), this.props.navigation.navigate('SlotScreen') }}
+              onPress={() => {this.props.setTotal(this.state.total), this.props.setService(this.state.services), this.props.navigation.navigate('SlotScreen') }}
             >
               <Text style={styles.FooterText}>
                 Continue
@@ -183,6 +207,7 @@ class ServicesScreen extends Component {
           }
         </View>
       </View>
+        ])
     )
   }
 }
@@ -230,6 +255,15 @@ export const styles  = StyleSheet.create({
     fontWeight: "800",
 
   },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
 })
 
 const mapStatetoProps = (state) => {

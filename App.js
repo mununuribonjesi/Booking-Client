@@ -14,6 +14,7 @@ import AboutUsScreen from "./src /AboutUsScreen";
 import BsHeader from "./shared/BsHeader";
 import SlotScreen from "./src /SlotScreen";
 import CheckoutScreen from "./src /checkoutScreen";
+import LocationScreen from "./src /LocationScreen";
 import {Provider} from "react-redux";
 import configureStore from './src /store/store';
 const store = configureStore;
@@ -41,6 +42,14 @@ AppointmentScreen:{
     headerTitle:() => <BsHeader />,
     headerShown:true,
 
+  },
+},
+
+LocationScreen:{
+  screen:LocationScreen,
+  navigationOptions: {
+    headerTitle:"Choose Location",
+    headerShown:true,
   },
 },
 

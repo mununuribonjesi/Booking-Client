@@ -7,6 +7,18 @@ import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import config from '../config';
+import {
+  BallIndicator,
+  BarIndicator,
+  DotIndicator,
+  MaterialIndicator,
+  PacmanIndicator,
+  PulseIndicator,
+  SkypeIndicator,
+  UIActivityIndicator,
+  WaveIndicator,
+} from 'react-native-indicators';
+
 
 
 class SlotScreen extends Component {
@@ -20,14 +32,17 @@ class SlotScreen extends Component {
       selectedSlot: [],
       data: [],
       confirm: false,
-      isGeneratingSlots: false
+      isGeneratingSlots: false,
+      Loading:false
     };
 
   }
 
   async componentDidMount() {
+    this.setState({isLoading:true});
     var date = Moment(new Date()).format("YYYY-MM-DD");
     await this.generateSlots(date);
+    this.setState({isLoading:false});
   }
 
   //generate slots for date selected
@@ -178,6 +193,12 @@ class SlotScreen extends Component {
     LogBox.ignoreAllLogs(true);
     return (
 
+      (this.state.isLoading == true ?
+        <View style={styles.loading}>
+        <UIActivityIndicator size={80} color="black" />
+      </View>
+  :[
+
       <View styles={styles.container}>
         <View style={styles.subHeader}>
           <Text style={styles.textStyle}>
@@ -205,7 +226,7 @@ class SlotScreen extends Component {
           {this.state.isGeneratingSlots == true ?
 
             <View style={[styles.container, styles.horizontal]}>
-              <ActivityIndicator size="large" color="#00ff00" />
+            <UIActivityIndicator size={80} color="black" />
             </View>
 
             : [
@@ -257,6 +278,7 @@ class SlotScreen extends Component {
         </View>
 
       </View>
+        ])
     )
   }
 }
@@ -281,6 +303,15 @@ export const styles  = StyleSheet.create({
     height: '100%',
     flex: 1,
     backgroundColor: 'white'
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   list: {
     justifyContent: 'center'
@@ -338,7 +369,15 @@ export const styles  = StyleSheet.create({
 
 
   },
-
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   horizontal: {
     flexDirection: "row",
     justifyContent: "space-around",
