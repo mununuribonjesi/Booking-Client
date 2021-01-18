@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import BarberComponent from './functionalComponents/BarberComponent';
+
 import config from '../config';
 import {
   BallIndicator,
@@ -24,7 +25,8 @@ class BookScreen extends Component {
     super(props);
     this.state = {
       stylists: [],
-      isLoading:false
+      isLoading:false,
+      ischecked: [],
     };
   }
 
@@ -35,6 +37,7 @@ class BookScreen extends Component {
     if (response.status === 200) {
       const stylists = response.data.stylists;
       this.setState({ stylists: stylists })
+      console.log(response);
     }
     this.setState({isLoading:false});
   }
@@ -43,10 +46,11 @@ class BookScreen extends Component {
   async getBarbers() {
     const token = await AsyncStorage.getItem('token');
     var response;
+    var organisationId = this.props.orders.organisationId
     if (this.props.navigation.state.params.isGetByService) {
       var service = Object.values(this.props.service);
       var skillId = service[0].skillId.toString();
-      var organisationId = this.props.orders.organisationId
+     
       response = await axios({
         method: 'get',
         url: config.Availability_URL + '/api/skilledBarbers',

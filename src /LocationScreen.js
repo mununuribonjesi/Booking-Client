@@ -7,11 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import UserAvatar from 'react-native-user-avatar';
-import { Avatar } from 'react-native-image-avatars';
-import ReactRoundedImage from "react-rounded-image";
-import ImgToBase64 from 'react-native-image-base64';
-import {Asset} from 'expo-asset';
-import ProfilePicture from 'react-native-profile-picture';
+
 
 
 import config from '../config';
@@ -180,7 +176,7 @@ navigateToScreen()
               style={styles.button}
               onPress={() => { this.props.setOrganisationId(item._id),this.navigateToScreen()}}
             >
-              <Text style={styles.bookText}>Open</Text>
+              <Text style={styles.bookText}>Book Now</Text>
             </TouchableOpacity>
           </ListItem>
         </TouchableOpacity>
