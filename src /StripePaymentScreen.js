@@ -41,6 +41,7 @@ class StripePaymentScreen extends Component {
 
 
 
+
   onClose = () => {
 
     if(this.state.isBack)
@@ -63,6 +64,7 @@ async onPaymentSuccess(token,total){
   const skill = Object.values(this.props.orders.service);
   const barber = this.props.orders.barber;
 
+
   const response = await axios({
     method: 'post',
     url:config.Stripe_URL+'/api/payment',
@@ -73,7 +75,7 @@ async onPaymentSuccess(token,total){
       'startTime':slot.startTime,
       'endTime':slot.endTime,
       'date':slot.date,
-      'skill':skill[0].Name
+      'skill':skill[0].skillId
     },
     headers: {
       'Authorization': `Bearer ${authToken}`
@@ -136,7 +138,9 @@ goHome = () =>
       {this.state.isLoading == true ?
 
         <View style={styles.loading}>
-        <UIActivityIndicator size={80} color="black" />
+
+        <UIActivityIndicator name="Saving" size={80} color="black" />
+        <Text style={styles.loadingText}> Saving Appointment</Text>
       </View>
 
         :[
@@ -183,6 +187,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       height: '100%',
       flex: 1,
+      backgroundColor:'#B6B4B6',
 
       textAlign: 'left'
   
@@ -213,6 +218,14 @@ const styles = StyleSheet.create({
       height: '80%'
     },
   
+
+    loadingText:{
+      flex: 1, 
+      alignItems: 'center',
+      justifyContent: 'center', 
+      fontSize:40,
+      color:'#0D5916'
+    },
   
     Footer: {
       backgroundColor: 'black',

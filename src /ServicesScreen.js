@@ -115,7 +115,7 @@ class ServicesScreen extends Component {
     if (checkboxes[index] === true) {
 
       var selected = [];
-      selected.push({ Name: this.state.data[index].name, Price: this.state.data[index].price, Duration: this.state.data[index].duration, skillId: this.state.data[index]._id });
+      selected.push({ Name: this.state.data[index].name, Price: this.state.data[index].price, Duration: this.state.data[index].duration, skillId:this.state.data[index]._id });
       this.setState({ total: this.state.data[index].price, services: selected });
 
     }
