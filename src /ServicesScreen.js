@@ -101,9 +101,6 @@ class ServicesScreen extends Component {
       setService={this.props.setService}
       navigation={this.props.navigation}
       /> 
-
-        
-
     )
   }
 }

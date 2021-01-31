@@ -35,24 +35,41 @@ class StripePaymentScreen extends Component {
       labels: { number: "CARD NUMBER", expiry: "EXPIRY", cvc: "CVC/CCV" },
       isLoading:false,
       error:false,
-      isBack:true
+      isBack:true,
+      successfull:false,
+      verified:false
+
     }
   };
 
 
+  async componentDidMount()
+  {
+
+    this.setState({verified:false});
+  
+  }
 
 
-  onClose = () => {
 
-    if(this.state.isBack)
+
+  onClose()
+  {
+    if(this.state.verified===true)
     {
-      this.props.navigation.navigate('CheckoutScreen')
+      this.props.navigation.navigate('HomeScreen');
+
     }
+
     else
     {
-
+      this.props.navigation.navigate('CheckoutScreen');
     }
-}
+  }
+
+
+
+
 
 async onPaymentSuccess(token,total){
 
@@ -86,7 +103,9 @@ async onPaymentSuccess(token,total){
   try {
 
     if (response.status === 200 && token) {
-      this.props.navigation.navigate('AppointmentScreen');
+     
+      this.setState({successfull:true,verified:true});
+
       //const value = await AsyncStorage.getItem('token')
     }
     else
@@ -95,6 +114,8 @@ async onPaymentSuccess(token,total){
       this.setState({error:true});
 
     }
+
+    
 
   } catch (error) {
     console.log('There has been a problem with your fetch operation: ' + error.message);
@@ -110,10 +131,24 @@ closeError = () =>
 
 }
 
+
+closeSuccessfull = () =>
+{
+    this.setState({error:false})
+    this.props.navigation.navigate('HomeScreen');
+
+}
+
+goAppointments =() =>
+{
+  this.setState({successfull:false})
+  this.props.navigation.navigate('AppointmentScreen');
+}
+
 goHome = () =>
 {
   
-  this.setState({error:false})
+  this.setState({successfull:false})
   this.props.navigation.navigate('HomeScreen');
 
 }
@@ -142,8 +177,10 @@ goHome = () =>
         <UIActivityIndicator name="Saving" size={80} color="black" />
         <Text style={styles.loadingText}> Saving Appointment</Text>
       </View>
+        :
+          [
 
-        :[
+            (!this.state.successfull || !this.state.error ?
         <ExpoStripePurchase
         publicKey={config.STRIPE_KEY}
         amount={total}
@@ -153,20 +190,36 @@ goHome = () =>
         onClose={this.onClose}
         onPaymentSuccess={async (token) => this.onPaymentSuccess(token,total)}
         style={{width: windowWidth * 2.5, alignSelf: 'center'}} />
-        ]
+          
+            : <View></View>
+
+            )
+          ]
       }
 
       <SCLAlert
       show={this.state.error}
       onRequestClose={this.closeError}
-      theme="info"
+      theme="danger"
       title="Info"
       subtitle="Opps Somethings when wrong with the payment"
       headerIconComponent={<Ionicons name="ios-thumbs-down" size={32} color="white" />}
     >
-      <SCLAlertButton theme="info" onPress={this.closeError}>Try Again</SCLAlertButton>
-      <SCLAlertButton theme="default" onPress={this.goHome}>Cancel</SCLAlertButton>
+      <SCLAlertButton theme="success" onPress={this.closeError}>Try Again</SCLAlertButton>
+      <SCLAlertButton theme="danger" onPress={this.goHome}>Cancel</SCLAlertButton>
     </SCLAlert>
+
+    <SCLAlert
+    show={this.state.successfull}
+    onRequestClose={this.closeSuccessfull}
+    theme="success"
+    title="Info"
+    subtitle="Congradulations Your Appointment was a success !!!"
+    headerIconComponent={<Ionicons name="ios-thumbs-up" size={32} color="white" />}
+  >
+    <SCLAlertButton theme="success" onPress={this.goAppointments}>View</SCLAlertButton>
+    <SCLAlertButton theme="info" onPress={this.closeSuccessfull}>Return</SCLAlertButton>
+  </SCLAlert>
       </View>
       
     )

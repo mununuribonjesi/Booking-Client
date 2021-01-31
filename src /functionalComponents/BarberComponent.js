@@ -32,7 +32,6 @@ const BarberComponent = (props) => {
   }
 
 
-
   const isCheckBox = (index) => {
 
     console.log(index);
