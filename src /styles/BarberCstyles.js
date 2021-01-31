@@ -1,90 +1,56 @@
 import { StyleSheet } from 'react-native';
 
 
-export const styles = StyleSheet.create({
+export const styles  = StyleSheet.create({
+  container: {
+    justifyContent:'center',
+    height:'100%',
+    flex:1
+  },
 
-      list: {
-      fontSize: 50,
-      backgroundColor: 'yellow'
-  
-    },
-    container: {
-      flex: 1,
-      flexDirection: 'row',
-      alignSelf: 'stretch',
-      backgroundColor: '#fff44f'
-    },
-  
-    imagewrapper: {
-      alignSelf: 'center'
-    },
-    textStyle: {
+  subHeader: {
+    backgroundColor: '#fff44f',
+    height: '10%'
+  },
+
+  textStyle: {
       textAlign: 'center',
       color: 'black',
       fontSize: 40,
       padding: 7
     },
-    headerFooterStyle: {
-  
-      backgroundColor: '#fff44f'
-  
-    },
-  
-    wrappercontainer: {
-      marginTop: 30,
-  
-    },
-  
-    button: {
-      alignItems: 'center',
-      backgroundColor: '#00ff00',
-      padding: 10,
-    },
-  
-    bookText:{
-      color:'black'
+    Body:{
+
+      backgroundColor:'white',
+      height:'75%'
     },
 
-  
-    iconWrapper: {
-      borderWidth: 1,
-      borderColor: 'rgba(0,0,0,0.2)',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: 100,
-      height: 100,
-      backgroundColor: '#fff',
-      borderRadius: 10
-  
+    Footer:{
+      backgroundColor:'black',
+      height:'15%'
+
     },
-  
-    wrapper: {
-      marginTop: 50,
-      paddingLeft: 20,
-      width: '50%',
-      flexDirection: 'row'
-  
-    },
-    item: {
-      width: '100%', // is 50% of container width
-      paddingLeft: 10,
-      height: '100%'
-  
-    },
-  
-    itemwrapper: {
-  
-    },
-    logoText: {
-      fontSize: 20,
-      fontWeight: "800",
-      marginTop: 20,
+
+    FooterText:
+    {
+      color:'white',
+      marginTop:25,
+      fontSize: 40,
       textAlign: 'center',
+      
     },
-    itemtext: {
-      textAlign: 'left',
-      marginTop: 10,
-      fontSize: 20
-  
-    }
-  })
+  logoText: {
+    fontSize: 20,
+    fontWeight: "800",
+
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+})

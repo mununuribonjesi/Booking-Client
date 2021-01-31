@@ -9,15 +9,7 @@ import BarberComponent from './functionalComponents/BarberComponent';
 
 import config from '../config';
 import {
-  BallIndicator,
-  BarIndicator,
-  DotIndicator,
-  MaterialIndicator,
-  PacmanIndicator,
-  PulseIndicator,
-  SkypeIndicator,
   UIActivityIndicator,
-  WaveIndicator,
 } from 'react-native-indicators';
 
 class BookScreen extends Component {
@@ -36,8 +28,14 @@ class BookScreen extends Component {
 
     if (response.status === 200) {
       const stylists = response.data.stylists;
-      this.setState({ stylists: stylists })
-      console.log(response);
+      this.setState({ stylists: stylists });
+      let checklist = [...this.state.ischecked];
+      var data = [...this.state.ischecked];
+
+      data.forEach(ckb =>{
+        checklist.push(false);
+      });
+
     }
     this.setState({isLoading:false});
   }
@@ -95,6 +93,7 @@ class BookScreen extends Component {
         setBarber={this.props.setBarber}
         setBarberId={this.props.setBarberId}
         isGetByService={this.props.navigation.state.params.isGetByService}
+        isChecked={this.state.ischecked}
       />
   
   ]
