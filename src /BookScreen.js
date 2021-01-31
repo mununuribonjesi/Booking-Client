@@ -36,6 +36,8 @@ class BookScreen extends Component {
         checklist.push(false);
       });
 
+      this.setState({ ischecked: checklist })
+
     }
     this.setState({isLoading:false});
   }

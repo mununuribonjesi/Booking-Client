@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FlatList, Text, View, TouchableOpacity,} from 'react-native';
 import { CheckBox,ListItem} from 'react-native-elements';
 import { connect } from 'react-redux';
-import {styles} from '../styles/BarberCstyles';
+import {styles} from '../styles/checkOutCstyles';
 import UserAvatar from 'react-native-user-avatar';
 
 const BarberComponent = (props) => {
