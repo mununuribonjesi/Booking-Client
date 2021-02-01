@@ -1,21 +1,25 @@
 import React, { Component } from 'react';
 import axios from 'react-native-axios';
-import { Keyboard, Button, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { Keyboard,DatePickerIOS, Button, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUserId} from './store/actions';
 import { connect } from 'react-redux';
 import config from '../config';
+import DatePicker from '@react-native-community/datetimepicker';
 
-
-class LoginScreen extends Component {
+class createAccountScreen extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       isAuthenticated: false,
-      username: '',
+      firstname: '',
+      lastname:'',
       password: '',
-      isFailed: false
+      confirmPassword:'',
+      email:'',
+      date:'',
+      chosenDate: new Date() 
     };
   }
 
@@ -28,59 +32,44 @@ class LoginScreen extends Component {
     }
   }
 
-  async onLogin() {
 
-    const response = await axios({
-      method: 'post',
-      url: config.Authentication_URL+'/api/login',
-      data: {
-        'email': this.state.username,
-        'password': this.state.password
-      }
-    });
-    
-    try {
-
-      const token = response.data.token;
-
-      if (response.status === 200 && token) {
-        this.setState({ isAuthenticated: true });
-        this.setToken(token);
-        var user = response.data.user;
-        var userId = user._id;
-        this.props.setUserId(userId);
-        this.props.navigation.navigate('HomeScreen');
-        //const value = await AsyncStorage.getItem('token')
-      }
-
-    } catch (error) {
-      console.log('There has been a problem with your fetch operation: ' + error.message);
-      throw error;
-    }
-  }
 
 
   render() {
 
     return (
-      <KeyboardAvoidingView
-      style={styles.containerView}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.containerView}> 
-        <View style={styles.logoView}> 
-        <Text style={styles.logoText}>Muni Book</Text>         
-        </View>
 
           <View style={styles.loginFormView}>
+
+          <TextInput
+          value={this.state.firstname}
+          onChangeText={(firstname) => this.setState({ firstname })}
+          placeholder={'Forename'}
+          placeholderTextColor='black'
+          style={styles.loginFormTextInput}
+          placeholderColor="#3897f1"
+        />
+        <TextInput
+          value={this.state.lastname}
+          onChangeText={(lastname) => this.setState({ lastname })}
+          placeholder={'Surname'}
+          placeholderTextColor='black'
+          style={styles.loginFormTextInput}
+          placeholderColor="#3897f1"
+        />
            
               <TextInput
-                value={this.state.username}
-                onChangeText={(username) => this.setState({ username })}
-                placeholder={'Username'}
+                value={this.state.email}
+                onChangeText={(email) => this.setState({ email })}
+                placeholder={'Email Address'}
                 placeholderTextColor='black'
                 style={styles.loginFormTextInput}
                 placeholderColor="#3897f1"
               />
+
+ 
+
               <TextInput
                 value={this.state.password}
                 placeholderTextColor='black'
@@ -90,34 +79,40 @@ class LoginScreen extends Component {
                 placeholderColor="#c4c3cb"
                 style={styles.loginFormTextInput}
               />
+              <TextInput
+                value={this.state.password}
+                placeholderTextColor='black'
+                onChangeText={(password) => this.setState({ password })}
+                placeholder={'Confrim Password'}
+                secureTextEntry={true}
+                placeholderColor="#c4c3cb"
+                style={styles.loginFormTextInput}
+              />
               <TouchableOpacity
-                onPress={this.onLogin.bind(this)}
               >
 
                 <View style={styles.loginButton}> 
                <Text style={styles.buttonText}>           
-                 Login            
+                 Create Account            
                </Text>
                </View>
               </TouchableOpacity>
 
-              <TouchableOpacity 
-              onPress={() => { this.props.navigation.navigate('createAccountScreen')}}
+              <TouchableOpacity
+              onPress={() => { this.props.navigation.navigate('LoginScreen')}}
               >
               <View style={styles.createButton}> 
               <Text style={styles.signUpButtonText}>           
-                Dont have an account? 
+                Already have an account? 
                 {" "}
                 <Text style={styles.signUpText}> 
-                  Sign up    
+                  Sign In    
                 </Text>
               </Text>
               </View>
               </TouchableOpacity>
           </View>
       </View>
-      </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
   
     );
   }
@@ -130,12 +125,6 @@ const styles = StyleSheet.create({
     height:'100%',
   },
 
-  logoView:{
-
-    height:'25%',
-    marginTop:100
-
-  },
 
   logoText: {
     fontSize: 85,
@@ -144,19 +133,20 @@ const styles = StyleSheet.create({
     color:'black'
   },
   loginFormView: {
-    height:'50%',
+    height:'100%',
+    marginTop:110
   },
   loginFormTextInput: {
-    height: 70,
+    height: 60,
     fontSize: 14,
-    borderRadius: 20,
+    borderRadius: 5,
     borderWidth: 1,
     borderColor: '#eaeaea',
     backgroundColor: '#fafafa',
     paddingLeft: 10,
     marginLeft: 15,
     marginRight: 15,
-    marginBottom: 15,
+    marginBottom: 25,
 
   },
 
@@ -239,6 +229,6 @@ const mapStatetoProps = (state) => {
 
   
   
-  export default connect(mapStatetoProps, mapDispatchToProps)(LoginScreen);
+  export default connect(mapStatetoProps, mapDispatchToProps)(createAccountScreen);
 
   

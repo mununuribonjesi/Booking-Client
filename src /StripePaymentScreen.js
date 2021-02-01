@@ -37,7 +37,7 @@ class StripePaymentScreen extends Component {
       error:false,
       isBack:true,
       successfull:false,
-      verified:false
+      isPayment:false
 
     }
   };
@@ -45,17 +45,13 @@ class StripePaymentScreen extends Component {
 
   async componentDidMount()
   {
-
-    this.setState({verified:false});
-  
+    this.setState({successfull:false,error:false});
   }
 
 
-
-
-  onClose()
+  onClose = () =>
   {
-    if(this.state.verified===true)
+    if(this.state.successfull)
     {
       this.props.navigation.navigate('HomeScreen');
 
@@ -104,7 +100,7 @@ async onPaymentSuccess(token,total){
 
     if (response.status === 200 && token) {
      
-      this.setState({successfull:true,verified:true});
+      this.setState({successfull:true,isPayment:true});
 
       //const value = await AsyncStorage.getItem('token')
     }

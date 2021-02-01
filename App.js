@@ -6,6 +6,7 @@ import Header from './shared/header';
 import StripePaymentScreen from './src /StripePaymentScreen';
 import React from 'react';
 import AppointmentScreen from "./src /AppointmentScreen";
+import createAccountScreen from "./src /createAccountScreen";
 import BookScreen from "./src /BookScreen";
 import GalleryScreen from "./src /GalleryScreen";
 import OurTeamScreen from "./src /OurTeamScreen";
@@ -27,6 +28,14 @@ const screens = {
       headerTitle: () => <Header />,
       headerShown: false //this will hide the header
     },
+},
+
+createAccountScreen: {
+  screen: createAccountScreen,
+  navigationOptions: {
+    headerTitle: () => <Header />,
+    headerShown: false //this will hide the header
+  },
 },
 BookScreen:{
   screen:BookScreen,
