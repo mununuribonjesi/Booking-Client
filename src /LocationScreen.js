@@ -7,6 +7,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import UserAvatar from 'react-native-user-avatar';
+import {FontAwesome5 } from '@expo/vector-icons';
+import {
+  SCLAlert,
+  SCLAlertButton
+} from 'fork-react-native-scl-alert';
 
 
 
@@ -35,7 +40,9 @@ class LocationScreen extends Component {
       data: [],
       isLoading:false,
       city:'',
-      ImgToBase64:''
+      ImgToBase64:'',
+      errorMessage:'',
+      isError:false
       
     };
   }
@@ -43,6 +50,13 @@ class LocationScreen extends Component {
   async componentDidMount() {
 
   }
+
+  isError = () =>
+  {
+    this.setState({isError:!this.state.isError});
+    this.props.navigation.navigate('HomeScreen');
+  }
+
 
 
 navigateToScreen()
@@ -67,6 +81,12 @@ navigateToScreen()
 }
 
 
+setOrganisation(response)
+{
+  this.setState({data:response.data.organisation})
+}
+
+
 
   ListHeader = () => {
     return (
@@ -85,6 +105,16 @@ navigateToScreen()
     return (
 
       <View style={styles.container}> 
+      <SCLAlert
+      show={this.state.isError}
+      onRequestClose={this.isError}
+      theme="danger"
+      title="Oops! Something went wrong"
+      subtitle={"error fetching Locations \n\n"+this.state.errorMessage}
+      headerIconComponent={<FontAwesome5 name="exclamation" size={40} color="white" />}
+    >
+      <SCLAlertButton theme="danger" onPress={this.isError}>OK</SCLAlertButton>
+    </SCLAlert>
 
       <View style={styles.searchbar} pointerEvents='box-none'> 
       
@@ -102,23 +132,22 @@ navigateToScreen()
         // 'details' is provided when fetchDetails = true
         var city = data.terms[0].value;
 
-        var response = await axios({
+         await axios({
           method: 'get',
           url: config.Availability_URL + '/api/organisation',
           params: {
             'city':city
           }
-        });
+        }).then(response => 
+          {
+            this.setOrganisation(response)
 
-        console.log(city);
-
-        console.log(response.data.organisation);
-
-        
-
-
-        this.setState({data:response.data.organisation})
-
+          }).catch(error => {
+            if(error.response)
+            {
+              this.setState({errorMessage:JSON.stringify(error.response.status),isError:true});
+            }
+          })
       }}
     
       styles={{

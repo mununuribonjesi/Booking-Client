@@ -8,6 +8,11 @@ import axios from 'react-native-axios';
 import config from '../config';
 import {UIActivityIndicator} from 'react-native-indicators';
 import { ServiceComponent } from './functionalComponents/ServiceComponent';
+import {FontAwesome5 } from '@expo/vector-icons';
+import {
+  SCLAlert,
+  SCLAlertButton
+} from 'fork-react-native-scl-alert';
 
 class ServicesScreen extends Component {
   constructor(props) {
@@ -18,7 +23,9 @@ class ServicesScreen extends Component {
       total: 0.00,
       services: [],
       data: [],
-      isLoading:false
+      isLoading:false,
+      isError:false,
+      errorMessage:''
     };
   }
 
@@ -46,7 +53,7 @@ class ServicesScreen extends Component {
 
 
   async getServices() {
-    var response;
+    var res;
     const token = await AsyncStorage.getItem('token');
     var organisationId = this.props.orders.organisationId
 
@@ -60,7 +67,16 @@ class ServicesScreen extends Component {
         headers: {
           'Authorization': `Bearer ${token}`
         }
-      });
+      }).then(response =>
+        {
+          res = response
+        }).catch(error => {
+          if(error.response)
+          {
+            res = error.response;
+            this.setState({errorMessage:JSON.stringify(error.response.status),isError:true});
+          }
+        })
     }
 
     else {
@@ -73,11 +89,29 @@ class ServicesScreen extends Component {
         headers: {
           'Authorization': `Bearer ${token}`
         }
-      });
+      }).then(response =>
+        {
+          res = response
+        }).catch(error => {
+          if(error.response)
+          {
+            res = error.response;
+            this.setState({errorMessage:JSON.stringify(error.response.status),isError:true});
+          }
+        })
     }
 
-    return response;
+    return res;
   }
+
+
+
+  isError = () =>
+  {
+    this.setState({isError:!this.state.isError});
+    this.props.navigation.navigate('LocationScreen');
+  }
+
 
 
   isGetByService() {
@@ -89,8 +123,19 @@ class ServicesScreen extends Component {
 
     return (
 
-      <ServiceComponent
+      <View> 
+      <SCLAlert
+      show={this.state.isError}
+      onRequestClose={this.isError}
+      theme="danger"
+      title="Oops! Something went wrong"
+      subtitle={"error fetching services \n\n"+this.state.errorMessage}
+      headerIconComponent={<FontAwesome5 name="exclamation" size={40} color="white" />}
+    >
+      <SCLAlertButton theme="danger" onPress={this.isError}>OK</SCLAlertButton>
+    </SCLAlert>
 
+      <ServiceComponent
       isLoading = {this.state.isLoading}
       data={this.state.data}
       isGetByService={isGetByService}
@@ -101,6 +146,7 @@ class ServicesScreen extends Component {
       setService={this.props.setService}
       navigation={this.props.navigation}
       /> 
+      </View>
     )
   }
 }

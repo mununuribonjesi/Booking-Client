@@ -18,6 +18,11 @@ import {
   UIActivityIndicator,
   WaveIndicator,
 } from 'react-native-indicators';
+import {FontAwesome5 } from '@expo/vector-icons';
+import {
+  SCLAlert,
+  SCLAlertButton
+} from 'fork-react-native-scl-alert';
 
 
 
@@ -33,8 +38,12 @@ class SlotScreen extends Component {
       data: [],
       confirm: false,
       isGeneratingSlots: false,
-      Loading:false
+      Loading:false,
+      isError:false,
+      errorMessage:''
     };
+
+
 
   }
 
@@ -48,10 +57,16 @@ class SlotScreen extends Component {
   //generate slots for date selected
   generateSlots = async (date) => {
 
+    var getWorkHours = await this.getWorkHours(date)
+    var getAppointments = await this.getAppointments(date)
+
+    if(getWorkHours.status===200&&getAppointments.status===200)
+    {
+
     this.setState({ isGeneratingSlots: true })
     var workHours = [];
-    workHours = await this.getWorkHours(date);
-    var bookings = await this.getAppointments(date);
+    workHours = getWorkHours.data.time;
+    var bookings = getAppointments.data.bookings;
     var duration = this.props.services[0].Duration;
 
     var inputDataFormat = "HH:mm:ss";
@@ -90,14 +105,18 @@ class SlotScreen extends Component {
     }
 
     this.setState({ availableTimeSlots: createdSlots, isGeneratingSlots: false })
+    }
   }
+
 
 
   getAppointments = async (date) => {
 
     const token = await AsyncStorage.getItem('token');
 
-    const response = await axios({
+    var res;
+
+     await axios({
       method: 'get',
       url: config.Availability_URL + '/api/appointments',
       params: {
@@ -107,16 +126,20 @@ class SlotScreen extends Component {
       headers: {
         'Authorization': `Bearer ${token}`
       }
-    });
+    }).then(response => 
+      {
 
-    if (response.status === 200) {
+        res = response
 
-      return response.data.bookings
-    }
+      }).catch(error => {
+        if(error.response)
+        {
+          res = error.response;
+          this.setState({errorMessage:JSON.stringify(error.response.status),isError:true});
+        }
+      });
 
-    else {
-      return response.status
-    }
+    return res;
   }
 
 
@@ -124,7 +147,9 @@ class SlotScreen extends Component {
 
     const token = await AsyncStorage.getItem('token');
 
-    const response = await axios({
+    var res;
+
+     await axios({
       method: 'get',
       url: config.Availability_URL + '/api/workHours',
       params: {
@@ -134,17 +159,21 @@ class SlotScreen extends Component {
       headers: {
         'Authorization': `Bearer ${token}`
       }
-    });
+    }).then(response => 
+      {
 
-    if (response.status === 200) {
-      return response.data.time
+        res = response
+
+      }).catch(error => {
+        if(error.response)
+        {
+          res = error.response;
+          this.setState({errorMessage:JSON.stringify(error.response.status),isError:true});
+        }
+      });
+
+      return res;
     }
-
-    else {
-      return response.status
-    }
-
-  }
 
   FlatListItemSeparator = () => {
     return (
@@ -171,6 +200,13 @@ class SlotScreen extends Component {
     slots[index] = !slots[index];
     this.setState({ ischecked: slots, selectedSlot: timeSlots[index], confirm: true });
   }
+
+  isError = () =>
+  {
+    this.setState({isError:!this.state.isError});
+    this.props.navigation.navigate('LocationScreen');
+  }
+
 
 
   onChangeDate(date) {
@@ -200,6 +236,16 @@ class SlotScreen extends Component {
   :[
 
       <View styles={styles.container}>
+      <SCLAlert
+      show={this.state.isError}
+      onRequestClose={this.isError}
+      theme="danger"
+      title="Oops! Something went wrong"
+      subtitle={"error generating slots \n\n"+this.state.errorMessage}
+      headerIconComponent={<FontAwesome5 name="exclamation" size={40} color="white" />}
+    >
+      <SCLAlertButton theme="danger" onPress={this.isError}>OK</SCLAlertButton>
+    </SCLAlert>
         <View style={styles.subHeader}>
           <Text style={styles.textStyle}>
             Schedule

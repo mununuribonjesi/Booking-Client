@@ -6,6 +6,11 @@ import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import BarberComponent from './functionalComponents/BarberComponent';
+import {FontAwesome5 } from '@expo/vector-icons';
+import {
+  SCLAlert,
+  SCLAlertButton
+} from 'fork-react-native-scl-alert';
 
 import config from '../config';
 import {
@@ -19,6 +24,8 @@ class BookScreen extends Component {
       stylists: [],
       isLoading:false,
       ischecked: [],
+      isError:false,
+      errorMessage:''
     };
   }
 
@@ -43,15 +50,25 @@ class BookScreen extends Component {
   }
 
 
+
+
+  isError = () =>
+  {
+    this.setState({isError:!this.state.isError});
+    this.props.navigation.navigate('LocationScreen');
+  }
+
+
+
   async getBarbers() {
     const token = await AsyncStorage.getItem('token');
-    var response;
+    var res;
     var organisationId = this.props.orders.organisationId
     if (this.props.navigation.state.params.isGetByService) {
       var service = Object.values(this.props.service);
       var skillId = service[0].skillId.toString();
      
-      response = await axios({
+      await axios({
         method: 'get',
         url: config.Availability_URL + '/api/skilledBarbers',
         params: {
@@ -60,10 +77,20 @@ class BookScreen extends Component {
         headers: {
           'Authorization': `Bearer ${token}`
         }
-      });
+      }).then(response =>
+        {
+          res = response
+        }).catch(error => {
+          if(error.response)
+          {
+            res = error.response;
+            this.setState({errorMessage:JSON.stringify(error.response.status),isError:true});
+          }
+        })
     }
     else {
-      response = await axios({
+       
+      await axios({
         method: 'get',
         url: config.Availability_URL + '/api/barbers',
         params: {
@@ -72,9 +99,18 @@ class BookScreen extends Component {
         headers: {
           'Authorization': `Bearer ${token}`
         }
-      });
+      }).then(response =>
+        {
+          res = response
+        }).catch(error => {
+          if(error.response)
+          {
+            res = error.response;
+            this.setState({errorMessage:JSON.stringify(error.response.status),isError:true});
+          }
+        })
     }
-    return response;
+    return res;
   }
 
   render() {
@@ -89,6 +125,7 @@ class BookScreen extends Component {
 
       </View>
   :[
+    <View> 
       <BarberComponent
         stylists={this.state.stylists}
         navigation={this.props.navigation}
@@ -97,7 +134,19 @@ class BookScreen extends Component {
         isGetByService={this.props.navigation.state.params.isGetByService}
         isChecked={this.state.ischecked}
       />
-  
+
+ 
+        <SCLAlert
+      show={this.state.isError}
+      onRequestClose={this.isError}
+      theme="danger"
+      title="Oops! Something went wrong"
+      subtitle={"error fetching Barbers \n\n"+this.state.errorMessage}
+      headerIconComponent={<FontAwesome5 name="exclamation" size={40} color="white" />}
+    >
+      <SCLAlertButton theme="danger" onPress={this.isError}>OK</SCLAlertButton>
+    </SCLAlert>
+    </View>
   ]
       )
 
