@@ -19,6 +19,9 @@ import LocationScreen from "./src /LocationScreen";
 import {Provider} from "react-redux";
 import configureStore from './src /store/store';
 import verificationScreen from "./src /verificationScreen";
+import {TouchableOpacity} from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; 
+import BackButton from "./shared/BackButton";
 const store = configureStore;
 
 
@@ -47,27 +50,34 @@ verificationScreen: {
 },
 BookScreen:{
   screen:BookScreen,
-  navigationOptions: {
+  navigationOptions:({navigation}) => ({
     headerTitle:() => <BsHeader />,
     headerShown:true,
-
-  },
+}),
 },
 AppointmentScreen:{
   screen:AppointmentScreen,
-  navigationOptions: {
+  navigationOptions:({navigation}) => ({
     headerTitle:() => <BsHeader />,
     headerShown:true,
+    headerLeft:() =>
+      <TouchableOpacity
+      onPress={()=> navigation.navigate("HomeScreen")}>
+      <BackButton />
 
-  },
+      </TouchableOpacity>
+
+    
+
+  }),
 },
 
 LocationScreen:{
   screen:LocationScreen,
-  navigationOptions: {
+  navigationOptions:({navigation}) => ({
     headerTitle:"Choose Location",
     headerShown:true,
-  },
+  }),
 },
 
 GalleryScreen:{
@@ -79,41 +89,41 @@ OurTeamScreen:{
 
 CheckoutScreen:{
   screen:CheckoutScreen,
-  navigationOptions: {
+  navigationOptions:({navigation}) => ({
     headerTitle:() => <BsHeader />,
     headerShown:true,
 
-  },
+  }),
   
 },
 
 
 StripePaymentScreen:{
   screen:StripePaymentScreen,
-  navigationOptions: {
+  navigationOptions:({navigation}) => ({
     headerTitle:() => <BsHeader />,
     headerShown:true,
 
-  },
+  }),
   
 },
 
 
 SlotScreen:{
   screen:SlotScreen,
-  navigationOptions: {
+  navigationOptions:({navigation}) => ({
     headerTitle:() => <BsHeader />,
     headerShown:true,
 
-  },
+  }),
 },
 ServicesScreen:{
   screen:ServicesScreen,
-  navigationOptions: {
+  navigationOptions:({navigation}) => ({
     headerTitle:() => <BsHeader />,
     headerShown:true,
 
-  },
+  }),
 },
 AboutUsScreen:
 {
@@ -122,13 +132,13 @@ AboutUsScreen:
 
 HomeScreen: {
   screen: HomeScreen,
-  navigationOptions: {
+  navigationOptions:({navigation}) => ({
     headerTitle: () => <Header />,
     headerShown:true,
     headerLeft: () => {
       return null;
     },
-  },
+  }),
 
 }
 };

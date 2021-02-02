@@ -17,7 +17,6 @@ import {
   UIActivityIndicator,
   WaveIndicator,
 } from 'react-native-indicators';
-
 import { ScreenStackHeaderConfig } from 'react-native-screens';
 import {
   SCLAlert,
@@ -34,36 +33,23 @@ class StripePaymentScreen extends Component {
       isLoading:false,
       error:false,
       isBack:true,
-      successfull:false,
-      isPayment:false
-
+      isSuccessfull:false,
+      isPayment:false,
+      isError:false,
+      isView:false,
+      isRetry:false,
+      errorMessage:''
     }
+
+    this.isError= this.isError.bind(this);
+    this.closeSuccessfull = this.closeSuccessfull.bind(this);
   };
 
 
   async componentDidMount()
   {
-    this.setState({successfull:false,error:false});
+    this.setState({isSuccessfull:false,error:false});
   }
-
-
-  onClose = () =>
-  {
-    if(this.state.successfull)
-    {
-      this.props.navigation.navigate('HomeScreen');
-
-    }
-
-    else
-    {
-      this.props.navigation.navigate('CheckoutScreen');
-    }
-  }
-
-
-
-
 
 async onPaymentSuccess(token,total){
 
@@ -75,8 +61,9 @@ async onPaymentSuccess(token,total){
   const skill = Object.values(this.props.orders.service);
   const barber = this.props.orders.barber;
 
+  var res;
 
-  const response = await axios({
+    await axios({
     method: 'post',
     url:config.Stripe_URL+'/api/payment',
     data: {
@@ -91,61 +78,75 @@ async onPaymentSuccess(token,total){
     headers: {
       'Authorization': `Bearer ${authToken}`
     }
-  });
-  this.setState({isLoading:false});
-
-  try {
-
-    if (response.status === 200 && token) {
-     
-      this.setState({successfull:true,isPayment:true});
-
-      //const value = await AsyncStorage.getItem('token')
-    }
-    else
+  }).then(response => 
     {
 
-      this.setState({error:true});
+      res = response
 
+    }).catch(error => {
+      if(error.response)
+      {
+        res = error.response;
+        this.setState({errorMessage:JSON.stringify(error.response.status),isError:true});
+      }
+    })
+
+
+    if (res.status === 200 && token) {
+     
+      this.setState({isSuccessfull:true,isPayment:true});
+    }  
+
+    this.setState({isLoading:false});
+
+}
+
+
+isError = (isRetry) =>
+{
+  this.setState({isError:false});
+
+  if(isRetry)
+  {
+  this.props.navigation.navigate('SlotScreen');
+  }
+  else
+  {
+    this.props.navigation.navigate('HomeScreen');
+  }
+}
+
+
+closeSuccessfull = (isView) =>
+{
+    this.setState({isSuccessfull:false})
+    
+    if(isView)
+    {
+      this.props.navigation.navigate('AppointmentScreen');
     }
 
-    
-
-  } catch (error) {
-    console.log('There has been a problem with your fetch operation: ' + error.message);
-    throw error;
-  }
-
-}
-
-closeError = () =>
-{
-    this.setState({error:false})
-    this.props.navigation.navigate('CheckoutScreen');
-
+    else
+    {
+      this.props.navigation.navigate('HomeScreen');
+    }
 }
 
 
-closeSuccessfull = () =>
+onClose = () =>
 {
-    this.setState({error:false})
+  if(this.state.isSuccessfull)
+  {
     this.props.navigation.navigate('HomeScreen');
 
+  }
+
+  else
+  {
+    this.props.navigation.navigate('CheckoutScreen');
+  }
 }
 
-goAppointments =() =>
-{
-  this.setState({successfull:false})
-  this.props.navigation.navigate('AppointmentScreen');
-}
-
-goHome = () =>
-{
-  
-  this.setState({successfull:false})
-  this.props.navigation.navigate('HomeScreen');
-
-}
 
 
   onChangeForm = (form) => {
@@ -159,6 +160,8 @@ goHome = () =>
     const windowWidth = Dimensions.get('window').width;
     const total = this.props.orders.total * 100;
     const skill = Object.values(this.props.orders.service);
+    var isView = false;
+    var isRetry = false;
 
     return (
 
@@ -191,28 +194,29 @@ goHome = () =>
           ]
       }
 
+      
       <SCLAlert
-      show={this.state.error}
-      onRequestClose={this.closeError}
+      show={this.state.isError}
+      onRequestClose={() => this.isError(isRetry=true)}
       theme="danger"
       title="Info"
-      subtitle="Opps Somethings when wrong with the payment"
+      subtitle={"Opps Somethings when wrong with the Appointment\n\n"+this.state.errorMessage}
       headerIconComponent={<Ionicons name="ios-thumbs-down" size={32} color="white" />}
     >
-      <SCLAlertButton theme="success" onPress={this.closeError}>Try Again</SCLAlertButton>
-      <SCLAlertButton theme="danger" onPress={this.goHome}>Cancel</SCLAlertButton>
+      <SCLAlertButton theme="success" onPress={() => this.isError(isRetry=true)}>Try Again</SCLAlertButton>
+      <SCLAlertButton theme="danger" onPress={() => this.isError(isRetry=false)}>Cancel</SCLAlertButton>
     </SCLAlert>
 
     <SCLAlert
-    show={this.state.successfull}
-    onRequestClose={this.closeSuccessfull}
+    show={this.state.isSuccessfull}
+    onRequestClose={() => this.closeSuccessfull(isView=true)}
     theme="success"
-    title="Info"
-    subtitle="Congradulations Your Appointment was a success !!!"
+    title="Pay Successs"
+    subtitle="Appointment was created successfully"
     headerIconComponent={<Ionicons name="ios-thumbs-up" size={32} color="white" />}
   >
-    <SCLAlertButton theme="success" onPress={this.goAppointments}>View</SCLAlertButton>
-    <SCLAlertButton theme="info" onPress={this.closeSuccessfull}>Return</SCLAlertButton>
+    <SCLAlertButton theme="success" onPress={() => this.closeSuccessfull(isView=true)}>View</SCLAlertButton>
+    <SCLAlertButton theme="info" onPress={() => this.closeSuccessfull(isView=false)}>Return</SCLAlertButton>
   </SCLAlert>
       </View>
       

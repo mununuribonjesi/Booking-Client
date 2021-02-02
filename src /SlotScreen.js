@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList, Text, View, StyleSheet, TouchableOpacity, LogBox, ActivityIndicator } from 'react-native';
+import { FlatList, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import Calendar from 'react-native-calendar-datepicker';
 import Moment from 'moment';
 import { setSlot } from './store/actions';
@@ -226,7 +226,6 @@ class SlotScreen extends Component {
   }
 
   render() {
-    LogBox.ignoreAllLogs(true);
     return (
 
       (this.state.isLoading == true ?

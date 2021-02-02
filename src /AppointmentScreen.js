@@ -68,9 +68,6 @@ class AppointmentScreen extends Component
     }
 
 
-
-
-
       async getCustomerAppointments()
       {
         const token = await AsyncStorage.getItem('token');
@@ -249,7 +246,7 @@ class AppointmentScreen extends Component
                 <View style={styles.Footer}>
                   <TouchableOpacity
                      onPress={() =>
-                        this.props.navigation.navigate("BookScreen",{
+                        this.props.navigation.navigate("LocationScreen",{
                           isGetByService:false
                         })}
                   >

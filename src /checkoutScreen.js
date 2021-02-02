@@ -18,9 +18,6 @@ class CheckoutScreen extends Component {
     this.setState({ modalVisible: !this.state.modalVisible });
   }
 
-  componentDidMount() {
-    LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
-}
 
   onChangeForm = (form) => {
     console.log(form)
