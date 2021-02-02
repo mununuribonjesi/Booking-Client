@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { FlatList, Text, View, KeyboardAvoidingView, StyleSheet, TouchableOpacity,Button, Dimensions,ActivityIndicator } from 'react-native';
-import { ListItem } from 'react-native-elements';
-import Moment from 'moment'
 import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ExpoStripePurchase from 'expo-stripe-webview';

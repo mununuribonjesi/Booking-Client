@@ -18,6 +18,7 @@ import CheckoutScreen from "./src /checkoutScreen";
 import LocationScreen from "./src /LocationScreen";
 import {Provider} from "react-redux";
 import configureStore from './src /store/store';
+import verificationScreen from "./src /verificationScreen";
 const store = configureStore;
 
 
@@ -32,6 +33,13 @@ const screens = {
 
 createAccountScreen: {
   screen: createAccountScreen,
+  navigationOptions: {
+    headerTitle: () => <Header />,
+    headerShown: false //this will hide the header
+  },
+},
+verificationScreen: {
+  screen: verificationScreen,
   navigationOptions: {
     headerTitle: () => <Header />,
     headerShown: false //this will hide the header

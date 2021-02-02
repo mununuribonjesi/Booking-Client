@@ -4,8 +4,12 @@ import { Keyboard, Button, Text, View, StyleSheet, TextInput, TouchableWithoutFe
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUserId} from './store/actions';
 import { connect } from 'react-redux';
+import {FontAwesome5 } from '@expo/vector-icons';
 import config from '../config';
-
+import {
+  SCLAlert,
+  SCLAlertButton
+} from 'react-native-scl-alert'
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -15,7 +19,9 @@ class LoginScreen extends Component {
       isAuthenticated: false,
       username: '',
       password: '',
-      isFailed: false
+      isFailed: false,
+      isError:false,
+      errorMessage:''
     };
   }
 
@@ -28,9 +34,26 @@ class LoginScreen extends Component {
     }
   }
 
+
+
+
+isError = () =>
+{
+  this.setState({isError:!this.state.isError});
+}
+
+
+
+
+
+
+
   async onLogin() {
 
-    const response = await axios({
+    var response;
+    try { 
+
+     response = await axios({
       method: 'post',
       url: config.Authentication_URL+'/api/login',
       data: {
@@ -38,25 +61,26 @@ class LoginScreen extends Component {
         'password': this.state.password
       }
     });
-    
-    try {
 
-      const token = response.data.token;
-
-      if (response.status === 200 && token) {
-        this.setState({ isAuthenticated: true });
-        this.setToken(token);
-        var user = response.data.user;
-        var userId = user._id;
-        this.props.setUserId(userId);
-        this.props.navigation.navigate('HomeScreen');
-        //const value = await AsyncStorage.getItem('token')
-      }
-
-    } catch (error) {
-      console.log('There has been a problem with your fetch operation: ' + error.message);
+    } catch (error) {      
+      this.setState({errorMessage:JSON.stringify(error.response.data.message),isError:true});
       throw error;
     }
+
+
+
+    const token = response.data.token;
+
+    if (response.status === 200 && token) {
+      this.setState({ isAuthenticated: true });
+      this.setToken(token);
+      var user = response.data.user;
+      var userId = user._id;
+      this.props.setUserId(userId);
+      this.props.navigation.navigate('HomeScreen');
+      //const value = await AsyncStorage.getItem('token')
+    }
+    
   }
 
 
@@ -115,6 +139,18 @@ class LoginScreen extends Component {
               </View>
               </TouchableOpacity>
           </View>
+
+
+      <SCLAlert
+      show={this.state.isError}
+      onRequestClose={this,this.isError}
+      theme="danger"
+      title="Attempt failed"
+      subtitle={this.state.errorMessage}
+      headerIconComponent={<FontAwesome5 name="exclamation" size={40} color="white" />}
+    >
+      <SCLAlertButton theme="danger" onPress={this.isError}>OK</SCLAlertButton>
+    </SCLAlert>
       </View>
       </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
