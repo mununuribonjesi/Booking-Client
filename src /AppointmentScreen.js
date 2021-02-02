@@ -9,6 +9,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setBarber, setBarberId } from './store/actions'
 import { connect } from 'react-redux';
 import { TabView, SceneMap } from 'react-native-tab-view';
+import {FontAwesome5 } from '@expo/vector-icons';
+import {
+  SCLAlert,
+  SCLAlertButton
+} from 'fork-react-native-scl-alert';
 
 
 class AppointmentScreen extends Component
@@ -20,14 +25,17 @@ class AppointmentScreen extends Component
         this.state = {
           upcomingAppointments:[],
           recentAppointments:[],
-          index:0  
+          index:0,
+          isError:false,
+          errorMessage:''
         };
       }
 
 
       async componentDidMount() {
 
-        var response = await this.getCustomerAppointments();     
+        var response = await this.getCustomerAppointments();
+        if (response.status === 200) {     
         var customerAppointments = response.data.customerApp;
         var upcomingAppointments = customerAppointments.filter(ua => {
         var str = ua.endTime;
@@ -48,21 +56,28 @@ class AppointmentScreen extends Component
         return Moment(dateComponent+'T'+timeComponent) < Moment()
         
         });
-
-        if (response.status === 200) {
-
           this.setState({upcomingAppointments:upcomingAppointments,recentAppointments:recentAppointments});
-         
         }
      }
+
+
+     isError = () =>
+    {
+      this.setState({isError:!this.state.isError});
+      this.props.navigation.navigate('HomeScreen');
+    }
+
+
+
 
 
       async getCustomerAppointments()
       {
         const token = await AsyncStorage.getItem('token');
-        var response;
+        
+        var res;
 
-         response = await axios({
+        await axios({
           method: 'get',
           url: config.Availability_URL +'/api/customerAppointments',
           headers: {
@@ -72,9 +87,20 @@ class AppointmentScreen extends Component
             'customerId':this.props.userId.toString()
           }
           
-        });
-      
-      return response;
+        }).then(response => 
+          {
+
+            res = response
+
+          }).catch(error => {
+            if(error.response)
+            {
+              res = error.response;
+              this.setState({errorMessage:JSON.stringify(error.response.status),isError:true});
+            }
+          })
+
+          return res;
     }
 
 
@@ -190,6 +216,16 @@ class AppointmentScreen extends Component
     return (
 
         <View styles={styles.container}>
+        <SCLAlert
+      show={this.state.isError}
+      onRequestClose={this.isError}
+      theme="danger"
+      title="Oops! Something went wrong"
+      subtitle={"error fetching appointments \n\n"+this.state.errorMessage}
+      headerIconComponent={<FontAwesome5 name="exclamation" size={40} color="white" />}
+    >
+      <SCLAlertButton theme="danger" onPress={this.isError}>OK</SCLAlertButton>
+    </SCLAlert>
 
         <View style={styles.subHeader}>
                   <Text style={styles.textStyle}>

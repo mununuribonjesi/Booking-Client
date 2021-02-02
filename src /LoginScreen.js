@@ -9,7 +9,8 @@ import config from '../config';
 import {
   SCLAlert,
   SCLAlertButton
-} from 'react-native-scl-alert'
+} from 'fork-react-native-scl-alert';
+import {LogBox} from 'react-native';
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -25,6 +26,10 @@ class LoginScreen extends Component {
     };
   }
 
+
+  componentDidMount() {
+    LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
+}
 
   setToken = async (value) => {
     try {
@@ -49,10 +54,6 @@ isError = () =>
 
 
   async onLogin() {
-
-
-
-
     await axios({
       method: 'post',
       url: config.Authentication_URL+'/api/login',
@@ -69,14 +70,12 @@ isError = () =>
             this.setState({errorMessage:JSON.stringify(error.response.data.message),isError:true});
         }
     })
-
   }
 
   
 
 Login(response)
 {
-
   const token = response.data.token;
   if (response.status === 200 && token) {
     this.setState({ isAuthenticated: true });
@@ -87,7 +86,6 @@ Login(response)
     this.props.navigation.navigate('HomeScreen');
     //const value = await AsyncStorage.getItem('token')
   }
-
 }
     
   
@@ -95,16 +93,32 @@ Login(response)
 
   render() {
 
+    LogBox.ignoreLogs(['Warning: ...']);
+
     return (
       <KeyboardAvoidingView
       style={styles.containerView}>
+      <SCLAlert
+      style={styles.modal}
+      show={this.state.isError}
+      onRequestClose={this,this.isError}
+      theme="danger"
+      title="Attempt failed"
+      subtitle={this.state.errorMessage}
+      headerIconComponent={<FontAwesome5 name="exclamation" size={40} color="white" />}
+    >
+      <SCLAlertButton theme="danger" onPress={this.isError}>OK</SCLAlertButton>
+    </SCLAlert>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.containerView}> 
+
         <View style={styles.logoView}> 
         <Text style={styles.logoText}>Muni Book</Text>         
         </View>
 
           <View style={styles.loginFormView}>
+
+      
            
               <TextInput
                 value={this.state.username}
@@ -150,16 +164,6 @@ Login(response)
           </View>
 
 
-      <SCLAlert
-      show={this.state.isError}
-      onRequestClose={this,this.isError}
-      theme="danger"
-      title="Attempt failed"
-      subtitle={this.state.errorMessage}
-      headerIconComponent={<FontAwesome5 name="exclamation" size={40} color="white" />}
-    >
-      <SCLAlertButton theme="danger" onPress={this.isError}>OK</SCLAlertButton>
-    </SCLAlert>
       </View>
       </TouchableWithoutFeedback>
       </KeyboardAvoidingView>

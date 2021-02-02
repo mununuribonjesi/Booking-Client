@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUserId} from './store/actions';
 import { connect } from 'react-redux';
 import config from '../config';
-import {Ionicons,MaterialIcons,AntDesign } from '@expo/vector-icons';
+import {Ionicons,MaterialIcons,AntDesign,FontAwesome5 } from '@expo/vector-icons';
 import DatePicker from '@react-native-community/datetimepicker';
 import {
   SCLAlert,
@@ -225,9 +225,9 @@ class createAccountScreen extends Component {
     theme="danger"
     title="Invalid Form"
     subtitle="Correct errors before submitting !!!"
-    headerIconComponent={<AntDesign name="exclamation" size={80} color="white" />}
+    headerIconComponent={<FontAwesome5 name="exclamation" size={40} color="white" />}
   >
-    <SCLAlertButton theme="success" onPress={this.alertClose}>OK</SCLAlertButton>
+    <SCLAlertButton theme="danger" onPress={this.alertClose}>OK</SCLAlertButton>
   </SCLAlert>
 
           <View style={styles.loginFormView}>

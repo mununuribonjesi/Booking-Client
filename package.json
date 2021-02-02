@@ -20,6 +20,7 @@
     "expo-asset": "~8.2.0",
     "expo-status-bar": "~1.0.2",
     "expo-stripe-webview": "^2.1.0",
+    "fork-react-native-scl-alert": "^1.3.1",
     "moment": "^2.29.1",
     "react": "16.13.1",
     "react-calendar": "^3.2.1",
