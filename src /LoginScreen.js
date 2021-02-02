@@ -50,38 +50,47 @@ isError = () =>
 
   async onLogin() {
 
-    var response;
-    try { 
 
-     response = await axios({
+
+
+    await axios({
       method: 'post',
       url: config.Authentication_URL+'/api/login',
       data: {
         'email': this.state.username,
         'password': this.state.password
       }
-    });
+    }).then(response =>
+      {
+        this.Login(response);
+      }).catch (error =>{
+        if(error.response)
+        {
+            this.setState({errorMessage:JSON.stringify(error.response.data.message),isError:true});
+        }
+    })
 
-    } catch (error) {      
-      this.setState({errorMessage:JSON.stringify(error.response.data.message),isError:true});
-      throw error;
-    }
-
-
-
-    const token = response.data.token;
-
-    if (response.status === 200 && token) {
-      this.setState({ isAuthenticated: true });
-      this.setToken(token);
-      var user = response.data.user;
-      var userId = user._id;
-      this.props.setUserId(userId);
-      this.props.navigation.navigate('HomeScreen');
-      //const value = await AsyncStorage.getItem('token')
-    }
-    
   }
+
+  
+
+Login(response)
+{
+
+  const token = response.data.token;
+  if (response.status === 200 && token) {
+    this.setState({ isAuthenticated: true });
+    this.setToken(token);
+    var user = response.data.user;
+    var userId = user._id;
+    this.props.setUserId(userId);
+    this.props.navigation.navigate('HomeScreen');
+    //const value = await AsyncStorage.getItem('token')
+  }
+
+}
+    
+  
 
 
   render() {
