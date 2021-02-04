@@ -22,15 +22,27 @@ import verificationScreen from "./src /verificationScreen";
 import {TouchableOpacity} from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
 import BackButton from "./shared/BackButton";
+import splashScreen from './src /splashScreen';
 const store = configureStore;
 
 
 const screens = {
+
+
+  splashScreen: {
+    screen: splashScreen,
+    navigationOptions: {
+      headerTitle: () => <Header />,
+      headerShown: false, //this will hide the header
+      animationEnabled: false,
+    },
+  },
   LoginScreen: {
     screen: LoginScreen,
     navigationOptions: {
       headerTitle: () => <Header />,
-      headerShown: false //this will hide the header
+      headerShown: false, //this will hide the header
+      animationEnabled: false,
     },
 },
 
@@ -145,7 +157,7 @@ HomeScreen: {
 
 const Navigation = createStackNavigator(screens,
   {
-    initialRouteName:'LoginScreen',
+    initialRouteName:'splashScreen',
 
       defaultNavigationOptions:{
       headerStyle: {backgroundColor:'black', height:100},

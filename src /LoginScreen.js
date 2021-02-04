@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
 import axios from 'react-native-axios';
-import { Keyboard, Button, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { Keyboard,Image, Button, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUserId} from './store/actions';
 import { connect } from 'react-redux';
 import {FontAwesome5 } from '@expo/vector-icons';
+import { LogBox } from 'react-native';
 import config from '../config';
 import {
   SCLAlert,
   SCLAlertButton
 } from 'fork-react-native-scl-alert';
-import {LogBox} from 'react-native';
+
+
+import Logo from '../assets/MuniBook.png';
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -46,11 +49,6 @@ isError = () =>
 {
   this.setState({isError:!this.state.isError});
 }
-
-
-
-
-
 
 
   async onLogin() {
@@ -93,33 +91,37 @@ Login(response)
 
   render() {
 
-    LogBox.ignoreLogs(['Warning: ...']);
+    LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+    LogBox.ignoreAllLogs();
+    LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
 
     return (
-      <KeyboardAvoidingView
-      style={styles.containerView}>
-      <SCLAlert
-      style={styles.modal}
-      show={this.state.isError}
-      onRequestClose={this,this.isError}
-      theme="danger"
-      title="Attempt failed"
-      subtitle={this.state.errorMessage}
-      headerIconComponent={<FontAwesome5 name="exclamation" size={40} color="white" />}
-    >
-      <SCLAlertButton theme="danger" onPress={this.isError}>OK</SCLAlertButton>
-    </SCLAlert>
+
+
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.containerView}> 
+    <SCLAlert
+    style={styles.modal}
+    show={this.state.isError}
+    onRequestClose={this,this.isError}
+    theme="danger"
+    title="Attempt failed"
+    subtitle={this.state.errorMessage}
+    headerIconComponent={<FontAwesome5 name="exclamation" size={40} color="white" />}
+  >
+    <SCLAlertButton theme="danger" onPress={this.isError}>OK</SCLAlertButton>
+  </SCLAlert>
 
-        <View style={styles.logoView}> 
-        <Text style={styles.logoText}>Muni Book</Text>         
+        <View style={styles.top}> 
+        <Image style={styles.Logo} source={Logo} />
         </View>
 
-          <View style={styles.loginFormView}>
+        <View style={styles.middle}> 
 
-      
-           
+          <View style={styles.formArea}>
+          <Text style={styles.signInText}>Sign In</Text>
+           <View style={styles.formItems}> 
+
               <TextInput
                 value={this.state.username}
                 onChangeText={(username) => this.setState({ username })}
@@ -127,6 +129,7 @@ Login(response)
                 placeholderTextColor='black'
                 style={styles.loginFormTextInput}
                 placeholderColor="#3897f1"
+                underlineColorAndroid='transparent'
               />
               <TextInput
                 value={this.state.password}
@@ -162,12 +165,13 @@ Login(response)
               </View>
               </TouchableOpacity>
           </View>
-
-
+          </View>
+          </View>
+          <View style={styles.footer}> 
+          </View>
       </View>
       </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
-  
+
     );
   }
 }
@@ -175,16 +179,39 @@ Login(response)
 const styles = StyleSheet.create({
   containerView: {
     flex: 1,
-    backgroundColor: '#fff44f',
+    position:'relative'
+  },
+
+  top:{
+    position:'relative',
     height:'100%',
+    backgroundColor:'#fff44f',
+    paddingRight:12.7,
+    paddingLeft:12.7,
+  },
+  signInText:{
+
+    justifyContent:'center',
+    alignSelf:'center',
+    marginTop:'5%',
+    fontSize:50
+
+
+  },
+  middle:
+  {
+    width:'100%',
+    height:'100%',
+    flex:1,
+    position:'absolute',
+    zIndex:2,
+    paddingLeft:26.3,
+    paddingRight:26.3
+    
   },
 
-  logoView:{
 
-    height:'25%',
-    marginTop:100
 
-  },
 
   logoText: {
     fontSize: 85,
@@ -192,21 +219,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color:'black'
   },
-  loginFormView: {
+  formArea: {
     height:'50%',
+    alignSelf:'center',
+    width:'100%',
+    top:"20%",
+    backgroundColor:'white',
+    borderRadius:20
+
+
   },
   loginFormTextInput: {
     height: 70,
     fontSize: 14,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#eaeaea',
-    backgroundColor: '#fafafa',
+    borderTopColor:'black',
+    backgroundColor: 'white',
     paddingLeft: 10,
     marginLeft: 15,
     marginRight: 15,
     marginBottom: 15,
-
+    borderBottomWidth :5,
+    borderBottomColor: '#000',
+    backgroundColor: 'white',
   },
 
   buttonText:{
@@ -220,14 +254,10 @@ const styles = StyleSheet.create({
     color:'black',
     fontSize:20,
     textAlign:'center',
-    fontWeight:'600'
+    fontWeight:'600',
+    marginTop:'5%'
   },
 
-  loginView:{
-
-    width:'100%'
-
-  },
 
   signUpText:
   {
@@ -235,6 +265,13 @@ const styles = StyleSheet.create({
     color:'blue'
 
   },
+
+  Logo:{
+    justifyContent:'center',
+    alignSelf:'center',
+    marginTop:'17%'
+
+},
 
   createButton: {
     borderRadius: 5,
@@ -250,12 +287,13 @@ const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: 'black',
     borderRadius: 5,
-    height: 45,
+    height: 60,
     marginTop: 10,
     textAlign:'center',
     justifyContent:'center',
-    width:'50%',
-    alignSelf:'center'
+    width:'90%',
+    alignSelf:'center',
+    marginTop:'9%'
 
   },
   fbLoginButton: {

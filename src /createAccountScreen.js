@@ -107,13 +107,13 @@ class createAccountScreen extends Component {
 
     if(this.state.firstname=="")
     {
-      this.setState({firsnameerror:"Forename field cannot be empty",isnameError:true});
+      this.setState({firsnameerror:"* Forename field cannot be empty",isnameError:true});
     }
 
     else if(this.state.firstname!=""&&!firstNameRE.test(this.state.firstname))
     {
 
-      this.setState({firsnameerror:"Please enter valid forename",isnameError:true});
+      this.setState({firsnameerror:"* Please enter valid forename",isnameError:true});
     }
 
     else
@@ -130,12 +130,12 @@ class createAccountScreen extends Component {
 
     if(this.state.lastname=="")
     {
-      this.setState({lastnameerror:"Surname field cannot be empty",issurnameError:true});
+      this.setState({lastnameerror:"* Surname field cannot be empty",issurnameError:true});
     }
 
     else if(this.state.lastname!=""&&!lastNameRE.test(this.state.lastname))
     {
-      this.setState({lastnameerror:"Please enter a valid surname",issurnameError:true});
+      this.setState({lastnameerror:"* Please enter a valid surname",issurnameError:true});
     }
 
     else
@@ -153,12 +153,12 @@ class createAccountScreen extends Component {
 
     if(this.state.email=="")
     {
-      this.setState({emailerror:"email field cannot be empty",isemailError:true});
+      this.setState({emailerror:"* email field cannot be empty",isemailError:true});
     }
 
     else if(this.state.email!=""&&!emailRE.test(this.state.email))
     {
-      this.setState({emailerror:"please enter a valid email",isemailError:true});
+      this.setState({emailerror:"* please enter a valid email",isemailError:true});
     }
 
     else
@@ -182,12 +182,12 @@ class createAccountScreen extends Component {
 
     if(this.state.password=="")
     {
-      this.setState({passworderror:"password field cannot be empty",ispasswordError:true});
+      this.setState({passworderror:"* password field cannot be empty",ispasswordError:true});
     }
 
     else if(this.state.password!=""&&!passwordRE.test(this.state.password))
     {
-      this.setState({passworderror:"requires one lower case letter, one upper case letter, one digit, 6-20 length",ispasswordError:true});
+      this.setState({passworderror:"* requires one lower case letter, one upper case letter, one digit, 6-20 length",ispasswordError:true});
     }
 
     else
@@ -203,7 +203,7 @@ class createAccountScreen extends Component {
 
     if(this.state.password!=this.state.confirmPassword)
     {
-      this.setState({confirmpassworderror:"passwords do not match",isconfirmError:true});
+      this.setState({confirmpassworderror:"* passwords do not match",isconfirmError:true});
     }
 
     else
@@ -229,9 +229,12 @@ class createAccountScreen extends Component {
   >
     <SCLAlertButton theme="danger" onPress={this.alertClose}>OK</SCLAlertButton>
   </SCLAlert>
-
-          <View style={styles.loginFormView}>
-
+  <View style={styles.top}> 
+        </View>
+        <View style={styles.middle}> 
+          <View style={styles.formArea}>
+          <View style={styles.formItems}> 
+          <Text style={styles.validation}>{this.state.firsnameerror}</Text>
           <TextInput
           value={this.state.firstname}
           onChangeText={(firstname) => this.setState({ firstname })}
@@ -241,7 +244,9 @@ class createAccountScreen extends Component {
           placeholderColor="#3897f1"
           onBlur={()=> this.firstnameValidation()}
         />
-        <Text style={styles.validation}>{this.state.firsnameerror}</Text>
+            
+        <Text style={styles.validation}>{this.state.lastnameerror}</Text>
+
         <TextInput
           value={this.state.lastname}
           onChangeText={(lastname) => this.setState({ lastname })}
@@ -251,8 +256,7 @@ class createAccountScreen extends Component {
           placeholderColor="#3897f1"
           onBlur={()=> this.lastnameValidation()}
         />
-           
-        <Text style={styles.validation}>{this.state.lastnameerror}</Text>
+        <Text style={styles.validation}>{this.state.emailerror}</Text>
               <TextInput
                 value={this.state.email}
                 onChangeText={(email) => this.setState({ email })}
@@ -263,9 +267,9 @@ class createAccountScreen extends Component {
                 onBlur={()=> this.emailValidation()}
               />
 
-              <Text style={styles.validation}>{this.state.emailerror}</Text>
+   
 
- 
+              <Text style={styles.validation}>{this.state.passworderror}</Text>
 
               <TextInput
                 value={this.state.password}
@@ -278,7 +282,7 @@ class createAccountScreen extends Component {
                 onBlur={()=> this.passwordValidation()}
               />
 
-              <Text style={styles.validation}>{this.state.passworderror}</Text>
+              <Text style={styles.validation}>{this.state.confirmpassworderror}</Text>
 
               <TextInput
                 value={this.state.confirmPassword}
@@ -290,9 +294,10 @@ class createAccountScreen extends Component {
                 style={styles.loginFormTextInput}
                 onBlur={()=> this.confirmPasswordValidation()}
               />
+              </View>
 
 
-              <Text style={styles.validation}>{this.state.confirmpassworderror}</Text>
+
               <TouchableOpacity
               onPress={()=> this.Submit()}
 
@@ -316,8 +321,10 @@ class createAccountScreen extends Component {
                   Sign In    
                 </Text>
               </Text>
+           
               </View>
               </TouchableOpacity>
+          </View>
           </View>
        
       </View>
@@ -329,10 +336,30 @@ class createAccountScreen extends Component {
 const styles = StyleSheet.create({
   containerView: {
     flex: 1,
-    backgroundColor: '#fff44f',
-    height:'100%',
+    position:'relative'
   },
 
+  
+    top:{
+      position:'relative',
+      height:'100%',
+      backgroundColor:'#fff44f',
+      paddingRight:12.7,
+      paddingLeft:12.7,
+    },
+
+    middle:
+    {
+      width:'100%',
+      height:'100%',
+      flex:1,
+      position:'absolute',
+      zIndex:2,
+      paddingLeft:26.3,
+      paddingRight:26.3
+      
+    },
+  
 
   logoText: {
     fontSize: 85,
@@ -340,43 +367,54 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color:'black'
   },
-  loginFormView: {
-    height:'100%',
-    marginTop:80
+  formArea: {
+    height:'75%',
+    alignSelf:'center',
+    width:'100%',
+    top:"10%",
+    backgroundColor:'white',
+    borderRadius:20
   },
   loginFormTextInput: {
-    height: 60,
+    height: 70,
     fontSize: 14,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#eaeaea',
-    backgroundColor: '#fafafa',
+    borderTopColor:'black',
+    backgroundColor: 'white',
     paddingLeft: 10,
     marginLeft: 15,
     marginRight: 15,
-
+    borderBottomWidth :5,
+    borderBottomColor: '#000',
+    backgroundColor: 'white',
   },
 
   validation:
   {
     color:'red',
-    marginLeft:25,
-    marginBottom:20,
+    marginLeft:20,
+    marginBottom:0,
     marginTop:5
+    
   },
 
+  formItems:
+  {
+    marginTop:'3%'
+  },
   buttonText:{
     color:'white',
     fontSize:20,
     textAlign:'center',
     fontWeight:'600'
+    
   },
 
   signUpButtonText:{
     color:'black',
     fontSize:20,
     textAlign:'center',
-    fontWeight:'600'
+    fontWeight:'600',
+    marginTop:'5%'
   },
 
   loginView:{
@@ -400,18 +438,20 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     width:'100%',
     alignSelf:'center',
+    
 
   },
 
   loginButton: {
     backgroundColor: 'black',
     borderRadius: 5,
-    height: 45,
+    height: 60,
     marginTop: 10,
     textAlign:'center',
     justifyContent:'center',
-    width:'50%',
-    alignSelf:'center'
+    width:'90%',
+    alignSelf:'center',
+    marginTop:'9%'
 
   },
   fbLoginButton: {
