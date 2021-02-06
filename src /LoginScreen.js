@@ -11,6 +11,8 @@ import {
   SCLAlert,
   SCLAlertButton
 } from 'fork-react-native-scl-alert';
+import { Constants } from 'react-native-unimodules';
+
 
 
 import Logo from '../assets/MuniBook.png';
@@ -32,6 +34,7 @@ class LoginScreen extends Component {
 
   componentDidMount() {
     LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
+    console.log(Constants.systemFonts);
 }
 
   setToken = async (value) => {

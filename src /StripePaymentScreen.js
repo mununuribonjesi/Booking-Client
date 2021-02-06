@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList, Text, View, KeyboardAvoidingView, StyleSheet, TouchableOpacity,Button, Dimensions,ActivityIndicator } from 'react-native';
+import { FlatList, Text, View, KeyboardAvoidingView, StyleSheet, TouchableOpacity,TextInput, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ExpoStripePurchase from 'expo-stripe-webview';
@@ -22,6 +22,7 @@ import {
   SCLAlert,
   SCLAlertButton
 } from 'react-native-scl-alert'
+import { PaymentsStripe as Stripe } from 'expo-payments-stripe';
 
 class StripePaymentScreen extends Component {
   constructor(props) {
@@ -49,7 +50,28 @@ class StripePaymentScreen extends Component {
   async componentDidMount()
   {
     this.setState({isSuccessfull:false,error:false});
+
+    Stripe.setOptionsAsync({
+      publishableKey:config.STRIPE_KEY, // Your key
+      androidPayMode: 'test', // [optional] used to set wallet environment (AndroidPay)
+      merchantId: 'your_merchant_id', // [optional] used for payments with ApplePay
+    });
+
   }
+
+async stripePayment()
+{
+
+    const params = {
+      number: '4242424242424242',
+      expMonth: 11,
+      expYear: 17,
+      cvc: '223',
+   }
+
+   const token = await Stripe.createTokenWithCardAsync(params);
+}
+
 
 async onPaymentSuccess(token,total){
 
@@ -178,15 +200,58 @@ onClose = () =>
           [
 
             (!this.state.successfull || !this.state.error ?
-        <ExpoStripePurchase
-        publicKey={config.STRIPE_KEY}
-        amount={total}
-        imageUrl="www.clever-image-url.com"
-        description={skill[0].Name}
-        currency="GBP"
-        onClose={this.onClose}
-        onPaymentSuccess={async (token) => this.onPaymentSuccess(token,total)}
-        style={{width: windowWidth * 2.5, alignSelf: 'center'}} />
+        // <ExpoStripePurchase
+        // publicKey={config.STRIPE_KEY}
+        // amount={total}
+        // imageUrl="www.clever-image-url.com"
+        // description={skill[0].Name}
+        // currency="GBP"
+        // onClose={this.onClose}
+        // onPaymentSuccess={async (token) => this.onPaymentSuccess(token,total)}
+        // style={{width: windowWidth * 2.5, alignSelf: 'center'}} />
+
+
+        <View style={styles.formArea}>
+        <View style={styles.formItems}> 
+        <TextInput
+        value={this.state.username}
+        onChangeText={(username) => this.setState({ username })}
+        placeholder={'Cardholders Name'}
+        placeholderTextColor='black'
+        style={styles.longCardText}
+        placeholderColor="#3897f1"
+        underlineColorAndroid='transparent'
+      />
+        <TextInput
+          value={this.state.username}
+          onChangeText={(username) => this.setState({ username })}
+          placeholder={'XXXX XXXX XXXX XXXX'}
+          placeholderTextColor='black'
+          style={styles.longCardText}
+          placeholderColor="#3897f1"
+          underlineColorAndroid='transparent'
+        />
+        <View style={styles.expirySecret}> 
+        <TextInput
+          value=''
+          placeholderTextColor='black'
+          onChangeText={(password) => this.setState({ password })}
+          placeholder={'MM/YY'}
+          placeholderColor="#c4c3cb"
+          style={styles.shortCardText}
+        />
+        <TextInput
+        value={'CVV'}
+        placeholderTextColor='black'
+        onChangeText={(password) => this.setState({ password })}
+        placeholder={'CVV'}
+        placeholderColor="#c4c3cb"
+        style={styles.shortCardText}
+      />
+      </View>
+      </View>
+
+        </View>
           
             : <View></View>
 
@@ -235,17 +300,25 @@ const mapStatetoProps = (state) => {
 
 const styles = StyleSheet.create({
     container: {
-      justifyContent: 'center',
-      height: '100%',
       flex: 1,
-      backgroundColor:'#B6B4B6',
-
-      textAlign: 'left'
+      position:'relative'
   
     },
-    loginFormTextInput: {
-      backgroundColor: 'white'
+    formArea: {
+      height:'50%',
+      alignSelf:'center',
+      width:'100%',
+      top:"20%",
+      backgroundColor:'white',
+
   
+    },
+
+    cardLegnth:{
+
+    },
+    shortLength:{
+
     },
     loginFormView: {
       backgroundColor: 'black'
@@ -267,6 +340,12 @@ const styles = StyleSheet.create({
   
     cardInputForm: {
       height: '80%'
+    },
+    expirySecret:
+    {
+      flex:1,
+      flexDirection:'row'
+
     },
   
 
@@ -357,6 +436,36 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center'
     },
+    longCardText: {
+      height: 70,
+      fontSize: 14,
+      borderTopColor:'black',
+      backgroundColor: 'white',
+      paddingLeft: 10,
+      marginLeft: 15,
+      marginRight: 15,
+      marginBottom: 15,
+      borderBottomWidth :5,
+      borderBottomColor: '#000',
+      backgroundColor: 'white',
+    },
+    shortCardText: {
+      height: 70,
+      fontSize: 14,
+      borderTopColor:'black',
+      backgroundColor: 'white',
+      paddingLeft: 10,
+      marginLeft: 15,
+      marginRight: 15,
+      marginBottom: 15,
+      border:5,
+      borderBottomColor: '#000',
+      backgroundColor: 'white',
+      width:'20%',
+      justifyContent:'space-between'
+    },
+  
+  
   
     rightText: {
       fontSize: 20,
