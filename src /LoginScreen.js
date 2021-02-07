@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'react-native-axios';
-import { Keyboard,Image, Button, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { Keyboard,Image, ScrollView, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUserId} from './store/actions';
 import { connect } from 'react-redux';
@@ -12,9 +12,6 @@ import {
   SCLAlertButton
 } from 'fork-react-native-scl-alert';
 import { Constants } from 'react-native-unimodules';
-
-
-
 import Logo from '../assets/MuniBook.png';
 
 class LoginScreen extends Component {
@@ -102,7 +99,7 @@ Login(response)
 
 
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    <View style={styles.containerView}> 
+      <ScrollView style={{width:'100%',height:'100%',backgroundColor:'#fff44f'}}> 
     <SCLAlert
     style={styles.modal}
     show={this.state.isError}
@@ -119,11 +116,11 @@ Login(response)
         <Image style={styles.Logo} source={Logo} />
         </View>
 
-        <View style={styles.middle}> 
 
           <View style={styles.formArea}>
-          <Text style={styles.signInText}>Sign In</Text>
+     
            <View style={styles.formItems}> 
+           <KeyboardAvoidingView behavior="position" > 
 
               <TextInput
                 value={this.state.username}
@@ -167,12 +164,12 @@ Login(response)
               </Text>
               </View>
               </TouchableOpacity>
-          </View>
+              </KeyboardAvoidingView>
           </View>
           </View>
           <View style={styles.footer}> 
           </View>
-      </View>
+      </ScrollView>
       </TouchableWithoutFeedback>
 
     );
@@ -185,13 +182,7 @@ const styles = StyleSheet.create({
     position:'relative'
   },
 
-  top:{
-    position:'relative',
-    height:'100%',
-    backgroundColor:'#fff44f',
-    paddingRight:12.7,
-    paddingLeft:12.7,
-  },
+
   signInText:{
 
     justifyContent:'center',
@@ -201,19 +192,13 @@ const styles = StyleSheet.create({
 
 
   },
-  middle:
-  {
-    width:'100%',
-    height:'100%',
-    flex:1,
-    position:'absolute',
-    zIndex:2,
-    paddingLeft:26.3,
-    paddingRight:26.3
-    
+
+  top:{
+
+    marginTop:10,
+    marginBottom:30
+
   },
-
-
 
 
   logoText: {
@@ -223,11 +208,9 @@ const styles = StyleSheet.create({
     color:'black'
   },
   formArea: {
-    height:'50%',
+    height:'70%',
     alignSelf:'center',
     width:'100%',
-    top:"20%",
-    backgroundColor:'white',
     borderRadius:20
 
 
@@ -240,8 +223,8 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     marginLeft: 15,
     marginRight: 15,
-    marginBottom: 15,
-    borderBottomWidth :5,
+    marginBottom: 30,
+    borderWidth :5,
     borderBottomColor: '#000',
     backgroundColor: 'white',
   },
@@ -255,7 +238,7 @@ const styles = StyleSheet.create({
 
   signUpButtonText:{
     color:'black',
-    fontSize:20,
+    fontSize:17,
     textAlign:'center',
     fontWeight:'600',
     marginTop:'5%'
@@ -264,9 +247,7 @@ const styles = StyleSheet.create({
 
   signUpText:
   {
-
     color:'blue'
-
   },
 
   Logo:{
@@ -291,12 +272,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     borderRadius: 5,
     height: 60,
-    marginTop: 10,
     textAlign:'center',
     justifyContent:'center',
     width:'90%',
     alignSelf:'center',
-    marginTop:'9%'
 
   },
   fbLoginButton: {

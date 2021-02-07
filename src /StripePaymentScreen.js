@@ -352,7 +352,7 @@ class StripePaymentScreen extends Component {
                 <TextInput
                   value={this.state.cardnumber}
                   onChangeText={(text) => this.cardnumberChange(text)}
-                  placeholder={'XXXX XXXX XXXX XXXX'}
+                  placeholder={'XXXX XXXX XXXX 0000'}
                   placeholderTextColor='black'
                   style={styles.longCardText}
                   placeholderColor="#3897f1"
@@ -502,11 +502,6 @@ const styles = StyleSheet.create({
     borderWidth:5,
     textAlign:'center'
 
-
-
- 
-
- 
 
   },
 

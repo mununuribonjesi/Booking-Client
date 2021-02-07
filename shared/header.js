@@ -49,24 +49,19 @@ const styles = StyleSheet.create({
         fontSize:20,
         color:'white',
         marginBottom:30
-        
-
     },
 
     icon:
     {
-  
-        fontSize:40,
-        color:'#00ff00',
+        fontSize:30,
+        color:'blue',
         height:50
-
-
     },
 
     item:
     {
-        left:100,
-        marginBottom:30
+        left:60,
+        marginBottom:40
 
     }
     ,

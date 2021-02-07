@@ -222,7 +222,7 @@ setOrganisation(response)
 export const styles = StyleSheet.create({
 
   list: {
-  fontSize: 50,
+  fontSize: 20,
   backgroundColor: 'yellow'
 
 },

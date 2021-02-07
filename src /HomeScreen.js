@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import {Keyboard,Button,Image, Text, View,StyleSheet, TextInput,TouchableHighlight,TouchableNativeFeedback, TouchableWithoutFeedback,TouchableOpacity, Alert, KeyboardAvoidingView,Dimensions} from 'react-native';
 import { FontAwesome,FontAwesome5,MaterialIcons,Ionicons,AntDesign } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons'; 
+import Logo from '../assets/MuniBook.png';
 
 
 class HomeScreen extends Component {
@@ -38,7 +39,7 @@ class HomeScreen extends Component {
 
       <View style={styles.container}>
         <View style={styles.wrappercontainer}>
-              <Text style={styles.logoText}>Muni Book</Text>
+        <Image style={styles.Logo} source={Logo} />
 
         <View style={styles.wrapper}>
         <View style={styles.item} 
@@ -54,7 +55,7 @@ class HomeScreen extends Component {
   style={styles.iconWrapper
   }>
     
-  <FontAwesome name="calendar-plus-o" size={40} color="black" />
+  <FontAwesome name="calendar-plus-o" size={30} color="black" />
   <Text style={styles.itemtext}>Book Appt</Text>
   </TouchableOpacity>
   </View>
@@ -68,7 +69,7 @@ class HomeScreen extends Component {
     isGetByService:true
   })}
   >
-  <FontAwesome5 name="hand-holding-heart" size={40} color="black" />
+  <FontAwesome5 name="hand-holding-heart" size={30} color="black" />
   <Text style={styles.itemtext}>Services</Text>
   </TouchableOpacity>
   </View>
@@ -82,7 +83,7 @@ class HomeScreen extends Component {
   }
   onPress={() => this.props.navigation.navigate('AppointmentScreen')}
   >
-  <MaterialIcons name="schedule" size={40} color="black" />
+  <MaterialIcons name="schedule" size={30} color="black" />
   <Text style={styles.itemtext}>Appointments</Text>
   </TouchableOpacity>
   </View>
@@ -95,7 +96,7 @@ class HomeScreen extends Component {
   }
   onPress={() => this.props.navigation.navigate('GalleryScreen')}
   >
-        <FontAwesome name="picture-o" size={40} color="black" />
+        <FontAwesome name="picture-o" size={30} color="black" />
   <Text style={styles.itemtext}>Gallery</Text>
   </TouchableOpacity>
   </View>
@@ -106,7 +107,7 @@ class HomeScreen extends Component {
   onPress={() => this.props.navigation.navigate('AboutUsScreen')}
   >
     
-  <Octicons name="info" size={40} color="black" />
+  <Octicons name="info" size={30} color="black" />
   <Text style={styles.itemtext}>About US</Text>
   </TouchableOpacity>
   </View>
@@ -117,7 +118,7 @@ class HomeScreen extends Component {
   style={styles.iconWrapper
   }
   >
-  <Ionicons name="ios-people" size={40} color="black" />
+  <Ionicons name="ios-people" size={20} color="black" />
   <Text style={styles.itemtext}>Our Team</Text>
   </TouchableOpacity>
   </View>
@@ -137,56 +138,59 @@ export default HomeScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'row',
-    alignSelf:'stretch',
-    backgroundColor:'#fff44f'
+    backgroundColor:'#fff44f',
+    width:'100%',
+    height:'100%'
   },
 
-  imagewrapper:{
-    alignSelf:'center'
-  },
 
   wrappercontainer:{
     marginTop:30,
 
   },
+  Logo:{
+    justifyContent:'center',
+    alignSelf:'center',
+    marginTop:'17%'
+
+},
 
   iconWrapper:{
     borderWidth:1,
     borderColor:'rgba(0,0,0,0.2)',
     alignItems:'center',
     justifyContent:'center',
-    width:100,
-    height:100,
-    backgroundColor:'#fff',
+    width:70,
+    height:70,
+    backgroundColor:'white',
     borderRadius:10
 
   },
 
   wrapper:{
     marginTop:50,
-    paddingLeft:10,
     width: '35%',
     flexDirection:'row'
 
   },
   item: {
     width: '100%', // is 50% of container width
-    paddingLeft:10,  
+    paddingLeft:10, 
   },
 
   itemwrapper:{
 
   },
   logoText: {
-    fontSize: 100,
+    fontSize: 20,
     fontWeight: "800",
     marginTop: 40,
     textAlign: 'center',
   },
   itemtext:{
     textAlign:'left',
+    fontSize:9,
     marginTop: 10
 
   }

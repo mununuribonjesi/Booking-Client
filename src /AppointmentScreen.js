@@ -183,7 +183,7 @@ class AppointmentScreen extends Component
               </ListItem.Content>
               <Text style={styles.rightText}>
     
-                £{item.price.toFixed(2)}
+             
     
               </Text>
             </ListItem>

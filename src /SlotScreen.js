@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { FlatList,ScrollView, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import Calendar from 'react-native-calendar-datepicker';
 import Moment from 'moment';
 import { setSlot } from './store/actions';
@@ -234,6 +234,7 @@ class SlotScreen extends Component {
       </View>
   :[
 
+  
       <View styles={styles.container}>
       <SCLAlert
       show={this.state.isError}
@@ -250,15 +251,16 @@ class SlotScreen extends Component {
             Schedule
             </Text>
         </View>
-
-        <View style={styles.Calendar}>
+       <ScrollView style={styles.Calendar}>
+        <View >
           <Calendar
             onChange={(date) => this.onChangeDate(date)}
             selected={this.state.date}
             minDate={Moment().startOf('day')}
             maxDate={Moment().add(10, 'years').startOf('day')}
-          />
-        </View>
+          />    
+     </View>
+     </ScrollView>
 
         <View style={styles.slotHeader}>
           <Text style={styles.textStyle}>
@@ -310,6 +312,7 @@ class SlotScreen extends Component {
             ]
           }
         </View>
+    
         <View style={styles.Footer}>
           {this.state.confirm &&
             <TouchableOpacity
@@ -321,7 +324,6 @@ class SlotScreen extends Component {
             </TouchableOpacity>
           }
         </View>
-
       </View>
         ])
     )
@@ -406,7 +408,7 @@ export const styles  = StyleSheet.create({
 
   },
   logoText: {
-    fontSize: 30,
+    fontSize: 15,
     fontWeight: "800",
     textAlign: 'center',
     marginTop: 20,

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'react-native-axios';
-import { Keyboard, Button, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { Keyboard, Button, Text, View, StyleSheet, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUserId} from './store/actions';
 import { connect } from 'react-redux';
@@ -217,6 +217,7 @@ class createAccountScreen extends Component {
     const alert = this.state.isAlertError;
 
     return (
+      <ScrollView style={{width:'100%',height:'100%',backgroundColor:'#fff44f'}}> 
     <View style={styles.containerView}> 
     <SCLAlert
     show={this.state.isAlertError}
@@ -228,11 +229,9 @@ class createAccountScreen extends Component {
   >
     <SCLAlertButton theme="danger" onPress={this.alertClose}>OK</SCLAlertButton>
   </SCLAlert>
-  <View style={styles.top}> 
+
         </View>
-        <View style={styles.middle}> 
-          <View style={styles.formArea}>
-          <View style={styles.formItems}> 
+          <KeyboardAvoidingView style={{marginTop:'1%'}} behavior="position" > 
           <Text style={styles.validation}>{this.state.firsnameerror}</Text>
           <TextInput
           value={this.state.firstname}
@@ -293,10 +292,7 @@ class createAccountScreen extends Component {
                 style={styles.loginFormTextInput}
                 onBlur={()=> this.confirmPasswordValidation()}
               />
-              </View>
-
-
-
+              </KeyboardAvoidingView>
               <TouchableOpacity
               onPress={()=> this.Submit()}
 
@@ -320,13 +316,9 @@ class createAccountScreen extends Component {
                   Sign In    
                 </Text>
               </Text>
-           
               </View>
               </TouchableOpacity>
-          </View>
-          </View>
-       
-      </View>
+      </ScrollView>
   
     );
   }
@@ -335,10 +327,10 @@ class createAccountScreen extends Component {
 const styles = StyleSheet.create({
   containerView: {
     flex: 1,
-    position:'relative'
+    position:'relative',
+    marginTop:20
   },
 
-  
     top:{
       position:'relative',
       height:'100%',
@@ -352,37 +344,28 @@ const styles = StyleSheet.create({
       width:'100%',
       height:'100%',
       flex:1,
-      position:'absolute',
       zIndex:2,
       paddingLeft:26.3,
       paddingRight:26.3
       
     },
   
-
   logoText: {
     fontSize: 85,
     fontWeight: "800",
     textAlign: 'center',
     color:'black'
   },
-  formArea: {
-    height:'75%',
-    alignSelf:'center',
-    width:'100%',
-    top:"10%",
-    backgroundColor:'white',
-    borderRadius:20
-  },
+
   loginFormTextInput: {
     height: 70,
     fontSize: 14,
     borderTopColor:'black',
     backgroundColor: 'white',
     paddingLeft: 10,
-    marginLeft: 15,
-    marginRight: 15,
-    borderBottomWidth :5,
+    marginLeft:10,
+    marginRight:10,
+    borderWidth:5,
     borderBottomColor: '#000',
     backgroundColor: 'white',
   },
@@ -396,10 +379,6 @@ const styles = StyleSheet.create({
     
   },
 
-  formItems:
-  {
-    marginTop:'3%'
-  },
   buttonText:{
     color:'white',
     fontSize:20,
@@ -410,7 +389,7 @@ const styles = StyleSheet.create({
 
   signUpButtonText:{
     color:'black',
-    fontSize:20,
+    fontSize:15,
     textAlign:'center',
     fontWeight:'600',
     marginTop:'5%'
