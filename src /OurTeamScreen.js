@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Keyboard,Button,Image, Text, View,StyleSheet, TextInput,TouchableHighlight, TouchableWithoutFeedback,TouchableOpacity, Alert, KeyboardAvoidingView,Dimensions} from 'react-native';
+import {Text, View} from 'react-native';
 
 class OurTeamScreen extends Component
 {

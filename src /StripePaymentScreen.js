@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
-import { FlatList, Text, View, KeyboardAvoidingView, StyleSheet, TouchableOpacity,TextInput, Dimensions } from 'react-native';
+import { FlatList, ScrollView, Text, View, KeyboardAvoidingView, StyleSheet, TouchableOpacity, TextInput, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { FontAwesome5 } from '@expo/vector-icons';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import ExpoStripePurchase from 'expo-stripe-webview';
-import {Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import axios from 'react-native-axios';
+import valid  from "card-validator";
+import { FontAwesome,Fontisto } from '@expo/vector-icons'; 
 import config from '../config';
 import {
   BallIndicator,
@@ -29,145 +33,266 @@ class StripePaymentScreen extends Component {
     super(props);
     this.state = {
       visible: true,
-      placeholders: { number: "XXXX XXXX XXXX XXXX", expiry: "MM/YY", cvc: "CVC" },
       labels: { number: "CARD NUMBER", expiry: "EXPIRY", cvc: "CVC/CCV" },
-      isLoading:false,
-      error:false,
-      isBack:true,
-      isSuccessfull:false,
-      isPayment:false,
-      isError:false,
-      isView:false,
-      isRetry:false,
-      errorMessage:''
+      isLoading: false,
+      error: false,
+      isBack: true,
+      isSuccessfull: false,
+      isPayment: false,
+      isError: false,
+      isView: false,
+      isRetry: false,
+      errorMessage:'',
+      username:'',
+      expiry:'',
+      cvv:'',
+      cardnumber:'',
+      isVisa:false,
+      isMastercard:false,
+      isAmericanExpress:false,
+      isJcb:false,
+      isDiscover:false
     }
 
-    this.isError= this.isError.bind(this);
+    this.isError = this.isError.bind(this);
     this.closeSuccessfull = this.closeSuccessfull.bind(this);
   };
 
 
-  async componentDidMount()
-  {
-    this.setState({isSuccessfull:false,error:false});
+  async componentDidMount() {
+    this.setState({ isSuccessfull: false, error: false });
 
     Stripe.setOptionsAsync({
-      publishableKey:config.STRIPE_KEY, // Your key
+      publishableKey: config.STRIPE_KEY, // Your key
       androidPayMode: 'test', // [optional] used to set wallet environment (AndroidPay)
       merchantId: 'your_merchant_id', // [optional] used for payments with ApplePay
     });
+    this.setState({isVisa:false,isMastercard:false,isAmericanExpress:false});
 
   }
 
-async stripePayment()
-{
+  async stripePayment() {
 
     const params = {
       number: '4242424242424242',
       expMonth: 11,
       expYear: 17,
       cvc: '223',
-   }
+    }
 
-   const token = await Stripe.createTokenWithCardAsync(params);
-}
+    const token = await Stripe.createTokenWithCardAsync(params);
+  }
 
 
-async onPaymentSuccess(token,total){
+  async onPaymentSuccess(token, total) {
 
-  this.setState({isBack:false});
-  this.setState({isLoading:true});
+    this.setState({ isBack: false });
+    this.setState({ isLoading: true });
 
-  const authToken = await AsyncStorage.getItem('token');
-  const slot = this.props.orders.slot;
-  const skill = Object.values(this.props.orders.service);
-  const barber = this.props.orders.barber;
+    const authToken = await AsyncStorage.getItem('token');
+    const slot = this.props.orders.slot;
+    const skill = Object.values(this.props.orders.service);
+    const barber = this.props.orders.barber;
 
-  var res;
+    var res;
 
     await axios({
-    method: 'post',
-    url:config.Stripe_URL+'/api/payment',
-    data: {
-      'token':token,
-      'total':total,
-      'name':barber,
-      'startTime':slot.startTime,
-      'endTime':slot.endTime,
-      'date':slot.date,
-      'skill':skill[0].skillId
-    },
-    headers: {
-      'Authorization': `Bearer ${authToken}`
-    }
-  }).then(response => 
-    {
+      method: 'post',
+      url: config.Stripe_URL + '/api/payment',
+      data: {
+        'token': token,
+        'total': total,
+        'name': barber,
+        'startTime': slot.startTime,
+        'endTime': slot.endTime,
+        'date': slot.date,
+        'skill': skill[0].skillId
+      },
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    }).then(response => {
 
       res = response
 
     }).catch(error => {
-      if(error.response)
-      {
+      if (error.response) {
         res = error.response;
-        this.setState({errorMessage:JSON.stringify(error.response.status),isError:true});
+        this.setState({ errorMessage: JSON.stringify(error.response.status), isError: true });
       }
     })
 
 
     if (res.status === 200 && token) {
-     
-      this.setState({isSuccessfull:true,isPayment:true});
-    }  
 
-    this.setState({isLoading:false});
+      this.setState({ isSuccessfull: true, isPayment: true });
+    }
 
-}
+    this.setState({ isLoading: false });
 
-
-isError = (isRetry) =>
-{
-  this.setState({isError:false});
-
-  if(isRetry)
-  {
-  this.props.navigation.navigate('SlotScreen');
   }
-  else
-  {
-    this.props.navigation.navigate('HomeScreen');
+
+
+  isError = (isRetry) => {
+    this.setState({ isError: false });
+
+    if (isRetry) {
+      this.props.navigation.navigate('SlotScreen');
+    }
+    else {
+      this.props.navigation.navigate('HomeScreen');
+    }
   }
-}
 
 
-closeSuccessfull = (isView) =>
-{
-    this.setState({isSuccessfull:false})
-    
-    if(isView)
-    {
+  closeSuccessfull = (isView) => {
+    this.setState({ isSuccessfull: false })
+
+  
+
+    if (isView) {
       this.props.navigation.navigate('AppointmentScreen');
     }
 
-    else
-    {
+    else {
       this.props.navigation.navigate('HomeScreen');
     }
-}
-
-
-onClose = () =>
-{
-  if(this.state.isSuccessfull)
-  {
-    this.props.navigation.navigate('HomeScreen');
-
   }
 
-  else
-  {
-    this.props.navigation.navigate('CheckoutScreen');
+
+  onClose = () => {
+    if (this.state.isSuccessfull) {
+      this.props.navigation.navigate('HomeScreen');
+
+    }
+
+    else {
+      this.props.navigation.navigate('CheckoutScreen');
+    }
   }
-}
+
+  cardnumberChange=(text)=>
+  {
+    var regex = /^[0-9 ]*$/;
+     // false or true
+    //getCardType(text);
+
+
+    var numberValidation = valid.number(text);
+
+    if (!numberValidation.isPotentiallyValid) {
+      console.log('not valid')
+      this.setState({isDiscover:false,isJcb:false,isVisa:false,isMastercard:false,isAmericanExpress:false});
+    }
+
+    if (numberValidation.card) {
+
+
+      console.log(numberValidation.card.type);
+      switch(numberValidation.card.type)
+      {
+        case 'visa':
+          this.setState({isDiscover:false,isJcb:false,isVisa:true,isMastercard:false,isAmericanExpress:false});
+          break;
+        
+        case 'mastercard':
+          this.setState({isDiscover:false,isJcb:false,isVisa:false,isMastercard:true,isAmericanExpress:false});
+          break;
+
+        case 'american-express':
+          this.setState({isDiscover:false,isJcb:false,isVisa:false,isMastercard:false,isAmericanExpress:true});
+          break;
+        case 'jcb':
+          this.setState({isDiscover:false,isJcb:true,isVisa:false,isMastercard:false,isAmericanExpress:false});
+        break;
+        case 'discover':
+          this.setState({isDiscover:true,isJcb:false,isVisa:false,isMastercard:false,isAmericanExpress:false});
+        break;
+
+          default:
+            this.setState({isDiscover:false,isJcb:false,isVisa:false,isMastercard:false,isAmericanExpress:false});
+      }
+    }
+    else
+    {
+      this.setState({isDiscover:false,isJcb:false,isVisa:false,isMastercard:false,isAmericanExpress:false});
+    }
+
+    if(!regex.test(text))
+    {
+      return
+    }
+
+    if (text.indexOf('.') >= 0 || text.length > 24) {
+      // Since the keyboard will have a decimal and we don't want
+      // to let the user use decimals, just exit if they add a decimal
+      // Also, we only want 'MM/YY' so if they try to add more than
+      // 5 characters, we want to exit as well
+      return;
+  }
+
+    this.setState({
+      cardnumber: text.replace(/\s?/g, '').replace(/(\d{4})/g, '$1 ').trim()
+    });
+ 
+  }
+
+
+  cvvChange = (text) =>
+  {
+
+    var regex = /^[0-9]*$/;
+
+    if(!regex.test(text))
+    {
+      return
+    }
+    if (text.indexOf('.') >= 0 || text.length > 4) {
+      // Since the keyboard will have a decimal and we don't want
+      // to let the user use decimals, just exit if they add a decimal
+      // Also, we only want 'MM/YY' so if they try to add more than
+      // 5 characters, we want to exit as well
+      return;
+  }
+
+
+  // Update the state, which in turns updates the value in the text field
+  this.setState({
+      cvv: text
+
+  });
+
+
+  }
+  expiryChange = (text) => {
+
+    var regex = /^[0-9/]*$/;
+
+    if(!regex.test(text))
+    {
+      return
+    }
+    if (text.indexOf('.') >= 0 || text.length > 5) {
+      // Since the keyboard will have a decimal and we don't want
+      // to let the user use decimals, just exit if they add a decimal
+      // Also, we only want 'MM/YY' so if they try to add more than
+      // 5 characters, we want to exit as well
+      return;
+  }
+
+  if (text.length === 2 && this.state.expiry.length === 1) {
+      // This is where the user has typed 2 numbers so far
+      // We can manually add a slash onto the end
+      // We check to make sure the current value was only 1 character
+      // long so that if they are backspacing, we don't add on the slash again
+      text += '/'
+  }
+
+  // Update the state, which in turns updates the value in the text field
+  this.setState({
+      expiry: text
+  });
+  }
 
 
 
@@ -176,7 +301,7 @@ onClose = () =>
   }
 
 
-  
+
   render() {
 
     const windowWidth = Dimensions.get('window').width;
@@ -184,107 +309,123 @@ onClose = () =>
     const skill = Object.values(this.props.orders.service);
     var isView = false;
     var isRetry = false;
+    const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
 
     return (
 
-      <View style={styles.container}> 
-
-      {this.state.isLoading == true ?
-
-        <View style={styles.loading}>
-
-        <UIActivityIndicator name="Saving" size={80} color="black" />
-        <Text style={styles.loadingText}> Saving Appointment</Text>
-      </View>
-        :
-          [
-
-            (!this.state.successfull || !this.state.error ?
-        // <ExpoStripePurchase
-        // publicKey={config.STRIPE_KEY}
-        // amount={total}
-        // imageUrl="www.clever-image-url.com"
-        // description={skill[0].Name}
-        // currency="GBP"
-        // onClose={this.onClose}
-        // onPaymentSuccess={async (token) => this.onPaymentSuccess(token,total)}
-        // style={{width: windowWidth * 2.5, alignSelf: 'center'}} />
-
-
+      <View style={styles.container}>
         <View style={styles.formArea}>
-        <View style={styles.formItems}> 
-        <TextInput
-        value={this.state.username}
-        onChangeText={(username) => this.setState({ username })}
-        placeholder={'Cardholders Name'}
-        placeholderTextColor='black'
-        style={styles.longCardText}
-        placeholderColor="#3897f1"
-        underlineColorAndroid='transparent'
-      />
-        <TextInput
-          value={this.state.username}
-          onChangeText={(username) => this.setState({ username })}
-          placeholder={'XXXX XXXX XXXX XXXX'}
-          placeholderTextColor='black'
-          style={styles.longCardText}
-          placeholderColor="#3897f1"
-          underlineColorAndroid='transparent'
-        />
-        <View style={styles.expirySecret}> 
-        <TextInput
-          value=''
-          placeholderTextColor='black'
-          onChangeText={(password) => this.setState({ password })}
-          placeholder={'MM/YY'}
-          placeholderColor="#c4c3cb"
-          style={styles.shortCardText}
-        />
-        <TextInput
-        value={'CVV'}
-        placeholderTextColor='black'
-        onChangeText={(password) => this.setState({ password })}
-        placeholder={'CVV'}
-        placeholderColor="#c4c3cb"
-        style={styles.shortCardText}
-      />
-      </View>
-      </View>
+          <View style={styles.formItems}>
+          <KeyboardAvoidingView behavior="position" > 
+            <View style={styles.loginButton}>
+              <Text style={styles.buttonText}>
+                <FontAwesome5 name="apple-pay" size={50} color="white" />
+              </Text>
+            </View>
 
-        </View>
+            <Text style={styles.dividerText}>
+              OR
+    </Text>
+
+    
+
+              <View>
+                <TextInput
+                  value={this.state.username}
+                  onChangeText={(username) => this.setState({ username })}
+                  placeholder={'Cardholders Name'}
+                  placeholderTextColor='black'
+                  style={styles.cardholderText}
+                  placeholderColor="#3897f1"
+                  underlineColorAndroid='transparent'
+                />
+                <View style={styles.cardinput}> 
+                <Text     style={{padding: 10}}> 
+
+                {this.state.isVisa &&  <FontAwesome name="cc-visa" size={40} color="black" />}
+                {this.state.isMastercard &&  <FontAwesome5 name="cc-mastercard" size={50} color="black" />}
+                {this.state.isAmericanExpress && <Fontisto name="american-express" size={40} color="black" />}
+                {this.state.isJcb && <Fontisto name="jcb" size={40} color="black" />}
+                {this.state.isDiscover && <FontAwesome5 name="cc-discover" size={40} color="black" />}
+
+                </Text>
+                <TextInput
+                  value={this.state.cardnumber}
+                  onChangeText={(text) => this.cardnumberChange(text)}
+                  placeholder={'XXXX XXXX XXXX XXXX'}
+                  placeholderTextColor='black'
+                  style={styles.longCardText}
+                  placeholderColor="#3897f1"
+                  underlineColorAndroid='transparent'
+                />
+                </View>
+
+                <View style={{ flexDirection: "row" }}>
+
+                  <View style={{ flex: 1 }}>
+                    <TextInput
+                      value={this.state.expiry}
+                      placeholderTextColor='black'
+                      onChangeText={(text)=>this.expiryChange(text)}
+                      placeholder={'MM/YY'}
+                      placeholderColor="#c4c3cb"
+                      style={styles.shortCardText}
+                    />
+                  </View>
+
+                  <View style={{ flex: 1, marginBottom: '10%' }}>
+                    <TextInput
+                      value={this.state.cvv}
+                      placeholderTextColor='black'
+                      onChangeText={(cvv) => this.cvvChange(cvv)}
+                      placeholder={'CVV'}
+                      placeholderColor="#c4c3cb"
+                      style={styles.shortCardText}
+                    />
+                  </View>
+                </View>
+                <View style={styles.loginButton}>
+                  <Text style={styles.buttonText}>
+                    Pay
+                </Text>
+                </View>
+              </View>
+
+              </KeyboardAvoidingView>
           
-            : <View></View>
+          </View>
+        </View>
 
-            )
-          ]
-      }
 
-      
-      <SCLAlert
-      show={this.state.isError}
-      onRequestClose={() => this.isError(isRetry=true)}
-      theme="danger"
-      title="Info"
-      subtitle={"Opps Somethings when wrong with the Appointment\n\n"+this.state.errorMessage}
-      headerIconComponent={<Ionicons name="ios-thumbs-down" size={32} color="white" />}
-    >
-      <SCLAlertButton theme="success" onPress={() => this.isError(isRetry=true)}>Try Again</SCLAlertButton>
-      <SCLAlertButton theme="danger" onPress={() => this.isError(isRetry=false)}>Cancel</SCLAlertButton>
-    </SCLAlert>
 
-    <SCLAlert
-    show={this.state.isSuccessfull}
-    onRequestClose={() => this.closeSuccessfull(isView=true)}
-    theme="success"
-    title="Pay Successs"
-    subtitle="Appointment was created successfully"
-    headerIconComponent={<Ionicons name="ios-thumbs-up" size={32} color="white" />}
-  >
-    <SCLAlertButton theme="success" onPress={() => this.closeSuccessfull(isView=true)}>View</SCLAlertButton>
-    <SCLAlertButton theme="info" onPress={() => this.closeSuccessfull(isView=false)}>Return</SCLAlertButton>
-  </SCLAlert>
+
+        <SCLAlert
+          show={this.state.isError}
+          onRequestClose={() => this.isError(isRetry = true)}
+          theme="danger"
+          title="Info"
+          subtitle={"Opps Somethings when wrong with the Appointment\n\n" + this.state.errorMessage}
+          headerIconComponent={<Ionicons name="ios-thumbs-down" size={32} color="white" />}
+        >
+          <SCLAlertButton theme="success" onPress={() => this.isError(isRetry = true)}>Try Again</SCLAlertButton>
+          <SCLAlertButton theme="danger" onPress={() => this.isError(isRetry = false)}>Cancel</SCLAlertButton>
+        </SCLAlert>
+
+        <SCLAlert
+          show={this.state.isSuccessfull}
+          onRequestClose={() => this.closeSuccessfull(isView = true)}
+          theme="success"
+          title="Pay Successs"
+          subtitle="Appointment was created successfully"
+          headerIconComponent={<Ionicons name="ios-thumbs-up" size={32} color="white" />}
+        >
+          <SCLAlertButton theme="success" onPress={() => this.closeSuccessfull(isView = true)}>View</SCLAlertButton>
+          <SCLAlertButton theme="info" onPress={() => this.closeSuccessfull(isView = false)}>Return</SCLAlertButton>
+        </SCLAlert>
       </View>
       
+
+
     )
   }
 }
@@ -299,182 +440,141 @@ const mapStatetoProps = (state) => {
 
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      position:'relative'
-  
-    },
-    formArea: {
-      height:'50%',
-      alignSelf:'center',
-      width:'100%',
-      top:"20%",
-      backgroundColor:'white',
+  container: {
+    flex: 1,
+    position: 'relative',
+    height: '100%',
+    top: 0, left: 0, right: 0, bottom: 0
 
-  
-    },
 
-    cardLegnth:{
+  },
+  formItems: {
+    marginTop: '5%'
 
-    },
-    shortLength:{
+  },
+  dividerText: {
+    color: 'black',
+    fontSize: 20,
+    textAlign: 'center',
+    fontWeight: '600',
+    marginBottom: '8%'
 
-    },
-    loginFormView: {
-      backgroundColor: 'black'
-    },
-    list: {
-      justifyContent: 'center'
-    },
-    textStyle: {
-      textAlign: 'center',
-      color: 'black',
-      fontSize: 40,
-      padding: 7
-    },
-    subHeader: {
-  
-      backgroundColor: '#fff44f',
-      height: '10%'
-    },
-  
-    cardInputForm: {
-      height: '80%'
-    },
-    expirySecret:
-    {
-      flex:1,
-      flexDirection:'row'
+  },
+  formArea: {
+    height: '100%',
+    alignSelf: 'center',
+    width: '100%',
+    backgroundColor: '#fff44f',
+  },
 
-    },
-  
 
-    loadingText:{
-      flex: 1, 
-      alignItems: 'center',
-      justifyContent: 'center', 
-      fontSize:40,
-      color:'#0D5916'
-    },
+
+  expirySecret:
+  {
+    flex: 1,
+    flexDirection: 'row',
+  },
+
+  buttonText: {
+    color: 'white',
+    fontSize: 20,
+    textAlign: 'center',
+    fontWeight: '600'
+  },
+
+  loadingText: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 40,
+    color: '#0D5916'
+  },
   
-    Footer: {
-      backgroundColor: 'black',
-      height: '15%'
-  
-    },
-  
-    details: {
-      backgroundColor: 'white',
-      height: '75%',
-      justifyContent: 'center',
-  
-    },
-  
-    cardModal: {
-  
-      backgroundColor: 'black',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '10%'
-  
-  
-    },
-  
-    formContainer:
-    {
-  
-      height:'100%'
-  
-    },
-  
-    pbackground: {
-      backgroundColor: 'red',
-      alignItems: 'center',
-      height: '20%'
-    },
-  
-    cardLabel: {
-  
-      color: 'black'
-    },
-  
-    FooterText:
-    {
-      color: 'white',
-      marginTop: 25,
-      fontSize: 40,
-      textAlign: 'center',
-  
-    },
-    leftText: {
-      fontSize: 20,
-      textAlign: 'left',
-      marginTop: 20,
-      marginBottom: 5,
-      marginLeft: 50
-  
-    },
-  
-    paymentButton:
-    {
-      color: 'white',
-      fontSize: 40,
-      marginTop:10
-  
-    },
-  
-    FlatList: {
-      marginTop: 40
-  
-    },
-    loading: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      top: 0,
-      bottom: 0,
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    longCardText: {
-      height: 70,
-      fontSize: 14,
-      borderTopColor:'black',
-      backgroundColor: 'white',
-      paddingLeft: 10,
-      marginLeft: 15,
-      marginRight: 15,
-      marginBottom: 15,
-      borderBottomWidth :5,
-      borderBottomColor: '#000',
-      backgroundColor: 'white',
-    },
-    shortCardText: {
-      height: 70,
-      fontSize: 14,
-      borderTopColor:'black',
-      backgroundColor: 'white',
-      paddingLeft: 10,
-      marginLeft: 15,
-      marginRight: 15,
-      marginBottom: 15,
-      border:5,
-      borderBottomColor: '#000',
-      backgroundColor: 'white',
-      width:'20%',
-      justifyContent:'space-between'
-    },
-  
-  
-  
-    rightText: {
-      fontSize: 20,
-      textAlign: 'left',
-      marginTop: 20,
-      marginBottom: 5,
-      right: 50,
-    },
-  })
+  cardinput:{
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    alignItems: 'center',
+    marginBottom:10,
+    width:'92%',
+    left: 15,
+    marginBottom:10,
+    borderTopColor: 'black',
+    borderWidth:5,
+    textAlign:'center'
+
+
+
+ 
+
+ 
+
+  },
+
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  longCardText: {
+    height: 60,
+    fontSize: 14,
+    borderTopColor: 'black',
+    backgroundColor: 'white',
+    marginLeft: 15,
+    marginRight: 15,
+    marginBottom: 15,
+    borderBottomColor: '#000',
+    width:'60%',
+    textAlign:'center'
+    
+  },
+  cardholderText:{
+    height: 50,
+    fontSize: 14,
+    borderTopColor: 'black',
+    backgroundColor: 'white',
+    paddingLeft: 10,
+    marginLeft: 15,
+    marginRight: 15,
+    marginBottom: 10,
+    borderBottomColor: '#000',
+    backgroundColor: 'white',
+    borderWidth:5
+
+  },
+  shortCardText: {
+    height: 60,
+    fontSize: 14,
+    borderTopColor: 'black',
+    backgroundColor: 'white',
+    paddingLeft: 10,
+    marginLeft: 15,
+    marginRight: 15,
+    borderBottomColor: '#000',
+    backgroundColor: 'white',
+    width: '85%',
+    borderTopColor: 'black',
+    borderWidth:5
+  },
+
+  loginButton: {
+    backgroundColor: 'black',
+    borderRadius: 5,
+    height: 60,
+    textAlign: 'center',
+    justifyContent: 'center',
+    width: '90%',
+    alignSelf: 'center',
+    marginBottom: '10%',
+
+  },
+
+
+})
 
 export default connect(mapStatetoProps)(StripePaymentScreen);
 

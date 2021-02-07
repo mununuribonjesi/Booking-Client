@@ -1,4 +1,6 @@
 rootProject.name = 'Booking-Client'
+include ':react-native-rn-apple-pay-button'
+project(':react-native-rn-apple-pay-button').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-rn-apple-pay-button/android')
 
 apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 includeUnimodulesProjects()

@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'react-native-axios';
-import { Keyboard,DatePickerIOS, Button, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { setUserId} from './store/actions';
 import { connect } from 'react-redux';
 import config from '../config';
 import { MaterialCommunityIcons,Entypo } from '@expo/vector-icons'; 
-import DatePicker from '@react-native-community/datetimepicker';
 import {
   SCLAlert,
   SCLAlertButton
