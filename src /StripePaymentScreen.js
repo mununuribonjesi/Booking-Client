@@ -79,10 +79,10 @@ class StripePaymentScreen extends Component {
     this.setState({ isError: false });
 
     if (isRetry) {
-      this.props.navigation.navigate('SlotScreen');
+      this.props.navigation.push('SlotScreen');
     }
     else {
-      this.props.navigation.navigate('HomeScreen');
+      this.props.navigation.push('HomeScreen');
     }
   }
 
@@ -187,9 +187,6 @@ class StripePaymentScreen extends Component {
   cardnumberChange=(text)=>
   {
     var regex = /^[0-9 ]*$/;
-     // false or true
-    //getCardType(text);
-
 
     var numberValidation = valid.number(text);
 
