@@ -27,6 +27,7 @@ import {
   SCLAlertButton
 } from 'react-native-scl-alert'
 import { PaymentsStripe as Stripe } from 'expo-payments-stripe';
+import { expirationMonth } from 'card-validator/dist/expiration-month';
 
 class StripePaymentScreen extends Component {
   constructor(props) {
@@ -71,20 +72,22 @@ class StripePaymentScreen extends Component {
 
   }
 
-  async stripePayment() {
 
-    const params = {
-      number: '4242424242424242',
-      expMonth: 11,
-      expYear: 17,
-      cvc: '223',
+
+
+  isError = (isRetry) => {
+    this.setState({ isError: false });
+
+    if (isRetry) {
+      this.props.navigation.navigate('SlotScreen');
     }
-
-    const token = await Stripe.createTokenWithCardAsync(params);
+    else {
+      this.props.navigation.navigate('HomeScreen');
+    }
   }
 
-
-  async onPaymentSuccess(token, total) {
+  async handlePayment()
+  {
 
     this.setState({ isBack: false });
     this.setState({ isLoading: true });
@@ -94,14 +97,35 @@ class StripePaymentScreen extends Component {
     const skill = Object.values(this.props.orders.service);
     const barber = this.props.orders.barber;
 
+    console.log('handle ith')
+
+    var expiryArray = this.state.expiry.split('/')
+    var expirationMonth =  Number(expiryArray[0]);
+    var expYear = Number(expiryArray[1]);
+
+    var total = this.props.orders.total;
+
+    console.log(total);
+    
+    console.log(token);
+    const params ={
+      number:this.state.cardnumber,
+      expMonth:expirationMonth,
+      expYear:expYear,
+      cvc:this.state.cvv,
+    }
+
+    const token = await Stripe.createTokenWithCardAsync(params);
+    
+    console.log(token);
     var res;
 
     await axios({
       method: 'post',
       url: config.Stripe_URL + '/api/payment',
       data: {
-        'token': token,
-        'total': total,
+        'token': token.tokenId,
+        'total': total*100,
         'name': barber,
         'startTime': slot.startTime,
         'endTime': slot.endTime,
@@ -118,10 +142,12 @@ class StripePaymentScreen extends Component {
     }).catch(error => {
       if (error.response) {
         res = error.response;
-        this.setState({ errorMessage: JSON.stringify(error.response.status), isError: true });
+        this.setState({ errorMessage: res.data.message, isError: true });
       }
     })
 
+
+    console.log(res.data.message);
 
     if (res.status === 200 && token) {
 
@@ -129,19 +155,6 @@ class StripePaymentScreen extends Component {
     }
 
     this.setState({ isLoading: false });
-
-  }
-
-
-  isError = (isRetry) => {
-    this.setState({ isError: false });
-
-    if (isRetry) {
-      this.props.navigation.navigate('SlotScreen');
-    }
-    else {
-      this.props.navigation.navigate('HomeScreen');
-    }
   }
 
 
@@ -314,6 +327,18 @@ class StripePaymentScreen extends Component {
     return (
 
       <View style={styles.container}>
+
+      {this.state.isLoading == true &&
+
+        <View style={styles.loading}>
+
+        <UIActivityIndicator name="Saving" size={80} color="black" />
+        <Text style={styles.loadingText}> Saving Appointment</Text>
+      </View>}
+
+
+
+      {!this.state.isSuccessfull && !this.state.isError &&
         <View style={styles.formArea}>
           <View style={styles.formItems}>
           <KeyboardAvoidingView behavior="position" > 
@@ -325,20 +350,9 @@ class StripePaymentScreen extends Component {
 
             <Text style={styles.dividerText}>
               OR
-    </Text>
-
-    
-
+            </Text>
               <View>
-                <TextInput
-                  value={this.state.username}
-                  onChangeText={(username) => this.setState({ username })}
-                  placeholder={'Cardholders Name'}
-                  placeholderTextColor='black'
-                  style={styles.cardholderText}
-                  placeholderColor="#3897f1"
-                  underlineColorAndroid='transparent'
-                />
+       
                 <View style={styles.cardinput}> 
                 <Text     style={{padding: 10}}> 
 
@@ -352,7 +366,7 @@ class StripePaymentScreen extends Component {
                 <TextInput
                   value={this.state.cardnumber}
                   onChangeText={(text) => this.cardnumberChange(text)}
-                  placeholder={'XXXX XXXX XXXX 0000'}
+                  placeholder={'XXXX XXXX XXXX XXXX'}
                   placeholderTextColor='black'
                   style={styles.longCardText}
                   placeholderColor="#3897f1"
@@ -384,27 +398,28 @@ class StripePaymentScreen extends Component {
                     />
                   </View>
                 </View>
+                <TouchableOpacity onPress={()=>{this.handlePayment()}}>
                 <View style={styles.loginButton}>
                   <Text style={styles.buttonText}>
                     Pay
                 </Text>
                 </View>
+                </TouchableOpacity>
               </View>
 
               </KeyboardAvoidingView>
           
           </View>
         </View>
-
-
+      }
 
 
         <SCLAlert
           show={this.state.isError}
           onRequestClose={() => this.isError(isRetry = true)}
           theme="danger"
-          title="Info"
-          subtitle={"Opps Somethings when wrong with the Appointment\n\n" + this.state.errorMessage}
+          title="OOPS"
+          subtitle={this.state.errorMessage}
           headerIconComponent={<Ionicons name="ios-thumbs-down" size={32} color="white" />}
         >
           <SCLAlertButton theme="success" onPress={() => this.isError(isRetry = true)}>Try Again</SCLAlertButton>
