@@ -1,26 +1,16 @@
 import React, { Component } from 'react';
 import { FlatList, ScrollView, Text, View, KeyboardAvoidingView, StyleSheet, TouchableOpacity, TextInput, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome5 } from '@expo/vector-icons';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import ExpoStripePurchase from 'expo-stripe-webview';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'react-native-axios';
 import valid  from "card-validator";
 import { FontAwesome,Fontisto } from '@expo/vector-icons'; 
 import config from '../config';
-import {
-  BallIndicator,
-  BarIndicator,
-  DotIndicator,
-  MaterialIndicator,
-  PacmanIndicator,
-  PulseIndicator,
-  SkypeIndicator,
-  UIActivityIndicator,
-  WaveIndicator,
-} from 'react-native-indicators';
+import {UIActivityIndicator} from 'react-native-indicators';
 import { ScreenStackHeaderConfig } from 'react-native-screens';
 import {
   SCLAlert,
@@ -72,9 +62,6 @@ class StripePaymentScreen extends Component {
 
   }
 
-
-
-
   isError = (isRetry) => {
     this.setState({ isError: false });
 
@@ -96,8 +83,6 @@ class StripePaymentScreen extends Component {
     const slot = this.props.orders.slot;
     const skill = Object.values(this.props.orders.service);
     const barber = this.props.orders.barber;
-
-    console.log('handle ith')
 
     var expiryArray = this.state.expiry.split('/')
     var expirationMonth =  Number(expiryArray[0]);
@@ -146,9 +131,6 @@ class StripePaymentScreen extends Component {
       }
     })
 
-
-    console.log(res.data.message);
-
     if (res.status === 200 && token) {
 
       this.setState({ isSuccessfull: true, isPayment: true });
@@ -173,17 +155,6 @@ class StripePaymentScreen extends Component {
   }
 
 
-  onClose = () => {
-    if (this.state.isSuccessfull) {
-      this.props.navigation.navigate('HomeScreen');
-
-    }
-
-    else {
-      this.props.navigation.navigate('CheckoutScreen');
-    }
-  }
-
   cardnumberChange=(text)=>
   {
     var regex = /^[0-9 ]*$/;
@@ -196,8 +167,7 @@ class StripePaymentScreen extends Component {
     }
 
     if (numberValidation.card) {
-
-
+      
       console.log(numberValidation.card.type);
       switch(numberValidation.card.type)
       {
@@ -234,10 +204,6 @@ class StripePaymentScreen extends Component {
     }
 
     if (text.indexOf('.') >= 0 || text.length > 24) {
-      // Since the keyboard will have a decimal and we don't want
-      // to let the user use decimals, just exit if they add a decimal
-      // Also, we only want 'MM/YY' so if they try to add more than
-      // 5 characters, we want to exit as well
       return;
   }
 
@@ -253,27 +219,21 @@ class StripePaymentScreen extends Component {
 
     var regex = /^[0-9]*$/;
 
-    if(!regex.test(text))
-    {
+    if(!regex.test(text)){
       return
     }
     if (text.indexOf('.') >= 0 || text.length > 4) {
-      // Since the keyboard will have a decimal and we don't want
-      // to let the user use decimals, just exit if they add a decimal
-      // Also, we only want 'MM/YY' so if they try to add more than
-      // 5 characters, we want to exit as well
+
       return;
   }
 
-
-  // Update the state, which in turns updates the value in the text field
   this.setState({
       cvv: text
 
   });
+ }
 
 
-  }
   expiryChange = (text) => {
 
     var regex = /^[0-9/]*$/;
@@ -283,22 +243,13 @@ class StripePaymentScreen extends Component {
       return
     }
     if (text.indexOf('.') >= 0 || text.length > 5) {
-      // Since the keyboard will have a decimal and we don't want
-      // to let the user use decimals, just exit if they add a decimal
-      // Also, we only want 'MM/YY' so if they try to add more than
-      // 5 characters, we want to exit as well
       return;
   }
 
   if (text.length === 2 && this.state.expiry.length === 1) {
-      // This is where the user has typed 2 numbers so far
-      // We can manually add a slash onto the end
-      // We check to make sure the current value was only 1 character
-      // long so that if they are backspacing, we don't add on the slash again
       text += '/'
   }
 
-  // Update the state, which in turns updates the value in the text field
   this.setState({
       expiry: text
   });
@@ -308,6 +259,87 @@ class StripePaymentScreen extends Component {
 
   onChangeForm = (form) => {
     console.log(form)
+  }
+  
+  renderCardForm()
+  {
+
+    if(!this.state.isSuccessfull && !this.state.isError && !this.state.isLoading)
+    {
+      return   <View style={styles.formArea}>
+      <View style={styles.formItems}>
+      <KeyboardAvoidingView behavior="position" > 
+        <View style={styles.loginButton}>
+          <Text style={styles.buttonText}>
+            <FontAwesome5 name="apple-pay" size={50} color="white" />
+          </Text>
+        </View>
+
+        <Text style={styles.dividerText}>
+          OR
+        </Text>
+          <View>
+   
+            <View style={styles.cardinput}> 
+            <Text     style={{padding: 10}}> 
+
+            {this.state.isVisa &&  <FontAwesome name="cc-visa" size={40} color="black" />}
+            {this.state.isMastercard &&  <FontAwesome5 name="cc-mastercard" size={50} color="black" />}
+            {this.state.isAmericanExpress && <Fontisto name="american-express" size={40} color="black" />}
+            {this.state.isJcb && <Fontisto name="jcb" size={40} color="black" />}
+            {this.state.isDiscover && <FontAwesome5 name="cc-discover" size={40} color="black" />}
+
+            </Text>
+            <TextInput
+              value={this.state.cardnumber}
+              onChangeText={(text) => this.cardnumberChange(text)}
+              placeholder={'XXXX XXXX XXXX XXXX'}
+              placeholderTextColor='black'
+              style={styles.longCardText}
+              placeholderColor="#3897f1"
+              underlineColorAndroid='transparent'
+            />
+            </View>
+
+            <View style={{ flexDirection: "row" }}>
+
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  value={this.state.expiry}
+                  placeholderTextColor='black'
+                  onChangeText={(text)=>this.expiryChange(text)}
+                  placeholder={'MM/YY'}
+                  placeholderColor="#c4c3cb"
+                  style={styles.shortCardText}
+                />
+              </View>
+
+              <View style={{ flex: 1, marginBottom: '10%' }}>
+                <TextInput
+                  value={this.state.cvv}
+                  placeholderTextColor='black'
+                  onChangeText={(cvv) => this.cvvChange(cvv)}
+                  placeholder={'CVV'}
+                  placeholderColor="#c4c3cb"
+                  style={styles.shortCardText}
+                />
+              </View>
+            </View>
+            <TouchableOpacity onPress={()=>{this.handlePayment()}}>
+            <View style={styles.loginButton}>
+              <Text style={styles.buttonText}>
+                Pay
+            </Text>
+            </View>
+            </TouchableOpacity>
+          </View>
+
+          </KeyboardAvoidingView>
+      
+      </View>
+    </View>
+    }
+
   }
 
 
@@ -323,94 +355,19 @@ class StripePaymentScreen extends Component {
 
     return (
 
+      
       <View style={styles.container}>
+{this.state.isLoading ?
+      <View style={styles.loading}>
 
-      {this.state.isLoading == true &&
+      <UIActivityIndicator name="Saving" size={80} color="black" />
+      <Text style={styles.loadingText}> Processing Payment</Text>
+    </View>
+    :
 
-        <View style={styles.loading}>
-
-        <UIActivityIndicator name="Saving" size={80} color="black" />
-        <Text style={styles.loadingText}> Saving Appointment</Text>
-      </View>}
-
-
-
-      {!this.state.isSuccessfull && !this.state.isError &&
-        <View style={styles.formArea}>
-          <View style={styles.formItems}>
-          <KeyboardAvoidingView behavior="position" > 
-            <View style={styles.loginButton}>
-              <Text style={styles.buttonText}>
-                <FontAwesome5 name="apple-pay" size={50} color="white" />
-              </Text>
-            </View>
-
-            <Text style={styles.dividerText}>
-              OR
-            </Text>
-              <View>
        
-                <View style={styles.cardinput}> 
-                <Text     style={{padding: 10}}> 
-
-                {this.state.isVisa &&  <FontAwesome name="cc-visa" size={40} color="black" />}
-                {this.state.isMastercard &&  <FontAwesome5 name="cc-mastercard" size={50} color="black" />}
-                {this.state.isAmericanExpress && <Fontisto name="american-express" size={40} color="black" />}
-                {this.state.isJcb && <Fontisto name="jcb" size={40} color="black" />}
-                {this.state.isDiscover && <FontAwesome5 name="cc-discover" size={40} color="black" />}
-
-                </Text>
-                <TextInput
-                  value={this.state.cardnumber}
-                  onChangeText={(text) => this.cardnumberChange(text)}
-                  placeholder={'XXXX XXXX XXXX XXXX'}
-                  placeholderTextColor='black'
-                  style={styles.longCardText}
-                  placeholderColor="#3897f1"
-                  underlineColorAndroid='transparent'
-                />
-                </View>
-
-                <View style={{ flexDirection: "row" }}>
-
-                  <View style={{ flex: 1 }}>
-                    <TextInput
-                      value={this.state.expiry}
-                      placeholderTextColor='black'
-                      onChangeText={(text)=>this.expiryChange(text)}
-                      placeholder={'MM/YY'}
-                      placeholderColor="#c4c3cb"
-                      style={styles.shortCardText}
-                    />
-                  </View>
-
-                  <View style={{ flex: 1, marginBottom: '10%' }}>
-                    <TextInput
-                      value={this.state.cvv}
-                      placeholderTextColor='black'
-                      onChangeText={(cvv) => this.cvvChange(cvv)}
-                      placeholder={'CVV'}
-                      placeholderColor="#c4c3cb"
-                      style={styles.shortCardText}
-                    />
-                  </View>
-                </View>
-                <TouchableOpacity onPress={()=>{this.handlePayment()}}>
-                <View style={styles.loginButton}>
-                  <Text style={styles.buttonText}>
-                    Pay
-                </Text>
-                </View>
-                </TouchableOpacity>
-              </View>
-
-              </KeyboardAvoidingView>
-          
-          </View>
-        </View>
-      }
-
-
+        this.renderCardForm()
+}
         <SCLAlert
           show={this.state.isError}
           onRequestClose={() => this.isError(isRetry = true)}
@@ -456,9 +413,8 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'relative',
     height: '100%',
-    top: 0, left: 0, right: 0, bottom: 0
-
-
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor:'#fff44f'
   },
   formItems: {
     marginTop: '5%'
@@ -498,7 +454,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 40,
+    fontSize: RFValue(30),
     color: '#0D5916'
   },
   
@@ -524,7 +480,8 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    backgroundColor:'#fff44f'
   },
   longCardText: {
     height: 60,

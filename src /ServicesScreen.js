@@ -123,7 +123,27 @@ class ServicesScreen extends Component {
 
     return (
 
-      <View> 
+      (this.state.isLoading == true ?
+
+
+        <View style={styles.loading}>
+        <UIActivityIndicator size={80} color="black" />
+
+      </View>
+  :[
+
+      <View>
+      <ServiceComponent
+      data={this.state.data}
+      isGetByService={isGetByService}
+      total={this.state.total}
+      services={this.state.services}
+      isChecked={this.state.ischecked}
+      setTotal={this.props.setTotal}
+      setService={this.props.setService}
+      navigation={this.props.navigation}
+      /> 
+
       <SCLAlert
       show={this.state.isError}
       onRequestClose={this.isError}
@@ -134,19 +154,9 @@ class ServicesScreen extends Component {
     >
       <SCLAlertButton theme="danger" onPress={this.isError}>OK</SCLAlertButton>
     </SCLAlert>
-
-      <ServiceComponent
-      isLoading = {this.state.isLoading}
-      data={this.state.data}
-      isGetByService={isGetByService}
-      total={this.state.total}
-      services={this.state.services}
-      isChecked={this.state.ischecked}
-      setTotal={this.props.setTotal}
-      setService={this.props.setService}
-      navigation={this.props.navigation}
-      /> 
-      </View>
+    </View>
+  ]
+  )
     )
   }
 }
@@ -164,5 +174,15 @@ const mapDispatchToProps = (dispatch) => {
     setTotal: (data) => dispatch(setTotal(data))
   }
 }
-
+const styles = StyleSheet.create({
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+  })
 export default connect(mapStatetoProps, mapDispatchToProps)(ServicesScreen);

@@ -51,12 +51,6 @@ export const ServiceComponent = (props) => {
 
   return(
 
-    (props.isLoading == true ?
-      <View style={styles.loading}>
-      <UIActivityIndicator size={80} color="black" />
-    </View>
-:[
-
     <View styles={styles.container}>
       <View style={styles.subHeader}>
         <Text style={styles.textStyle}>
@@ -116,7 +110,6 @@ export const ServiceComponent = (props) => {
         }
       </View>
     </View>
-      ])
   )
 }
 

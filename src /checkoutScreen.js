@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList, Text, View, KeyboardAvoidingView, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import { ListItem } from 'react-native-elements';
 import Moment from 'moment'
 import { connect } from 'react-redux';
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
   textStyle: {
     textAlign: 'center',
     color: 'black',
-    fontSize: 40,
+    fontSize: RFValue(35),
     padding: 7
   },
   subHeader: {
@@ -193,12 +194,12 @@ const styles = StyleSheet.create({
   {
     color: 'white',
     marginTop: 25,
-    fontSize: 40,
+    fontSize: RFValue(35),
     textAlign: 'center',
 
   },
   leftText: {
-    fontSize: 20,
+    fontSize: RFValue(20),
     textAlign: 'left',
     marginTop: 20,
     marginBottom: 5,
@@ -209,7 +210,7 @@ const styles = StyleSheet.create({
   paymentButton:
   {
     color: 'white',
-    fontSize: 40,
+    fontSize: RFValue(40),
     marginTop:10
 
   },
@@ -220,7 +221,7 @@ const styles = StyleSheet.create({
   },
 
   rightText: {
-    fontSize: 20,
+    fontSize: RFValue(20),
     textAlign: 'left',
     marginTop: 20,
     marginBottom: 5,

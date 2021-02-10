@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList,View, Text, StyleSheet, TouchableOpacity,Image} from 'react-native';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import { CheckBox, ListItem } from 'react-native-elements';
 import { setOrganisationId, setService, setTotal } from './store/actions'
 import { connect } from 'react-redux';
@@ -132,6 +133,9 @@ setOrganisation(response)
         // 'details' is provided when fetchDetails = true
         var city = data.terms[0].value;
 
+        console.log(details);
+    
+
          await axios({
           method: 'get',
           url: config.Availability_URL + '/api/organisation',
@@ -185,20 +189,20 @@ setOrganisation(response)
           <ListItem
           
             style={styles.list} key={item._id} bottomDivider>
-            <UserAvatar size={100} name="Avishay Bar" src={item.uri} />
+            <UserAvatar size={80} name="Avishay Bar" src={item.uri} />
         
             <ListItem.Content>
               <View styles={styles.list}>
-                <ListItem.Title>{item.companyName}</ListItem.Title>
+                <ListItem.Title><Text style={styles.listText}>{item.companyName}</Text></ListItem.Title>
               </View>
               <View styles={styles.list}>
-              <ListItem.Title>{item.addressLine1}</ListItem.Title>
+              <ListItem.Title><Text style={styles.listText}>{item.addressLine1}</Text></ListItem.Title>
             </View>
             <View styles={styles.list}>
-            <ListItem.Title>{item.town}</ListItem.Title>
+            <ListItem.Title><Text style={styles.listText}>{item.town}</Text></ListItem.Title>
           </View>
           <View styles={styles.list}>
-          <ListItem.Title>{item.postCode}</ListItem.Title>
+          <ListItem.Title><Text style={styles.listText}>{item.postCode}</Text></ListItem.Title>
         </View>
             </ListItem.Content>
             <TouchableOpacity
@@ -222,8 +226,13 @@ setOrganisation(response)
 export const styles = StyleSheet.create({
 
   list: {
-  fontSize: 20,
+  fontSize: RFValue(20),
   backgroundColor: 'yellow'
+
+},
+
+listText:{
+  fontSize: RFValue(12)
 
 },
 

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'react-native-axios';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import { Keyboard,Image, ScrollView, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUserId} from './store/actions';
@@ -182,13 +183,9 @@ const styles = StyleSheet.create({
   },
 
 
-  signInText:{
+  signUpText:{
 
-    justifyContent:'center',
-    alignSelf:'center',
-    marginTop:'5%',
-    fontSize:50
-
+    color:'blue'
 
   },
 
@@ -201,7 +198,7 @@ const styles = StyleSheet.create({
 
 
   logoText: {
-    fontSize: 85,
+    fontSize: RFValue(85),
     fontWeight: "800",
     textAlign: 'center',
     color:'black'
@@ -216,7 +213,7 @@ const styles = StyleSheet.create({
   },
   loginFormTextInput: {
     height: 70,
-    fontSize: 14,
+    fontSize:RFValue(14),
     borderTopColor:'black',
     backgroundColor: 'white',
     paddingLeft: 10,
@@ -230,30 +227,23 @@ const styles = StyleSheet.create({
 
   buttonText:{
     color:'white',
-    fontSize:20,
+    fontSize:RFValue(20),
     textAlign:'center',
     fontWeight:'600'
   },
 
   signUpButtonText:{
     color:'black',
-    fontSize:17,
+    fontSize:RFValue(17),
     textAlign:'center',
     fontWeight:'600',
     marginTop:'5%'
-  },
-
-
-  signUpText:
-  {
-    color:'blue'
   },
 
   Logo:{
     justifyContent:'center',
     alignSelf:'center',
     marginTop:'17%'
-
 },
 
   createButton: {

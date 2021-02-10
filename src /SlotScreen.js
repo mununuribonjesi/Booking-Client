@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { FlatList,ScrollView, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import Calendar from 'react-native-calendar-datepicker';
+//import Calendar from 'react-native-calendar-picker';
 import Moment from 'moment';
 import { setSlot } from './store/actions';
 import { connect } from 'react-redux';
@@ -135,7 +137,7 @@ class SlotScreen extends Component {
         if(error.response)
         {
           res = error.response;
-          this.setState({errorMessage:JSON.stringify(error.response.status),isError:true});
+          this.setState({errorMessage:JSON.stringify(error.response.status),isError:false});
         }
       });
 
@@ -257,7 +259,9 @@ class SlotScreen extends Component {
             onChange={(date) => this.onChangeDate(date)}
             selected={this.state.date}
             minDate={Moment().startOf('day')}
-            maxDate={Moment().add(10, 'years').startOf('day')}
+            maxDate={Moment().add(7, 'years').startOf('day')}
+  
+            
           />    
      </View>
      </ScrollView>
@@ -349,7 +353,7 @@ export const styles  = StyleSheet.create({
     justifyContent: 'center',
     height: '100%',
     flex: 1,
-    backgroundColor: 'white'
+    flexDirection:'row'
   },
   loading: {
     position: 'absolute',
@@ -366,7 +370,7 @@ export const styles  = StyleSheet.create({
   textStyle: {
     textAlign: 'center',
     color: 'black',
-    fontSize: 40,
+    fontSize: RFValue(35),
     padding: 7
   },
   subHeader: {
@@ -403,12 +407,12 @@ export const styles  = StyleSheet.create({
   {
     color: 'white',
     marginTop: 25,
-    fontSize: 40,
+    fontSize: RFValue(35),
     textAlign: 'center',
 
   },
   logoText: {
-    fontSize: 15,
+    fontSize: RFValue(15),
     fontWeight: "800",
     textAlign: 'center',
     marginTop: 20,

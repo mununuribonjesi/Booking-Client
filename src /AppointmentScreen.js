@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {FlatList, Text, View,StyleSheet,TouchableOpacity,Dimensions} from 'react-native';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import Tab from './functionalComponents/AppointmentComponent';
 import {ListItem} from 'react-native-elements';
 import Moment from 'moment';
@@ -106,7 +107,7 @@ class AppointmentScreen extends Component
     return (
       <View
         style={{
-          height: 1,
+          height: 5,
           width: "100%",
           backgroundColor: "#000",
         }}
@@ -124,7 +125,6 @@ class AppointmentScreen extends Component
       <FlatList style={styles.FlatList}
         data={Object.values(this.state.upcomingAppointments)}
         ItemSeparatorComponent={this.FlatListItemSeparator}
-        ListFooterComponent={this.FlatListItemSeparator}
         keyExtractor={(item, index) => index.toString()}
         renderItem={this.renderAppointment}
       />)
@@ -134,7 +134,6 @@ class AppointmentScreen extends Component
     SecondRoute = () => (<FlatList style={styles.FlatList}
         data={Object.values(this.state.recentAppointments)}
         ItemSeparatorComponent={this.FlatListItemSeparator}
-        ListFooterComponent={this.FlatListItemSeparator}
         keyExtractor={(item, index) => index.toString()}
         renderItem={this.renderAppointment}
       />)
@@ -144,7 +143,14 @@ class AppointmentScreen extends Component
     renderAppointment = ({ item }) => {
 
         return (
-          <View>
+          <View style={{backgroundColor:'black'}}>
+          <ListItem>
+          <ListItem.Content>
+          <Text style={{textAlign:"center",fontSize:RFValue(25)}}>{item.companyName +", "+ item.addressLine1 +", "+ item.town +", "+ item.postCode}
+          </Text>
+          </ListItem.Content>
+        
+        </ListItem>
             <ListItem style={styles}>
               <ListItem.Title style={styles.leftText}>Barber:</ListItem.Title>
               <ListItem.Content>
@@ -182,11 +188,11 @@ class AppointmentScreen extends Component
     
               </ListItem.Content>
               <Text style={styles.rightText}>
-    
-             
-    
+              £{Number(item.price).toFixed(2)}
               </Text>
             </ListItem>
+
+        
             
           </View>)
       }
@@ -273,10 +279,15 @@ export const styles = StyleSheet.create({
     height: '10%'
   },
 
+  FlatList:
+  {
+
+  },
+
   textStyle: {
       textAlign: 'center',
       color: 'black',
-      fontSize: 40,
+      fontSize: RFValue(35),
       padding: 7
     },
     Body:{
@@ -295,7 +306,7 @@ export const styles = StyleSheet.create({
     {
       color:'white',
       marginTop:25,
-      fontSize: 40,
+      fontSize:RFValue(35),
       textAlign: 'center',
       
     },
