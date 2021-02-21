@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { FlatList,View, Text, StyleSheet, TouchableOpacity,Image} from 'react-native';
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import { CheckBox, ListItem } from 'react-native-elements';
+import { RFValue } from "react-native-responsive-fontsize";
+import {ListItem } from 'react-native-elements';
 import { setOrganisationId, setService, setTotal } from './store/actions'
 import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,21 +14,9 @@ import {
   SCLAlertButton
 } from 'fork-react-native-scl-alert';
 import Geocoder from 'react-native-geocoding';
-
-
 import config from '../config';
-import {
-  BallIndicator,
-  BarIndicator,
-  DotIndicator,
-  MaterialIndicator,
-  PacmanIndicator,
-  PulseIndicator,
-  SkypeIndicator,
-  UIActivityIndicator,
-  WaveIndicator,
-} from 'react-native-indicators';
-
+import { relative } from 'path';
+import { ScrollView } from 'react-native-gesture-handler';
 
 class LocationScreen extends Component {
   constructor(props) {
@@ -182,23 +170,23 @@ setOrganisation(response)
     </View>
 
 
+<ScrollView
 
-<View style={styles.shoplist}>
+style={styles.flatlist}
+>
+
+
     <FlatList
       data={this.state.data}
       keyExtractor={(x,i) => i.toString()}
-      renderItem={({ item, }) => (
-        
+      renderItem={({ item, }) => (     
         <TouchableOpacity
         onPress={() => { this.props.setOrganisationId(item._id),this.navigateToScreen()}}
         >
 
-  
-          <ListItem
-          
+          <ListItem      
             style={styles.list} key={item._id} bottomDivider>
-            <UserAvatar size={80} name="Avishay Bar" src={item.uri} />
-        
+            <UserAvatar size={80} name="Avishay Bar" src={item.uri} />  
             <ListItem.Content>
               <View styles={styles.list}>
                 <ListItem.Title><Text style={styles.listText}>{item.companyName}</Text></ListItem.Title>
@@ -223,12 +211,9 @@ setOrganisation(response)
         </TouchableOpacity>
       )}
     />
-
-
+    </ScrollView>
     </View>
-
-
-    </View>
+    
     )
   }
 }
@@ -239,11 +224,17 @@ export const styles = StyleSheet.create({
   fontSize: RFValue(20),
 
 
+
 },
 
 listText:{
   fontSize: RFValue(12)
 
+},
+
+flatlist:{
+  top:40,
+  marginBottom:40
 },
 
 searchbar:{
@@ -253,26 +244,14 @@ searchbar:{
   width:'100%',
   height:'40%',
   zIndex:100,
-
-
 },
 
-
-
-shoplist:{
-  position:'absolute',
-  width:'100%',
-  height:'85%',
-  backgroundColor: 'white',
-  borderWidth:3
-},
 
 container: {
   justifyContent: 'center',
   height: '100%',
   flex: 1,
-  textAlign: 'left',
-  backgroundColor:'black'
+  textAlign: 'left'
 },
 
 imagewrapper: {
