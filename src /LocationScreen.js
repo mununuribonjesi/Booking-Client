@@ -13,7 +13,7 @@ import {
   SCLAlert,
   SCLAlertButton
 } from 'fork-react-native-scl-alert';
-
+import Geocoder from 'react-native-geocoding';
 
 
 import config from '../config';
@@ -49,6 +49,12 @@ class LocationScreen extends Component {
   }
 
   async componentDidMount() {
+
+
+    await AsyncStorage.setItem('token', config.token)
+
+    Geocoder.init(config.PLACES_KEY);
+
 
   }
 
@@ -133,14 +139,17 @@ setOrganisation(response)
         // 'details' is provided when fetchDetails = true
         var city = data.terms[0].value;
 
-        console.log(details);
-    
+        var location = details.geometry.location;
+        var lat = location.lat;
+        var long = location.lng;
+
 
          await axios({
           method: 'get',
           url: config.Availability_URL + '/api/organisation',
           params: {
-            'city':city
+            'lat':lat,
+            'long':long
           }
         }).then(response => 
           {
@@ -161,8 +170,8 @@ setOrganisation(response)
         },
         
         textInput: {
-          height: 60,
-          color: '#5d5d5d',
+          height: 40,
+          color: '#black',
           fontSize: 16,
         },
         predefinedPlacesDescription: {
@@ -171,7 +180,6 @@ setOrganisation(response)
       }}
     />
     </View>
-
 
 
 
@@ -215,6 +223,8 @@ setOrganisation(response)
         </TouchableOpacity>
       )}
     />
+
+
     </View>
 
 
@@ -227,7 +237,7 @@ export const styles = StyleSheet.create({
 
   list: {
   fontSize: RFValue(20),
-  backgroundColor: 'yellow'
+
 
 },
 
@@ -247,12 +257,14 @@ searchbar:{
 
 },
 
+
+
 shoplist:{
   position:'absolute',
   width:'100%',
-  height:'100%',
-  top:0,
-  marginTop:60
+  height:'85%',
+  backgroundColor: 'white',
+  borderWidth:3
 },
 
 container: {
@@ -260,6 +272,7 @@ container: {
   height: '100%',
   flex: 1,
   textAlign: 'left',
+  backgroundColor:'black'
 },
 
 imagewrapper: {
