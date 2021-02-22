@@ -238,12 +238,23 @@ class StripePaymentScreen extends Component {
 
     var regex = /^[0-9/]*$/;
 
+    var checkSlash = /^[/]*$/;
+
     if(!regex.test(text))
     {
       return
     }
     if (text.indexOf('.') >= 0 || text.length > 5) {
       return;
+  }
+
+  if(!checkSlash.test(text)&&text.length===3&&this.state.expiry.length===2)
+  {
+      
+      var firstTwo = text.substring(0,2) + '/';
+      var thirdOne = text.substring(2,3);
+      
+      text = firstTwo + thirdOne;
   }
 
   if (text.length === 2 && this.state.expiry.length === 1) {
@@ -254,8 +265,6 @@ class StripePaymentScreen extends Component {
       expiry: text
   });
   }
-
-
 
   onChangeForm = (form) => {
     console.log(form)

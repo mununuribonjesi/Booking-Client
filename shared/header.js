@@ -1,8 +1,10 @@
 import React from 'react';
 import {StyleSheet,Text,View,TouchableOpacity} from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
+import { RFValue } from "react-native-responsive-fontsize";
 
-export default function Header() {
+export default function Header(props) {
+
     return (
         <View style={styles.header}>
             
@@ -17,8 +19,11 @@ export default function Header() {
 
                 <View style={styles.item}>
                 <TouchableOpacity 
-                            style={styles.iconWrapper
-                            }
+                            style={styles.iconWrapper}
+
+                        
+                            onPress={() => props.navigation.navigate('ProfileScreen')}
+                             
                             >
 
                 <Ionicons name="ios-person" style={styles.icon} />
@@ -55,7 +60,8 @@ const styles = StyleSheet.create({
     {
         fontSize:30,
         color:'blue',
-        height:50
+        height:50,
+        top:5
     },
 
     item:

@@ -223,13 +223,14 @@ const styles = StyleSheet.create({
     borderWidth :5,
     borderBottomColor: '#000',
     backgroundColor: 'white',
+    borderRadius:25
   },
 
   buttonText:{
     color:'white',
     fontSize:RFValue(20),
     textAlign:'center',
-    fontWeight:'600'
+    fontWeight:'600',
   },
 
   signUpButtonText:{

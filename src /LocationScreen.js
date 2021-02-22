@@ -13,7 +13,6 @@ import {
   SCLAlert,
   SCLAlertButton
 } from 'fork-react-native-scl-alert';
-import Geocoder from 'react-native-geocoding';
 import config from '../config';
 import { relative } from 'path';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -37,11 +36,6 @@ class LocationScreen extends Component {
   }
 
   async componentDidMount() {
-
-
-    await AsyncStorage.setItem('token', config.token)
-
-    Geocoder.init(config.PLACES_KEY);
 
 
   }
@@ -172,12 +166,13 @@ setOrganisation(response)
 
 <ScrollView
 
-style={styles.flatlist}
+style={styles.ScrollView}
 >
 
 
     <FlatList
       data={this.state.data}
+      style={styles.flatlist}
       keyExtractor={(x,i) => i.toString()}
       renderItem={({ item, }) => (     
         <TouchableOpacity
@@ -192,23 +187,44 @@ style={styles.flatlist}
                 <ListItem.Title><Text style={styles.listText}>{item.companyName}</Text></ListItem.Title>
               </View>
               <View styles={styles.list}>
-              <ListItem.Title><Text style={styles.listText}>{item.addressLine1}</Text></ListItem.Title>
+              <ListItem.Subtitle><Text style={styles.listText}>{item.addressLine1}</Text></ListItem.Subtitle>
             </View>
             <View styles={styles.list}>
-            <ListItem.Title><Text style={styles.listText}>{item.town}</Text></ListItem.Title>
+            <ListItem.Subtitle><Text style={styles.listText}>{item.town}</Text></ListItem.Subtitle>
           </View>
           <View styles={styles.list}>
-          <ListItem.Title><Text style={styles.listText}>{item.postCode}</Text></ListItem.Title>
+          <ListItem.Subtitle><Text style={styles.listText}>{item.postCode}</Text></ListItem.Subtitle>
         </View>
+
+ 
+        <Text style={styles.leftText}>{"\n" + Number(item.distance).toFixed(2) + ' mi'}</Text>
+
+   
+
+
+
             </ListItem.Content>
+
+            <View> 
             <TouchableOpacity
               style={styles.button}
               onPress={() => { this.props.setOrganisationId(item._id),this.navigateToScreen()}}
             >
               <Text style={styles.bookText}>Book Now</Text>
+                        
+
+       
             </TouchableOpacity>
+            </View>
+
+
+ 
           </ListItem>
+
+
+
         </TouchableOpacity>
+        
       )}
     />
     </ScrollView>
@@ -222,19 +238,27 @@ export const styles = StyleSheet.create({
 
   list: {
   fontSize: RFValue(20),
+},
 
-
+leftText:{
+  textAlign:'right',
+  fontSize: RFValue(12),
+  color:'blue'
 
 },
 
-listText:{
-  fontSize: RFValue(12)
 
+listText:{
+  fontSize: RFValue(12),
+
+},
+scrollView:{
+  top:40,
 },
 
 flatlist:{
   top:40,
-  marginBottom:40
+  marginBottom:40,
 },
 
 searchbar:{
@@ -266,11 +290,6 @@ textStyle: {
 headerFooterStyle: {
 
   backgroundColor: '#fff44f'
-
-},
-
-wrappercontainer: {
-  marginTop: 30,
 
 },
 

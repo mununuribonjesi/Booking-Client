@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'react-native-axios';
 import { Keyboard, Button, Text, View, StyleSheet, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUserId} from './store/actions';
 import { connect } from 'react-redux';
@@ -217,8 +218,20 @@ class createAccountScreen extends Component {
     const alert = this.state.isAlertError;
 
     return (
-      <ScrollView style={{width:'100%',height:'100%',backgroundColor:'#fff44f'}}> 
-    <View style={styles.containerView}> 
+
+
+      <KeyboardAvoidingView enabled behavior={ Platform.OS === 'ios'? 'padding': null}
+                style= {styles.FlexGrowOne}>
+      <ScrollView  style={[{flex: 1,backgroundColor:'#fff44f'}]}> 
+
+      <Text style={[{textAlign:'center', fontSize:40,top:'5%'}]}> 
+      ─ REGISTER ─
+    </Text>
+
+      <View style={[{flex: 1,backgroundColor:'#fff44f',top:'10%',marginBottom:'30%'}]}>
+      
+
+
     <SCLAlert
     show={this.state.isAlertError}
     onRequestClose={this.alertClose}
@@ -230,8 +243,8 @@ class createAccountScreen extends Component {
     <SCLAlertButton theme="danger" onPress={this.alertClose}>OK</SCLAlertButton>
   </SCLAlert>
 
-        </View>
-          <KeyboardAvoidingView style={{marginTop:'1%'}} behavior="position" > 
+
+  <View style={styles.TextInputWrapper}>
           <Text style={styles.validation}>{this.state.firsnameerror}</Text>
           <TextInput
           value={this.state.firstname}
@@ -240,37 +253,45 @@ class createAccountScreen extends Component {
           placeholderTextColor='black'
           style={styles.loginFormTextInput}
           placeholderColor="#3897f1"
+          returnKeyType="next"
           onBlur={()=> this.firstnameValidation()}
+          onSubmitEditing={()=>{this.lastNameInput.focus();}}
         />
-            
+            </View>
         <Text style={styles.validation}>{this.state.lastnameerror}</Text>
 
         <TextInput
+          ref={(input) => { this.lastNameInput = input; }}
           value={this.state.lastname}
           onChangeText={(lastname) => this.setState({ lastname })}
           placeholder={'Surname'}
           placeholderTextColor='black'
           style={styles.loginFormTextInput}
           placeholderColor="#3897f1"
+          returnKeyType="next"
           onBlur={()=> this.lastnameValidation()}
+          onSubmitEditing={()=>{this.EmailInput.focus();}}
         />
         <Text style={styles.validation}>{this.state.emailerror}</Text>
               <TextInput
+              ref={(input) => { this.EmailInput = input; }}
                 value={this.state.email}
+                returnKeyType="next"
                 onChangeText={(email) => this.setState({ email })}
                 placeholder={'Email Address'}
                 placeholderTextColor='black'
                 style={styles.loginFormTextInput}
                 placeholderColor="#3897f1"
                 onBlur={()=> this.emailValidation()}
+                onSubmitEditing={()=>{this.passwordInput.focus();}}
               />
-
-   
 
               <Text style={styles.validation}>{this.state.passworderror}</Text>
 
               <TextInput
+              ref={(input) => { this.passwordInput = input; }}
                 value={this.state.password}
+                returnKeyType="next"
                 placeholderTextColor='black'
                 onChangeText={(password) => this.setState({ password })}
                 placeholder={'Password'}
@@ -278,12 +299,17 @@ class createAccountScreen extends Component {
                 placeholderColor="#c4c3cb"
                 style={styles.loginFormTextInput}
                 onBlur={()=> this.passwordValidation()}
+                onSubmitEditing={()=>{this.confirmpasswordInput.focus();}}
               />
+             
+   
 
               <Text style={styles.validation}>{this.state.confirmpassworderror}</Text>
 
               <TextInput
+              ref={(input) => { this.confirmpasswordInput = input; }}
                 value={this.state.confirmPassword}
+                returnKeyType="done"
                 placeholderTextColor='black'
                 onChangeText={(confirmPassword) => this.setState({ confirmPassword })}
                 placeholder={'Confrim Password'}
@@ -292,7 +318,7 @@ class createAccountScreen extends Component {
                 style={styles.loginFormTextInput}
                 onBlur={()=> this.confirmPasswordValidation()}
               />
-              </KeyboardAvoidingView>
+     
               <TouchableOpacity
               onPress={()=> this.Submit()}
 
@@ -318,7 +344,10 @@ class createAccountScreen extends Component {
               </Text>
               </View>
               </TouchableOpacity>
+
+      </View>
       </ScrollView>
+      </KeyboardAvoidingView>
   
     );
   }
@@ -369,6 +398,11 @@ const styles = StyleSheet.create({
     borderBottomColor: '#000',
     backgroundColor: 'white',
   },
+  hairline: {
+  backgroundColor: '#A2A2A2',
+  height: 2,
+  width: 165
+},
 
   validation:
   {
@@ -386,6 +420,7 @@ const styles = StyleSheet.create({
     fontWeight:'600'
     
   },
+  
 
   signUpButtonText:{
     color:'black',
@@ -400,6 +435,17 @@ const styles = StyleSheet.create({
     width:'100%'
 
   },
+  FlexGrowOne: {
+    flexGrow : 1
+},
+
+  loginButtonBelowText1: {
+  fontFamily: 'AvenirNext-Bold',
+  fontSize: 14,
+  paddingHorizontal: 5,
+  alignSelf: 'center',
+  color: '#A2A2A2'
+},
 
   signUpText:
   {

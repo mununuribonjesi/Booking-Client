@@ -2,6 +2,7 @@ import { createStackNavigator } from "react-navigation-stack";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import LoginScreen from "./src /LoginScreen";
 import HomeScreen from "./src /HomeScreen";
+import ProfileScreen from "./src /ProfileScreen";
 import Header from './shared/header';
 import StripePaymentScreen from './src /StripePaymentScreen';
 import React from 'react';
@@ -60,6 +61,14 @@ verificationScreen: {
     headerShown: false //this will hide the header
   },
 },
+ProfileScreen: {
+  screen: ProfileScreen,
+  navigationOptions: {
+    headerTitle:"Profile",
+    headerShown:true,
+    animationEnabled: false,
+  },
+},
 BookScreen:{
   screen:BookScreen,
   navigationOptions:({navigation}) => ({
@@ -102,7 +111,8 @@ OurTeamScreen:{
 CheckoutScreen:{
   screen:CheckoutScreen,
   navigationOptions:({navigation}) => ({
-    headerTitle:() => <BsHeader />,
+    headerTitle:() => <BsHeader
+    />,
     headerShown:true,
 
   }),
@@ -145,7 +155,18 @@ AboutUsScreen:
 HomeScreen: {
   screen: HomeScreen,
   navigationOptions:({navigation}) => ({
-    headerTitle: () => <Header />,
+    headerTitle: () => 
+    
+    <TouchableOpacity
+    onPress={()=> navigation.navigate("ProfileScreen")}>
+
+
+
+    <Header
+    navigation={navigation}
+    />
+    </TouchableOpacity>,
+
     headerShown:true,
     headerLeft: () => {
       return null;
@@ -157,7 +178,7 @@ HomeScreen: {
 
 const Navigation = createStackNavigator(screens,
   {
-    initialRouteName:'LocationScreen',
+    initialRouteName:'splashScreen',
 
       defaultNavigationOptions:{
       headerStyle: {backgroundColor:'black', height:100},

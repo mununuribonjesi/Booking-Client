@@ -4,6 +4,7 @@ import {Keyboard,Button,Image, Text, View,StyleSheet, TextInput,TouchableHighlig
 import { FontAwesome,FontAwesome5,MaterialIcons,Ionicons,AntDesign } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons'; 
 import Logo from '../assets/MuniBook.png';
+import { RFValue } from "react-native-responsive-fontsize";
 
 
 class HomeScreen extends Component {
@@ -55,7 +56,7 @@ class HomeScreen extends Component {
   style={styles.iconWrapper
   }>
     
-  <FontAwesome name="calendar-plus-o" size={30} color="black" />
+  <FontAwesome name="calendar-plus-o" size={RFValue(20)} color="black" />
   <Text style={styles.itemtext}>Book Appt</Text>
   </TouchableOpacity>
   </View>
@@ -69,7 +70,7 @@ class HomeScreen extends Component {
     isGetByService:true
   })}
   >
-  <FontAwesome5 name="hand-holding-heart" size={30} color="black" />
+  <FontAwesome5 name="hand-holding-heart" size={RFValue(25)} color="black" />
   <Text style={styles.itemtext}>Services</Text>
   </TouchableOpacity>
   </View>
@@ -83,8 +84,8 @@ class HomeScreen extends Component {
   }
   onPress={() => this.props.navigation.navigate('AppointmentScreen')}
   >
-  <MaterialIcons name="schedule" size={30} color="black" />
-  <Text style={styles.itemtext}>Appointments</Text>
+  <MaterialIcons name="schedule" size={RFValue(30)} color="black" />
+  <Text style={styles.itemtext}>Bookings</Text>
   </TouchableOpacity>
   </View>
         </View>
@@ -96,7 +97,7 @@ class HomeScreen extends Component {
   }
   onPress={() => this.props.navigation.navigate('GalleryScreen')}
   >
-        <FontAwesome name="picture-o" size={30} color="black" />
+        <FontAwesome name="picture-o" size={RFValue(30)} color="black" />
   <Text style={styles.itemtext}>Gallery</Text>
   </TouchableOpacity>
   </View>
@@ -107,7 +108,7 @@ class HomeScreen extends Component {
   onPress={() => this.props.navigation.navigate('AboutUsScreen')}
   >
     
-  <Octicons name="info" size={30} color="black" />
+  <Octicons name="info" size={RFValue(30)} color="black" />
   <Text style={styles.itemtext}>About US</Text>
   </TouchableOpacity>
   </View>
@@ -118,7 +119,7 @@ class HomeScreen extends Component {
   style={styles.iconWrapper
   }
   >
-  <Ionicons name="ios-people" size={20} color="black" />
+  <Ionicons name="ios-people" size={RFValue(30)} color="black" />
   <Text style={styles.itemtext}>Our Team</Text>
   </TouchableOpacity>
   </View>
@@ -161,8 +162,8 @@ const styles = StyleSheet.create({
     borderColor:'rgba(0,0,0,0.2)',
     alignItems:'center',
     justifyContent:'center',
-    width:70,
-    height:70,
+    width:75,
+    height:75,
     backgroundColor:'white',
     borderRadius:10
 
@@ -170,13 +171,14 @@ const styles = StyleSheet.create({
 
   wrapper:{
     marginTop:50,
-    width: '35%',
+    width: '33%',
     flexDirection:'row'
 
   },
   item: {
     width: '100%', // is 50% of container width
-    paddingLeft:10, 
+    alignItems:'center'
+    
   },
 
   itemwrapper:{
@@ -190,8 +192,14 @@ const styles = StyleSheet.create({
   },
   itemtext:{
     textAlign:'left',
-    fontSize:9,
+    fontSize:RFValue(10),
     marginTop: 10
+
+  },
+
+  icon:{
+    fontSize:RFValue(30),
+
 
   }
 })
