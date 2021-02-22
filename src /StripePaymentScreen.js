@@ -298,15 +298,19 @@ class StripePaymentScreen extends Component {
             {this.state.isJcb && <Fontisto name="jcb" size={40} color="black" />}
             {this.state.isDiscover && <FontAwesome5 name="cc-discover" size={40} color="black" />}
 
+
             </Text>
             <TextInput
               value={this.state.cardnumber}
+              returnKeyType="next"
               onChangeText={(text) => this.cardnumberChange(text)}
               placeholder={'XXXX XXXX XXXX XXXX'}
               placeholderTextColor='black'
               style={styles.longCardText}
               placeholderColor="#3897f1"
               underlineColorAndroid='transparent'
+              onSubmitEditing={()=>{this.expiryInput.focus();}}
+
             />
             </View>
 
@@ -314,21 +318,26 @@ class StripePaymentScreen extends Component {
 
               <View style={{ flex: 1 }}>
                 <TextInput
+                ref={(input) => { this.expiryInput = input; }}
                   value={this.state.expiry}
+                  returnKeyType="next"
                   placeholderTextColor='black'
                   onChangeText={(text)=>this.expiryChange(text)}
                   placeholder={'MM/YY'}
                   placeholderColor="#c4c3cb"
+                  onSubmitEditing={()=>{this.cvvinput.focus();}}
                   style={styles.shortCardText}
                 />
               </View>
 
               <View style={{ flex: 1, marginBottom: '10%' }}>
                 <TextInput
+                ref={(input) => { this.cvvinput= input; }}
                   value={this.state.cvv}
                   placeholderTextColor='black'
                   onChangeText={(cvv) => this.cvvChange(cvv)}
-                  placeholder={'CVV'}
+                  placeholder={'CVC'}
+                  returnKeyType="done"
                   placeholderColor="#c4c3cb"
                   style={styles.shortCardText}
                 />

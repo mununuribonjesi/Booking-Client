@@ -98,7 +98,8 @@ Login(response)
     return (
 
 
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      
+      <KeyboardAvoidingView enabled behavior={ Platform.OS === 'ios'? 'padding': null}>
       <ScrollView style={{width:'100%',height:'100%',backgroundColor:'#fff44f'}}> 
     <SCLAlert
     style={styles.modal}
@@ -116,22 +117,25 @@ Login(response)
         <Image style={styles.Logo} source={Logo} />
         </View>
 
-
           <View style={styles.formArea}>
      
            <View style={styles.formItems}> 
            <KeyboardAvoidingView behavior="position" > 
+          
 
               <TextInput
                 value={this.state.username}
                 onChangeText={(username) => this.setState({ username })}
+                returnKeyType="next"
                 placeholder={'Username'}
                 placeholderTextColor='black'
                 style={styles.loginFormTextInput}
                 placeholderColor="#3897f1"
                 underlineColorAndroid='transparent'
+                onSubmitEditing={()=>{this.passwordInput.focus();}}
               />
-              <TextInput
+              <TextInput        
+              ref={(input) => { this.passwordInput = input; }}
                 value={this.state.password}
                 placeholderTextColor='black'
                 onChangeText={(password) => this.setState({ password })}
@@ -170,7 +174,8 @@ Login(response)
           <View style={styles.footer}> 
           </View>
       </ScrollView>
-      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
+
 
     );
   }

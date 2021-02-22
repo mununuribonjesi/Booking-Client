@@ -178,7 +178,7 @@ HomeScreen: {
 
 const Navigation = createStackNavigator(screens,
   {
-    initialRouteName:'splashScreen',
+    initialRouteName:'StripePaymentScreen',
 
       defaultNavigationOptions:{
       headerStyle: {backgroundColor:'black', height:100},

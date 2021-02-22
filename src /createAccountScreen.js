@@ -302,8 +302,6 @@ class createAccountScreen extends Component {
                 onSubmitEditing={()=>{this.confirmpasswordInput.focus();}}
               />
              
-   
-
               <Text style={styles.validation}>{this.state.confirmpassworderror}</Text>
 
               <TextInput
