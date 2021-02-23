@@ -24,6 +24,8 @@ import {TouchableOpacity} from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
 import BackButton from "./shared/BackButton";
 import splashScreen from './src /splashScreen';
+import UpdateScreen from "./src /UpdateScreen";
+import CancelButton from "./shared/CancelButton";
 const store = configureStore;
 
 
@@ -63,11 +65,22 @@ verificationScreen: {
 },
 ProfileScreen: {
   screen: ProfileScreen,
-  navigationOptions: {
-    headerTitle:"Profile",
+  navigationOptions:({navigation}) => ({
+    headerTitle:() => <BsHeader />,
+    animationEnabled:false,
     headerShown:true,
-    animationEnabled: false,
-  },
+    headerLeft:() =>
+      <TouchableOpacity
+      onPress={()=> navigation.navigate("HomeScreen")}>
+
+      <BackButton />
+
+
+      </TouchableOpacity>
+
+    
+
+  }),
 },
 BookScreen:{
   screen:BookScreen,
@@ -114,6 +127,25 @@ CheckoutScreen:{
     headerTitle:() => <BsHeader
     />,
     headerShown:true,
+
+  }),
+  
+},
+
+
+UpdateScreen:{
+  screen:UpdateScreen,
+  navigationOptions:({navigation}) => ({
+    headerTitle:() => <BsHeader />,
+    headerShown:true,
+    headerLeft:() =>
+    <TouchableOpacity
+    onPress={()=> navigation.navigate("ProfileScreen")}>
+
+    <CancelButton />
+
+
+    </TouchableOpacity>
 
   }),
   
@@ -178,7 +210,7 @@ HomeScreen: {
 
 const Navigation = createStackNavigator(screens,
   {
-    initialRouteName:'StripePaymentScreen',
+    initialRouteName:'splashScreen',
 
       defaultNavigationOptions:{
       headerStyle: {backgroundColor:'black', height:100},

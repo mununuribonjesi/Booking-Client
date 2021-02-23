@@ -12,7 +12,7 @@ import {
   SCLAlertButton
 } from 'react-native-scl-alert'
 import { LogBox } from 'react-native';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 class createAccountScreen extends Component {
   constructor(props) {
@@ -37,7 +37,8 @@ class createAccountScreen extends Component {
       isemailError:true,
       ispasswordError:true,
       isconfirmError:true,
-      isAlertError:false
+      isAlertError:false,
+      date:new Date()
     };
 
     this.baseState = this.state
@@ -52,6 +53,15 @@ class createAccountScreen extends Component {
     } catch (e) {
       // saving error
     }
+  }
+
+  onDateChange(date)
+  {
+
+    this.setState({
+      date:date
+    })
+
   }
 
 
@@ -283,8 +293,25 @@ class createAccountScreen extends Component {
                 style={styles.loginFormTextInput}
                 placeholderColor="#3897f1"
                 onBlur={()=> this.emailValidation()}
+                onSubmitEditing={()=>{this.DobInput.focus();}}
+              />
+
+              <Text style={styles.validation}>{this.state.emailerror}</Text>
+              <TextInput
+              ref={(input) => { this.DobInput = input; }}
+                value={this.state.email}
+                returnKeyType="next"
+                onChangeText={(email) => this.setState({ email })}
+                placeholder={'dd/mm/yyyy'}
+                placeholderTextColor='black'
+                style={styles.loginFormTextInput}
+                placeholderColor="#3897f1"
                 onSubmitEditing={()=>{this.passwordInput.focus();}}
               />
+
+
+              
+              
 
               <Text style={styles.validation}>{this.state.passworderror}</Text>
 
