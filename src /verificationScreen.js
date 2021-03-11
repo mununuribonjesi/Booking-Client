@@ -10,6 +10,7 @@ import {
   SCLAlertButton
 } from 'react-native-scl-alert'
 import { LogBox } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 class verificationScreen extends Component {
@@ -61,7 +62,10 @@ class verificationScreen extends Component {
     const b = this.props.navigation.state.params.email;
 
     return (
+      
+
     <View style={styles.containerView}> 
+
 
           <View style={styles.verificationFormView}>
 
@@ -120,6 +124,7 @@ class verificationScreen extends Component {
             </SCLAlert>
        
       </View>
+
   
     );
   }
@@ -137,7 +142,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    marginTop:150,
+    marginTop:10,
     alignItems: 'center',
   },
 

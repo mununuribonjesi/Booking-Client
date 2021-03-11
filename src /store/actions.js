@@ -1,4 +1,4 @@
-import {SETBARBER ,SETSERVICE,SETSLOT ,SETTOTAL,SETBARBERID,SETORGANISATIONID,SETUSERID} from './actionTypes'
+import {SETBARBER ,SETSERVICE,SETSLOT ,SETTOTAL,SETBARBERID,SETORGANISATIONID,SETUSERID,SETUSER,SETAUTHENTICATION} from './actionTypes'
 
 export const setBarber = (barber) => ({
     type: SETBARBER,
@@ -35,6 +35,23 @@ export const setBarberId = (barberId) => ({
 export const setOrganisationId = (organisationId) => ({
     type: SETORGANISATIONID,
     data:organisationId
+})
+
+export const setUser = (userId,firstname,lastname,email,dob,radius,isAuthenticated) =>({
+    type: SETUSER,
+    userId:userId,
+    firstname:firstname,
+    lastname:lastname,
+    email:email,
+    dob:dob,
+    radius:radius,
+    isAuthenticated:isAuthenticated
+
+})
+
+export const setAuthentication = (isAuthenticated) =>({
+    type:SETAUTHENTICATION,
+    isAuthenticated:isAuthenticated
 })
 
 

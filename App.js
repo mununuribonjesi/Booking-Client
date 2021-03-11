@@ -40,6 +40,25 @@ const screens = {
       animationEnabled: false,
     },
   },
+  ProfileScreen: {
+    screen: ProfileScreen,
+    navigationOptions:({navigation}) => ({
+      headerTitle:() => <BsHeader />,
+      animationEnabled:false,
+      headerShown:true,
+      headerLeft:() =>
+        <TouchableOpacity
+        onPress={()=> navigation.navigate("HomeScreen")}>
+  
+        <BackButton />
+  
+  
+        </TouchableOpacity>
+  
+      
+  
+    }),
+  },
   LoginScreen: {
     screen: LoginScreen,
     navigationOptions: {
@@ -63,25 +82,7 @@ verificationScreen: {
     headerShown: false //this will hide the header
   },
 },
-ProfileScreen: {
-  screen: ProfileScreen,
-  navigationOptions:({navigation}) => ({
-    headerTitle:() => <BsHeader />,
-    animationEnabled:false,
-    headerShown:true,
-    headerLeft:() =>
-      <TouchableOpacity
-      onPress={()=> navigation.navigate("HomeScreen")}>
 
-      <BackButton />
-
-
-      </TouchableOpacity>
-
-    
-
-  }),
-},
 BookScreen:{
   screen:BookScreen,
   navigationOptions:({navigation}) => ({
@@ -210,7 +211,7 @@ HomeScreen: {
 
 const Navigation = createStackNavigator(screens,
   {
-    initialRouteName:'splashScreen',
+    initialRouteName:'ProfileScreen',
 
       defaultNavigationOptions:{
       headerStyle: {backgroundColor:'black', height:100},

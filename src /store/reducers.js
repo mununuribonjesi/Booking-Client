@@ -1,5 +1,6 @@
 import { ActivityIndicatorComponent } from 'react-native'
-import { SETBARBER, SETBARBERID, SETSERVICE, SETSLOT, SETTOTAL, SETUSERID,SETORGANISATIONID} from './actionTypes'
+import { act } from 'react-test-renderer'
+import { SETBARBER, SETBARBERID, SETSERVICE, SETSLOT, SETTOTAL, SETUSERID, SETORGANISATIONID, SETUSER,SETAUTHENTICATION} from './actionTypes'
 
 const initialState = {
     service: [],
@@ -8,11 +9,42 @@ const initialState = {
     total: 0,
     barberId: '',
     userId: '',
-    organisationId:''
+    organisationId: ''
 }
 
-const userState = {
 
+const userState = {
+    userId:"",
+    firstname: "",
+    lastname: "",
+    email: "",
+    dob: "",
+    radius: 0,
+    isAuthenticated:false
+}
+
+
+const userReducer = (state = userState, action) => {
+    switch (action.type) {
+        case SETUSER:
+            return {
+                ...state,
+                userId:state.userId = action.userId,
+                firstname: state.firstname = action.firstname,
+                lastname: state.lastname = action.lastname,
+                email: state.email = action.email,
+                dob: state.dob = action.dob,
+                radius: state.radius = action.radius,
+                isAuthenticated:state.isAuthenticated=action.isAuthenticated
+            }
+        case SETAUTHENTICATION:
+            return{
+                ...state,
+                isAuthenticated:state.isAuthenticated=action.isAuthenticated
+            }
+        default:
+            return state
+    }
 }
 
 const orderReducer = (state = initialState, action) => {
@@ -42,21 +74,21 @@ const orderReducer = (state = initialState, action) => {
                 ...state,
                 total: state.total = action.data
             }
-        case SETUSERID:     
+        case SETUSERID:
             return {
                 ...state,
-                    userId: state.userId = action.data
+                userId: state.userId = action.data
             }
         case SETORGANISATIONID:
             return {
-                ...state, 
-                    organisationId: state.organisationId = action.data
+                ...state,
+                organisationId: state.organisationId = action.data
             }
-            
+
         default: // need this for default case
             return state
     }
 }
 
 
-export default orderReducer
+export { orderReducer, userReducer }

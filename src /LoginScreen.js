@@ -3,11 +3,12 @@ import axios from 'react-native-axios';
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import { Keyboard,Image, ScrollView, Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setUserId} from './store/actions';
+import { setUser, setUserId} from './store/actions';
 import { connect } from 'react-redux';
 import {FontAwesome5 } from '@expo/vector-icons';
 import { LogBox } from 'react-native';
 import config from '../config';
+import moment from 'moment';
 import {
   SCLAlert,
   SCLAlertButton
@@ -26,12 +27,12 @@ class LoginScreen extends Component {
       isError:false,
       errorMessage:''
     };
+
+    this.baseState = this.state
   }
 
 
-  componentDidMount() {
-    LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
-
+  async componentDidMount() {
 }
 
   setToken = async (value) => {
@@ -61,7 +62,7 @@ isError = () =>
       }
     }).then(response =>
       {
-        this.Login(response);
+        this.login(response);
       }).catch (error =>{
         if(error.response)
         {
@@ -72,7 +73,7 @@ isError = () =>
 
   
 
-Login(response)
+login(response)
 {
   const token = response.data.token;
   if (response.status === 200 && token) {
@@ -81,8 +82,26 @@ Login(response)
     var user = response.data.user;
     var userId = user._id;
     this.props.setUserId(userId);
-    this.props.navigation.navigate('HomeScreen');
-    //const value = await AsyncStorage.getItem('token')
+
+   
+
+    var dob = moment(user.dob).format("DD-MM-YYYY");
+
+    if(user.isVerified)
+    {
+      this.props.navigation.navigate('HomeScreen');
+      this.props.setUser(user._id,user.firstname,user.lastname,user.email,dob,user.radius,true)
+      this.setState(this.baseState);
+
+    }
+    else 
+    {
+      this.setState(this.baseState);
+      this.props.navigation.navigate('verificationScreen',{
+        email:user.email
+      });
+    }
+
   }
 }
     
@@ -288,16 +307,17 @@ const mapStatetoProps = (state) => {
 
     return {
       orders: state.orderReducer,
-      service:state.orderReducer.service
+      service:state.orderReducer.service,
+      user:state.user
     }
   }
   
   const mapDispatchToProps = (dispatch) => {
   
     return {
-      setUserId: (data) => dispatch(setUserId(data))
+      setUserId: (data) => dispatch(setUserId(data)),
+      setUser: (userId,firstname,lastname,email,dob,radius,isAuthenticated) => dispatch(setUser(userId,firstname,lastname,email,dob,radius,isAuthenticated))
     }
-  
   }
 
 

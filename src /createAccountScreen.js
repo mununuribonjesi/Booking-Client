@@ -13,6 +13,7 @@ import {
 } from 'react-native-scl-alert'
 import { LogBox } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import moment from 'moment';
 
 class createAccountScreen extends Component {
   constructor(props) {
@@ -29,8 +30,10 @@ class createAccountScreen extends Component {
       passworderror:'',
       confirmpassworderror:'',
       email:'',
+      dob:'',
       emailerror:'',
       date:'',
+      dobError:'',
       chosenDate: new Date(),
       isnameError:true,
       issurnameError:true,
@@ -38,6 +41,7 @@ class createAccountScreen extends Component {
       ispasswordError:true,
       isconfirmError:true,
       isAlertError:false,
+      isDobError:true,
       date:new Date()
     };
 
@@ -67,45 +71,46 @@ class createAccountScreen extends Component {
 
   async Submit()
   {
-    if(!this.state.isnameError&&!this.state.issurnameError&&!this.state.isemailError&&!this.state.ispasswordError&&!this.state.isconfirmError)
+    if(!this.state.isnameError&&!this.state.issurnameError&&!this.state.isemailError&&!this.state.ispasswordError&&!this.state.isconfirmError&&!this.state.isDobError)
     {
-
       const response = await axios({
         method: 'post',
         url: config.Authentication_URL+'/api/register',
         data: {
           'email': this.state.email,
           'password': this.state.password,
-          'firstName':this.state.firstname,
-          'lastName':this.state.lastname
-        }
-      });
-      
-      try {
-  
-        if (response.status === 200) {
+          'firstname':this.state.firstname,
+          'lastname':this.state.lastname,
+          'dob':moment(this.state.dob, "DD-MM-YYYY").utc(true)
 
+        }
+      }).then(response =>
+        {
           this.setState(this.baseState);
           this.props.navigation.navigate('verificationScreen',{
             email:response.data
           });
-        }
-  
-      } catch (error) {
-        console.log('There has been a problem with your fetch operation: ' + error.message);
-        throw error;
-      }
+     
+        }).catch (error =>{
+          if(error.response)
+          {
+            if(error.response.status==400)
+            {
+              this.setState({emailerror:"* user already exists",isemailError:true});
+            }
+
+            this.setState({isAlertError:true});
+
+          }
+      })
 
     }
 
     else
     {
-
-
       console.log('set is alert');
       this.setState({isAlertError:true});
       console.log(this.state.isAlertError);
-
     }
 }
 
@@ -156,7 +161,55 @@ class createAccountScreen extends Component {
 
   }
 
-  emailValidation()
+  dobValidation()
+  {
+
+    var validDateRange = /^(0?[1-9]|[12][0-9]|3[01])[-](0?[1-9]|1[012])[-]\d{4}$/
+
+
+    if(this.state.dob=="")
+    {
+
+      this.setState({dobError:"* Dob field cannot be empty",isDobError:true});
+
+    }
+
+    else if(this.state.dob!=""&&!validDateRange.test(this.state.dob))
+    {
+
+      this.setState({dobError:"* please enter a valid date dd-mm-yyyy",isDobError:true});
+
+    }
+
+    else if(this.state.dob!=""&&validDateRange.test(this.state.dob)&&this.getAge(this.state.dob)<13)
+    {
+
+      
+        this.setState({dobError:"*you have to be 13 years old to sign up",isDobError:true});
+      
+    }
+
+
+    else
+    {
+      this.setState({dobError:"",isDobError:false});
+
+    }
+    
+  }
+
+
+
+ getAge(birthDateString) {
+    var today = moment().utc(true);
+    var birthDate = moment(birthDateString, "DD-MM-YYYY").utc(true);
+ 
+    return today.diff(birthDate,'years');
+}
+
+
+
+  async emailValidation()
   {
 
     const emailRE = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
@@ -175,6 +228,81 @@ class createAccountScreen extends Component {
     {
       this.setState({emailerror:"",isemailError:false});
     }
+
+  }
+
+  dobChange(text)
+  {
+
+
+    var regex = /^[0-9-]*$/;
+  
+    var dash = /^[-]*$/;
+
+    var doubleDash = /^[--]*$/;
+
+    var tripleDash = /^[---]*$/;
+
+
+    if (text.length===11)
+    {
+
+      return 
+
+    }
+
+      if(!regex.test(text))
+      {
+        return
+      }
+
+      
+      if(!dash.test(text)&&text.length===3&&this.state.dob.length===2)
+      {
+          
+          var firstTwo = text.substring(0,2) + '-';
+          var thirdOne = text.substring(2,3);
+          text = firstTwo + thirdOne;
+      }
+
+      if(!doubleDash.test(text)&&text.length===6&&this.state.dob.length===5)
+      {
+          
+          var firstTwo = text.substring(0,4) + '-';
+          var thirdOne = text.substring(2,4);
+
+          console.log(thirdOne);
+          
+          text = firstTwo + thirdOne;
+
+          if(tripleDash.test(text))
+          {
+            return
+          }
+          
+      }
+
+
+      if(!dash.test(text)&&text.length===3&&this.state.dob.length===2)
+      {
+          
+          var firstTwo = text.substring(0,2) + '-';
+          var thirdOne = text.substring(2,3);
+          
+          text = firstTwo + thirdOne;
+      }
+
+  
+    if (text.length === 2 && this.state.dob.length === 1) {
+        text += '-'
+    }
+
+
+    if (text.length === 5 && this.state.dob.length === 4) {
+      text += '-'
+   }
+
+   this.setState({dob:text})
 
   }
 
@@ -296,23 +424,20 @@ class createAccountScreen extends Component {
                 onSubmitEditing={()=>{this.DobInput.focus();}}
               />
 
-              <Text style={styles.validation}>{this.state.emailerror}</Text>
+              <Text style={styles.validation}>{this.state.dobError}</Text>
               <TextInput
               ref={(input) => { this.DobInput = input; }}
-                value={this.state.email}
+                value={this.state.dob}
                 returnKeyType="next"
-                onChangeText={(email) => this.setState({ email })}
-                placeholder={'dd/mm/yyyy'}
+                onChangeText={(dob) => this.dobChange(dob)}
+                placeholder={'dd-mm-yyyy'}
                 placeholderTextColor='black'
                 style={styles.loginFormTextInput}
                 placeholderColor="#3897f1"
+                onBlur={async () => this.dobValidation()}
                 onSubmitEditing={()=>{this.passwordInput.focus();}}
               />
-
-
               
-              
-
               <Text style={styles.validation}>{this.state.passworderror}</Text>
 
               <TextInput

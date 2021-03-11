@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { FlatList,View, Text, StyleSheet, TouchableOpacity,Image,Animated} from 'react-native';
 import { RFValue } from "react-native-responsive-fontsize";
 import {ListItem } from 'react-native-elements';
-import { setOrganisationId, setService, setTotal } from './store/actions'
+import { setAuthentication, setOrganisationId, setService, setTotal } from './store/actions'
 import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
@@ -31,20 +31,48 @@ class ProfileScreen extends Component
         }
     }
 
-    data = [
-        {firstName:"Mununuri",
-        lastName:"Bonjesi",
-        changePassword:"Change Password",
-        email:"Mununuri.Bonjesi@gmail.com",
-        dob:"12-05-1993",
-        password:""
+
+ 
+    async updateChanges()
+    {
+      label = 'radius'
+      text = this.state.value;
+      
+      const update = {[label]:text};
+      const userId = {_id:this.props.user.userId};
+
+        await axios({
+          method: 'POST',
+          url: config.Authentication_URL+'/api/user',
+          data: {
+
+            update:update,
+            userId:userId
+
+          }
+        }).then(response =>
+          { 
+            this.props.navigation.navigate("ProfileScreen");
+          }).catch (error =>{
+            if(error.response)
+            {
+                this.setState({errorMessage:JSON.stringify(error.response.data.message),isError:true});
+            }
+        })
     }
-    ]
 
     setValue(value)
     {
 
         this.setState({value:value})
+    }
+
+    async logout()
+    { 
+         this.props.setAuthentication(false);
+         await AsyncStorage.removeItem('token')
+         await AsyncStorage.getItem('token');
+         this.props.navigation.navigate("LoginScreen");
     }
 
 
@@ -61,13 +89,13 @@ class ProfileScreen extends Component
           >
           <Divider style={{color:'black'}}/>
 
-          <List.Item title={"Forename\n"}
-          description={this.data[0].firstName}
+          <List.Item title={"Firstname\n"}
+          description={this.props.user.firstname}
           right={props => <TouchableOpacity 
 
             onPress={() =>
               this.props.navigation.navigate("UpdateScreen",{
-                text:this.data[0].firstName,label:"Forename",password:false,delete:false
+                text:this.props.user.firstname,label:"Firstname",password:false,delete:false
               })
             }
             
@@ -80,13 +108,13 @@ class ProfileScreen extends Component
           <Divider style={{color:'black'}}/>
 
 
-          <List.Item title={"Surname\n"}
-          description={this.data[0].lastName}
+          <List.Item title={"Lastname\n"}
+          description={this.props.user.lastname}
           right={props => <TouchableOpacity 
 
             onPress={() =>
               this.props.navigation.navigate("UpdateScreen",{
-                text:this.data[0].lastName,label:"Surname",password:false,delete:false
+                text:this.props.user.lastname,label:"Lastname",password:false,delete:false
               })
             }
             
@@ -99,12 +127,12 @@ class ProfileScreen extends Component
 
 
           <List.Item title={"Email\n"}
-          description={this.data[0].email}
+          description={this.props.user.email}
           right={props => <TouchableOpacity 
 
             onPress={() =>
               this.props.navigation.navigate("UpdateScreen",{
-                text:this.data[0].email,label:"Email",password:false,delete:false
+                text:this.props.user.email,label:"Email",password:false,delete:false
               })
             }
             
@@ -117,12 +145,12 @@ class ProfileScreen extends Component
           
           
           <List.Item title={"D.O.B\n"}
-          description={this.data[0].dob}
+          description={this.props.user.dob}
           right={props => <TouchableOpacity 
 
             onPress={() =>
               this.props.navigation.navigate("UpdateScreen",{
-                text:this.data[0].dob,label:"DOB",password:false,delete:false
+                text:this.props.user.dob,label:"Dob",password:false,delete:false
               })
             }>
             <Feather name="edit" style={{marginTop:35,paddingRight:20}} size={24} color="black" /></TouchableOpacity>}
@@ -137,17 +165,38 @@ class ProfileScreen extends Component
         title="Location Settings"
         >
         <Divider style={{color:'black'}}/>
-        <View style={{ flex: 1, alignItems: 'stretch', marginTop:20,justifyContent: 'center' }}>
+
+        <View style={{ flex: 1,top:10, alignItems: 'stretch',justifyContent: 'center' }}>
         <Slider
-          value={this.state.value.toFixed(0)}
-          onValueChange={(value) => this.setState({ value })}
+          value={Number(this.props.user.radius).toFixed(0)}
+          onValueChange={(value) => this.setValue( value )}
           maximumValue={100}
-          minimumValue={10}
           step={1}
           trackStyle={{ height: 10, color: 'blue' }}
         />
         <Text style={{marginTop:20,marginBottom:20}}>Radius: {this.state.value} miles</Text>
       </View>
+
+      <TouchableOpacity
+      
+      onPress= {
+        () => {
+          this.updateChanges()
+        }
+      }
+      >
+      <View style={styles.saveButton}> 
+ 
+
+     <Text style={styles.buttonText}>      
+  
+       <Text style={{paddingLeft:20,marginTop:50}}>Save</Text>          
+     </Text>
+
+
+    </View>
+    </TouchableOpacity>
+
       <Divider style={{color:'black'}}/>
       </List.Accordion>
    
@@ -212,6 +261,9 @@ title="Terms & Conditions"
       </View>
       <View style='footer'> 
       <TouchableOpacity
+      onPress={() =>
+        this.logout()
+      }
       >
       <View style={styles.loginButton}> 
  
@@ -226,12 +278,6 @@ title="Terms & Conditions"
     </TouchableOpacity>
     </View>
         </ScrollView>
-
-        
-
-        
-
-
 
     )
     }
@@ -265,6 +311,26 @@ export const styles = StyleSheet.create({
 
   },
 
+
+  saveButton: {
+    backgroundColor: 'green',
+    borderRadius: 5,
+    height: 40,
+    textAlign:'center',
+    justifyContent:'center',
+    width:'20%',
+    alignSelf:'center',
+    marginBottom:20
+  },
+
+  buttonText:{
+    color:'white',
+    fontSize:RFValue(20),
+    textAlign:'center',
+    fontWeight:'600',
+  },
+
+
   footer:{
     height:'15%'
 
@@ -284,4 +350,19 @@ export const styles = StyleSheet.create({
   },
 
 })
-export default ProfileScreen
+
+const mapStatetoProps = (state) => {
+
+  return {
+    user: state.userReducer,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  
+  return {
+    setAuthentication:(isAuthenticated) => dispatch(setAuthentication(isAuthenticated))
+  }
+}
+
+export default connect(mapStatetoProps,mapDispatchToProps)(ProfileScreen);
