@@ -4,7 +4,6 @@ import LoginScreen from "./src /LoginScreen";
 import HomeScreen from "./src /HomeScreen";
 import ProfileScreen from "./src /ProfileScreen";
 import Header from './shared/header';
-import StripePaymentScreen from './src /StripePaymentScreen';
 import React from 'react';
 import AppointmentScreen from "./src /AppointmentScreen";
 import CreateAccountScreen from "./src /CreateAccountScreen";
@@ -25,8 +24,9 @@ import BackButton from "./shared/BackButton";
 import SplashScreen from './src /SplashScreen';
 import UpdateScreen from "./src /UpdateScreen";
 import CancelButton from "./shared/CancelButton";
+import { LogBox } from "react-native";
 const store = configureStore;
-
+LogBox.disableYellowBox = true;
 
 const screens = {
 
@@ -151,18 +151,6 @@ UpdateScreen:{
   
 },
 
-
-StripePaymentScreen:{
-  screen:StripePaymentScreen,
-  navigationOptions:({navigation}) => ({
-    headerTitle:() => <BsHeader />,
-    headerShown:true,
-
-  }),
-  
-},
-
-
 SlotScreen:{
   screen:SlotScreen,
   navigationOptions:({navigation}) => ({
@@ -210,7 +198,7 @@ HomeScreen: {
 
 const Navigation = createStackNavigator(screens,
   {
-    initialRouteName:'LoginScreen',
+    initialRouteName:'SplashScreen',
 
       defaultNavigationOptions:{
       headerStyle: {backgroundColor:'black', height:100},

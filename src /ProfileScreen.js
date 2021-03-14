@@ -7,10 +7,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import {Divider,List,} from 'react-native-paper';
 import { Feather,AntDesign,Entypo} from '@expo/vector-icons'; 
-import { Slider } from 'react-native-elements';
 import config from '../config';
 import { ScrollView } from 'react-native-gesture-handler';
 import moment from 'moment';
+import Slider from '@react-native-community/slider';
 
 class ProfileScreen extends Component
 {
@@ -179,46 +179,9 @@ class ProfileScreen extends Component
 
         </List.Accordion>
 
-        <Divider style={{color:'black'}}/>
-
-        <List.Accordion
-        title="Location Settings"
-        >
-        <Divider style={{color:'black'}}/>
-
-        <View style={{ flex: 1,top:10, alignItems: 'stretch',justifyContent: 'center' }}>
-        <Slider
-          value={Number(user.radius).toFixed(0)}
-          onValueChange={(value) => this.setValue( value )}
-          maximumValue={100}
-          step={1}
-          trackStyle={{ height: 10, color: 'blue' }}
-        />
-        <Text style={{marginTop:20,marginBottom:20}}>Radius: {this.state.value} miles</Text>
-      </View>
-
-      <TouchableOpacity
-      
-      onPress= {
-        () => {
-          this.updateChanges()
-        }
-      }
-      >
-      <View style={styles.saveButton}> 
- 
-
-     <Text style={styles.buttonText}>      
-  
-       <Text style={{paddingLeft:20,marginTop:50}}>Save</Text>          
-     </Text>
+       <Divider style={{color:'black'}}/>
 
 
-    </View>
-    </TouchableOpacity>
-
-      <Divider style={{color:'black'}}/>
-      </List.Accordion>
    
       <Divider style={{color:'black'}}/>
 
@@ -249,7 +212,7 @@ class ProfileScreen extends Component
           <List.Item  title={<Text style={{color:'red'}}>Delete Account</Text>}/>
           </TouchableOpacity>
           <Divider style={{color:'black'}}/>
-        </List.Accordion>
+        </List.Accordion> 
 
 
         <Divider style={{color:'black'}}/>

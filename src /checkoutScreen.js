@@ -2,22 +2,171 @@ import React, { Component } from 'react';
 import { FlatList, Text, View, KeyboardAvoidingView, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import { ListItem } from 'react-native-elements';
-import Moment from 'moment'
+import Moment from 'moment';
 import { connect } from 'react-redux';
+import config from '../config';
+import axios from 'react-native-axios';
+import { Ionicons } from '@expo/vector-icons';
+import { PaymentsStripe as Stripe } from 'expo-payments-stripe';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {UIActivityIndicator} from 'react-native-indicators';
+
+import {
+  SCLAlert,
+  SCLAlertButton
+} from 'react-native-scl-alert'
 
 class CheckoutScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      modalVisible: false,
-      placeholders: { number: "XXXX XXXX XXXX XXXX", expiry: "MM/YY", cvc: "CVC" },
-      labels: { number: "CARD NUMBER", expiry: "EXPIRY", cvc: "CVC/CCV" }
+      visible: true,
+      labels: { number: "CARD NUMBER", expiry: "EXPIRY", cvc: "CVC/CCV" },
+      isLoading: false,
+      error: false,
+      isBack: true,
+      isSuccessfull: false,
+      isPayment: false,
+      isError: false,
+      isView: false,
+      isRetry: false,
+      errorMessage:'',
+      username:'',
+      expiry:'',
+      cvv:'',
+      cardnumber:'',
+      isVisa:false,
+      isMastercard:false,
+      isAmericanExpress:false,
+      isJcb:false,
+      isDiscover:false
     }
+
+    this.isError = this.isError.bind(this);
+    this.closeSuccessfull = this.closeSuccessfull.bind(this);
   };
 
   setModalVisible = () => {
     this.setState({ modalVisible: !this.state.modalVisible });
   }
+
+
+  async componentDidMount() {
+    this.setState({ isSuccessfull: false, error: false });
+
+    Stripe.setOptionsAsync({
+      publishableKey: config.STRIPE_KEY, // Your key
+      androidPayMode: 'test', // [optional] used to set wallet environment (AndroidPay)
+      merchantId: 'your_merchant_id', // [optional] used for payments with ApplePay
+    });
+
+    this.setState({isVisa:false,isMastercard:false,isAmericanExpress:false});
+  }
+
+
+  async checkOut()
+  {
+
+    this.setState({ isBack: false });
+    this.setState({ isLoading: true });
+
+    const authToken = await AsyncStorage.getItem('token');
+    const slot = this.props.orders.slot;
+    const skill = Object.values(this.props.orders.service);
+    const barber = this.props.orders.barber;
+
+    var expiryArray = this.state.expiry.split('/')
+    var expirationMonth =  Number(expiryArray[0]);
+    var expYear = Number(expiryArray[1]);
+
+    var total = this.props.orders.total;
+
+
+
+    const params ={
+      number:this.state.cardnumber,
+      expMonth:expirationMonth,
+      expYear:expYear,
+      cvc:this.state.cvv,
+    }
+
+
+
+    console.log('muni')
+
+
+    var token;
+    await Stripe.paymentRequestWithCardFormAsync().then((value) => { token = value  }) .catch((error) => {  return  this.setState({ isLoading: false }); })
+
+
+    await axios({
+      method: 'post',
+      url: config.Stripe_URL + '/api/payment',
+      data: {
+        'token': token.tokenId,
+        'total': total*100,
+        'name': barber,
+        'startTime': slot.startTime,
+        'endTime': slot.endTime,
+        'date': slot.date,
+        'skill': skill[0].skillId
+      },
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    }).then(response => {
+
+
+
+      res = response
+
+
+    }).catch(error => {
+      if (error.response) {
+        res = error.response;
+        console.log(error.response);
+        this.setState({ errorMessage: res.data.message, isError: true });
+      }
+    })
+
+    if (res.status === 200 && token) {
+
+      this.setState({ isSuccessfull: true, isPayment: true });
+    }
+
+    this.setState({ isLoading: false });
+
+
+  }
+
+
+
+  isError = (isRetry) => {
+    this.setState({ isError: false });
+
+    if (isRetry) {
+      this.props.navigation.push('SlotScreen');
+    }
+    else {
+      this.props.navigation.push('HomeScreen');
+    }
+  }
+
+
+  closeSuccessfull = (isView) => {
+    this.setState({ isSuccessfull: false })
+
+  
+
+    if (isView) {
+      this.props.navigation.navigate('AppointmentScreen');
+    }
+
+    else {
+      this.props.navigation.navigate('HomeScreen');
+    }
+  }
+
 
 
   onChangeForm = (form) => {
@@ -90,31 +239,73 @@ class CheckoutScreen extends Component {
 
     return (
 
-      <View styles={styles.container}>
-        <View style={styles.subHeader}>
-          <Text style={styles.textStyle}>
-            Order Details
-            </Text>
-        </View>
+      <View style={styles.container}>
 
-        <View style={styles.details}>
-          <FlatList style={styles.FlatList}
-            data={data}
-            ItemSeparatorComponent={this.FlatListItemSeparator}
-            ListFooterComponent={this.FlatListItemSeparator}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={this.renderItem}
-          />
-        </View>
-        <View style={styles.Footer}>
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate('StripePaymentScreen')}
-          >
-            <Text style={styles.FooterText}>
-              Checkout
-          </Text>
-          </TouchableOpacity>
-        </View>
+      {this.state.isLoading ?
+
+        <View style={styles.loading}>
+        <UIActivityIndicator name="Saving" size={80} color="black" />
+        <Text style={styles.loadingText}> Processing Payment</Text>
+      </View>
+      :
+<View> 
+      <View style={styles.subHeader}>
+      <Text style={styles.textStyle}>
+        Order Details
+        </Text>
+    </View>
+
+    <View style={styles.details}>
+      <FlatList style={styles.FlatList}
+        data={data}
+        ItemSeparatorComponent={this.FlatListItemSeparator}
+        ListFooterComponent={this.FlatListItemSeparator}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={this.renderItem}
+      />
+    </View>
+    <View style={styles.Footer}>
+      <TouchableOpacity
+        onPress={() => this.checkOut()}
+      >
+        <Text style={styles.FooterText}>
+          Checkout
+      </Text>
+      </TouchableOpacity>
+    </View>
+    
+      </View>
+
+        }
+       
+
+        <SCLAlert
+        show={this.state.isError}
+        onRequestClose={() => this.isError(isRetry = true)}
+        theme="danger"
+        title="OOPS"
+        subtitle={this.state.errorMessage}
+        headerIconComponent={<Ionicons name="ios-thumbs-down" size={32} color="white" />}
+      >
+        <SCLAlertButton theme="success" onPress={() => this.isError(isRetry = true)}>Try Again</SCLAlertButton>
+        <SCLAlertButton theme="danger" onPress={() => this.isError(isRetry = false)}>Cancel</SCLAlertButton>
+      </SCLAlert>
+
+      <SCLAlert
+        show={this.state.isSuccessfull}
+        onRequestClose={() => this.closeSuccessfull(isView = true)}
+        theme="success"
+        title="Pay Success"
+        subtitle="Appointment was created successfully"
+        headerIconComponent={<Ionicons name="ios-thumbs-up" size={32} color="white" />}
+      >
+        <SCLAlertButton theme="success" onPress={() => this.closeSuccessfull(isView = true)}>View</SCLAlertButton>
+        <SCLAlertButton theme="info" onPress={() => this.closeSuccessfull(isView = false)}>Return</SCLAlertButton>
+      </SCLAlert>
+
+        
+
+
       </View>
     )
   }
@@ -124,19 +315,19 @@ const mapStatetoProps = (state) => {
 
   return {
     orders: state.orderReducer
-  }
+  } 
 }
 
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-    height: '100%',
+   container: {
     flex: 1,
-    backgroundColor: 'white',
-    textAlign: 'left'
-
+    position: 'relative',
+    height: '100%',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor:'#fff44f'
   },
+
   loginFormTextInput: {
     backgroundColor: 'white'
 
@@ -233,6 +424,25 @@ const styles = StyleSheet.create({
   FlatList: {
     marginTop: 40
 
+  },
+
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:'#fff44f'
+  },
+
+  loadingText: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: RFValue(30),
+    color: '#0D5916'
   },
 
   rightText: {
