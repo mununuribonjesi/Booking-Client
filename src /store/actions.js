@@ -1,4 +1,4 @@
-import {SETBARBER ,SETSERVICE,SETSLOT ,SETTOTAL,SETBARBERID,SETORGANISATIONID,SETUSERID,SETUSER,SETAUTHENTICATION} from './actionTypes'
+import {SETBARBER ,SETSERVICE,SETSLOT ,SETTOTAL,SETBARBERID,SETORGANISATIONID,SETUSERID,SETUSER,SETAUTHENTICATION,SETUSERCACHE,GETUSERCACHE,SETUPDATE} from './actionTypes'
 
 export const setBarber = (barber) => ({
     type: SETBARBER,
@@ -47,6 +47,20 @@ export const setUser = (userId,firstname,lastname,email,dob,radius,isAuthenticat
     radius:radius,
     isAuthenticated:isAuthenticated
 
+})
+
+export const setUpdate = (update) => ({
+    type:SETUPDATE,
+    update:update
+})
+
+export const setUserCache = (data) =>({
+    type:SETUSERCACHE,
+    data:data
+})
+
+export const getUserCache =() =>({
+    type:GETUSERCACHE
 })
 
 export const setAuthentication = (isAuthenticated) =>({

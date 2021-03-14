@@ -13,7 +13,7 @@ import { LogBox } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 
-class verificationScreen extends Component {
+class VerificationScreen extends Component {
   constructor(props) {
     super(props);
     };
@@ -220,6 +220,6 @@ const mapStatetoProps = (state) => {
 
   
   
-  export default connect(mapStatetoProps, mapDispatchToProps)(verificationScreen);
+  export default connect(mapStatetoProps, mapDispatchToProps)(VerificationScreen);
 
   

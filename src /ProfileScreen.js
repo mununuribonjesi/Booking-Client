@@ -1,24 +1,16 @@
 import React, { Component } from 'react';
-import { FlatList,View, Text, StyleSheet, TouchableOpacity,Image,Animated} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity,Image,Animated} from 'react-native';
 import { RFValue } from "react-native-responsive-fontsize";
-import {ListItem } from 'react-native-elements';
-import { setAuthentication, setOrganisationId, setService, setTotal } from './store/actions'
+import { setAuthentication, setUpdate, setUser,setUserCache,setUserId} from './store/actions';
 import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import UserAvatar from 'react-native-user-avatar';
-import {FontAwesome5 } from '@expo/vector-icons';
-import {Divider, DataTable,Drawer,List,TextInput } from 'react-native-paper';
-import { Feather,AntDesign,Entypo,SimpleLineIcons } from '@expo/vector-icons'; 
+import {Divider,List,} from 'react-native-paper';
+import { Feather,AntDesign,Entypo} from '@expo/vector-icons'; 
 import { Slider } from 'react-native-elements';
-import {
-  SCLAlert,
-  SCLAlertButton
-} from 'fork-react-native-scl-alert';
 import config from '../config';
-import { relative } from 'path';
 import { ScrollView } from 'react-native-gesture-handler';
+import moment from 'moment';
 
 class ProfileScreen extends Component
 {
@@ -27,12 +19,37 @@ class ProfileScreen extends Component
         super(props);
 
         this.state ={
-            value:20
+            value:20,
+            data:""
         }
     }
 
+    async componentDidMount()
+    {
 
- 
+      var authenticatedUser = await AsyncStorage.getItem('user');
+      var data = JSON.parse(authenticatedUser);
+      console.log(data);
+      this.setState({data:data})
+
+      console.log(this.state.data);
+
+    }
+
+    async componentDidUpdate()
+    {
+
+      if(this.props.update)
+      {
+      var authenticatedUser = await AsyncStorage.getItem('user');
+      var data = JSON.parse(authenticatedUser);
+      this.setState({data:data});
+      console.log(this.state.data);
+      this.props.setUpdate(false);
+      }
+
+    }
+
     async updateChanges()
     {
       label = 'radius'
@@ -78,6 +95,9 @@ class ProfileScreen extends Component
 
     render()
     {
+
+      var user = this.state.data;
+      var dob = moment(user.dob).format("DD-MM-YYYY")
     return (
 
         <ScrollView> 
@@ -90,12 +110,12 @@ class ProfileScreen extends Component
           <Divider style={{color:'black'}}/>
 
           <List.Item title={"Firstname\n"}
-          description={this.props.user.firstname}
+          description={user.firstname}
           right={props => <TouchableOpacity 
 
             onPress={() =>
               this.props.navigation.navigate("UpdateScreen",{
-                text:this.props.user.firstname,label:"Firstname",password:false,delete:false
+                text:user.firstname,label:"Firstname",password:false,delete:false
               })
             }
             
@@ -109,12 +129,12 @@ class ProfileScreen extends Component
 
 
           <List.Item title={"Lastname\n"}
-          description={this.props.user.lastname}
+          description={user.lastname}
           right={props => <TouchableOpacity 
 
             onPress={() =>
               this.props.navigation.navigate("UpdateScreen",{
-                text:this.props.user.lastname,label:"Lastname",password:false,delete:false
+                text:user.lastname,label:"Lastname",password:false,delete:false
               })
             }
             
@@ -127,12 +147,12 @@ class ProfileScreen extends Component
 
 
           <List.Item title={"Email\n"}
-          description={this.props.user.email}
+          description={user.email}
           right={props => <TouchableOpacity 
 
             onPress={() =>
               this.props.navigation.navigate("UpdateScreen",{
-                text:this.props.user.email,label:"Email",password:false,delete:false
+                text:user.email,label:"Email",password:false,delete:false
               })
             }
             
@@ -145,12 +165,12 @@ class ProfileScreen extends Component
           
           
           <List.Item title={"D.O.B\n"}
-          description={this.props.user.dob}
+          description={dob}
           right={props => <TouchableOpacity 
 
             onPress={() =>
               this.props.navigation.navigate("UpdateScreen",{
-                text:this.props.user.dob,label:"Dob",password:false,delete:false
+                text:dob,label:"Dob",password:false,delete:false
               })
             }>
             <Feather name="edit" style={{marginTop:35,paddingRight:20}} size={24} color="black" /></TouchableOpacity>}
@@ -168,7 +188,7 @@ class ProfileScreen extends Component
 
         <View style={{ flex: 1,top:10, alignItems: 'stretch',justifyContent: 'center' }}>
         <Slider
-          value={Number(this.props.user.radius).toFixed(0)}
+          value={Number(user.radius).toFixed(0)}
           onValueChange={(value) => this.setValue( value )}
           maximumValue={100}
           step={1}
@@ -210,7 +230,7 @@ class ProfileScreen extends Component
           <TouchableOpacity
           onPress={() =>
             this.props.navigation.navigate("UpdateScreen",{
-              text:this.state.password,label:"",password:true,delete:false
+              text:this.state.password,label:"password",password:true,delete:false
             })
           }
           
@@ -355,13 +375,16 @@ const mapStatetoProps = (state) => {
 
   return {
     user: state.userReducer,
+    update: state.updateReducer.update
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   
   return {
-    setAuthentication:(isAuthenticated) => dispatch(setAuthentication(isAuthenticated))
+        setAuthentication:(bool)=> dispatch(setAuthentication(bool)),
+        setUser: (userId, firstname, lastname, email, dob, radius, isAuthenticated) => dispatch(setUser(userId, firstname, lastname, email, dob, radius, isAuthenticated)),
+        setUpdate:(update)=> dispatch(setUpdate(update))
   }
 }
 

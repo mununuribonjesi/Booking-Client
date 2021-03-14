@@ -7,7 +7,7 @@ import Header from './shared/header';
 import StripePaymentScreen from './src /StripePaymentScreen';
 import React from 'react';
 import AppointmentScreen from "./src /AppointmentScreen";
-import createAccountScreen from "./src /createAccountScreen";
+import CreateAccountScreen from "./src /CreateAccountScreen";
 import BookScreen from "./src /BookScreen";
 import GalleryScreen from "./src /GalleryScreen";
 import OurTeamScreen from "./src /OurTeamScreen";
@@ -15,15 +15,14 @@ import ServicesScreen from "./src /ServicesScreen";
 import AboutUsScreen from "./src /AboutUsScreen";
 import BsHeader from "./shared/BsHeader";
 import SlotScreen from "./src /SlotScreen";
-import CheckoutScreen from "./src /checkoutScreen";
+import CheckoutScreen from "./src /CheckoutScreen";
 import LocationScreen from "./src /LocationScreen";
 import {Provider} from "react-redux";
 import configureStore from './src /store/store';
-import verificationScreen from "./src /verificationScreen";
+import VerificationScreen from "./src /VerificationScreen";
 import {TouchableOpacity} from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; 
 import BackButton from "./shared/BackButton";
-import splashScreen from './src /splashScreen';
+import SplashScreen from './src /SplashScreen';
 import UpdateScreen from "./src /UpdateScreen";
 import CancelButton from "./shared/CancelButton";
 const store = configureStore;
@@ -32,8 +31,8 @@ const store = configureStore;
 const screens = {
 
 
-  splashScreen: {
-    screen: splashScreen,
+  SplashScreen: {
+    screen: SplashScreen,
     navigationOptions: {
       headerTitle: () => <Header />,
       headerShown: false, //this will hide the header
@@ -68,15 +67,15 @@ const screens = {
     },
 },
 
-createAccountScreen: {
-  screen: createAccountScreen,
+CreateAccountScreen: {
+  screen: CreateAccountScreen,
   navigationOptions: {
     headerTitle: () => <Header />,
     headerShown: false //this will hide the header
   },
 },
-verificationScreen: {
-  screen: verificationScreen,
+VerificationScreen: {
+  screen: VerificationScreen,
   navigationOptions: {
     headerTitle: () => <Header />,
     headerShown: false //this will hide the header
@@ -211,7 +210,7 @@ HomeScreen: {
 
 const Navigation = createStackNavigator(screens,
   {
-    initialRouteName:'ProfileScreen',
+    initialRouteName:'LoginScreen',
 
       defaultNavigationOptions:{
       headerStyle: {backgroundColor:'black', height:100},

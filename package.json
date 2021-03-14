@@ -36,6 +36,7 @@
     "react-native": "~0.63.4",
     "react-native-autocomplete-googleplaces-tnmt": "^1.0.4",
     "react-native-axios": "^0.17.1",
+    "react-native-cache": "^2.0.1",
     "react-native-calendar-datepicker": "^1.2.2",
     "react-native-check-box": "^2.1.7",
     "react-native-customize-selected-date": "^1.0.1",

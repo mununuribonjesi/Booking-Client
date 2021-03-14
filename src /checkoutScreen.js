@@ -27,52 +27,66 @@ class CheckoutScreen extends Component {
   renderItem = ({ item }) => {
     return (
       <View>
+      <ListItem style={styles}>
+        <ListItem.Title style={styles.leftText}>Barber:</ListItem.Title>
+        <ListItem.Content>
+        </ListItem.Content>
+        <Text style={styles.rightText}>{item.barber}
+        </Text>
+      </ListItem>
+      <ListItem >
+        <ListItem.Title style={styles.leftText}>Date:</ListItem.Title>
+        <ListItem.Content >
+        </ListItem.Content>
+        <Text style={styles.rightText}>
+          {Moment(new Date(item.date)).format("ddd DD MMM YYYY")}
+        </Text>
+      </ListItem>
+      <ListItem bottomDivider>
+        <ListItem.Title style={styles.leftText}>Slot:</ListItem.Title>
+        <ListItem.Content>
+        </ListItem.Content>
+        <Text style={styles.rightText}>
+          {item.startime} - {item.endtime}
+        </Text>
+      </ListItem>
+
         <ListItem style={styles}>
-          <ListItem.Title style={styles.leftText}>Barber:</ListItem.Title>
+          <ListItem.Title style={styles.leftText}>x1  {item.name}</ListItem.Title>
           <ListItem.Content>
           </ListItem.Content>
-          <Text style={styles.rightText}>{item.barber}
+          <Text style={styles.rightText}>£{Number(item.price).toFixed(2)}
           </Text>
         </ListItem>
-        <ListItem >
-          <ListItem.Title style={styles.leftText}>Date:</ListItem.Title>
-          <ListItem.Content >
-          </ListItem.Content>
-          <Text style={styles.rightText}>
-            {Moment(new Date(item.slot.date)).format("ddd DD MMM YYYY")}
-          </Text>
-        </ListItem>
-        <ListItem bottomDivider>
-          <ListItem.Title style={styles.leftText}>Slot:</ListItem.Title>
-          <ListItem.Content>
-          </ListItem.Content>
-          <Text style={styles.rightText}>
-            {item.slot.startTime} - {item.slot.endTime}
-          </Text>
-        </ListItem>
-        {item.service.map((s) => (
-          <ListItem style={styles}>
-            <ListItem.Title style={styles.leftText}>x1  {s.Name}</ListItem.Title>
-            <ListItem.Content>
-            </ListItem.Content>
-            <Text style={styles.rightText}>£{s.Price.toFixed(2)}
-            </Text>
-          </ListItem>
-        ))
-        }
-        <ListItem topDivider>
-          <ListItem.Title style={styles.leftText}>Total:</ListItem.Title>
-          <ListItem.Content>
-          </ListItem.Content>
-          <Text style={styles.rightText}>
-            £{item.total.toFixed(2)}
-          </Text>
-        </ListItem>
-      </View>)
+  
+      
+      <ListItem topDivider>
+        <ListItem.Title style={styles.leftText}>Total:</ListItem.Title>
+        <ListItem.Content>
+        </ListItem.Content>
+        <Text style={styles.rightText}>
+          £{Number(item.total).toFixed(2)}
+        </Text>
+      </ListItem>
+    </View>)
   }
   render() {
 
-    const windowHeight = Dimensions.get('window').height;
+  var order = this.props.orders;
+
+    data = [
+    { "barber":order.barber,
+      "name":order.service[0].Name,
+      "price":order.service[0].Price,
+      "startime":order.slot.startTime,
+      "endtime":order.slot.endTime,
+      "date":order.slot.date,
+      "total":order.total
+    }]
+    
+    
+
+    console.log(data);
 
     return (
 
@@ -85,7 +99,7 @@ class CheckoutScreen extends Component {
 
         <View style={styles.details}>
           <FlatList style={styles.FlatList}
-            data={Object.values(this.props.orders)}
+            data={data}
             ItemSeparatorComponent={this.FlatListItemSeparator}
             ListFooterComponent={this.FlatListItemSeparator}
             keyExtractor={(item, index) => index.toString()}
@@ -107,8 +121,9 @@ class CheckoutScreen extends Component {
 }
 
 const mapStatetoProps = (state) => {
+
   return {
-    orders: state
+    orders: state.orderReducer
   }
 }
 

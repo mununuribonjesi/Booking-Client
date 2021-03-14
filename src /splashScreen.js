@@ -1,16 +1,10 @@
 import React,{Component} from 'react';
 import{View,Image,Text,StyleSheet,Animated} from 'react-native';
-import {UIActivityIndicator} from 'react-native-indicators';
 import { LogBox } from 'react-native';
-
 import Logo from '../assets/logo.png';
 
-const switchtoAuth = () => {
 
-
-}
-
-class splashScreen extends Component
+class SplashScreen extends Component
 {
 
 
@@ -89,7 +83,7 @@ class splashScreen extends Component
 
 }
 
-export default splashScreen;
+export default SplashScreen;
 
 const styles = StyleSheet.create({
     container:{

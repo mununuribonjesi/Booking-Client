@@ -1,21 +1,19 @@
 import React, { Component } from 'react';
 import axios from 'react-native-axios';
-import { Keyboard, Button, Text, View, StyleSheet, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
-import KeyboardSpacer from 'react-native-keyboard-spacer';
+import {Text, View, StyleSheet, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUserId} from './store/actions';
 import { connect } from 'react-redux';
 import config from '../config';
-import {Ionicons,MaterialIcons,AntDesign,FontAwesome5 } from '@expo/vector-icons';
+import {FontAwesome5 } from '@expo/vector-icons';
 import {
   SCLAlert,
   SCLAlertButton
 } from 'react-native-scl-alert'
 import { LogBox } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 
-class createAccountScreen extends Component {
+class CreateAccountScreen extends Component {
   constructor(props) {
     super(props);
 
@@ -87,7 +85,7 @@ class createAccountScreen extends Component {
       }).then(response =>
         {
           this.setState(this.baseState);
-          this.props.navigation.navigate('verificationScreen',{
+          this.props.navigation.navigate('VerificationScreen',{
             email:response.data
           });
      
@@ -658,6 +656,6 @@ const mapStatetoProps = (state) => {
 
   
   
-  export default connect(mapStatetoProps, mapDispatchToProps)(createAccountScreen);
+  export default connect(mapStatetoProps, mapDispatchToProps)(CreateAccountScreen);
 
   

@@ -73,7 +73,7 @@ isError = () =>
 
   
 
-login(response)
+async login(response)
 {
   const token = response.data.token;
   if (response.status === 200 && token) {
@@ -85,19 +85,18 @@ login(response)
 
    
 
-    var dob = moment(user.dob).format("DD-MM-YYYY");
+
 
     if(user.isVerified)
     {
+      await AsyncStorage.setItem('user', JSON.stringify(user));
       this.props.navigation.navigate('HomeScreen');
-      this.props.setUser(user._id,user.firstname,user.lastname,user.email,dob,user.radius,true)
       this.setState(this.baseState);
-
     }
     else 
     {
       this.setState(this.baseState);
-      this.props.navigation.navigate('verificationScreen',{
+      this.props.navigation.navigate('VerificationScreen',{
         email:user.email
       });
     }
@@ -175,7 +174,7 @@ login(response)
               </TouchableOpacity>
 
               <TouchableOpacity 
-              onPress={() => { this.props.navigation.navigate('createAccountScreen')}}
+              onPress={() => { this.props.navigation.navigate('CreateAccountScreen')}}
               >
               <View style={styles.createButton}> 
               <Text style={styles.signUpButtonText}>           

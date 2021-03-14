@@ -1,9 +1,10 @@
 import {createStore,combineReducers} from 'redux';
-import {orderReducer,userReducer} from './reducers';
+import {orderReducer,userReducer,updateReducer} from './reducers';
 
 const rootReducer = combineReducers({
     orderReducer: orderReducer,
-    userReducer: userReducer
+    userReducer: userReducer,
+    updateReducer:updateReducer
 })
 
 const configureStore = () => createStore(rootReducer);

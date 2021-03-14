@@ -1,7 +1,8 @@
-import { ActivityIndicatorComponent } from 'react-native'
-import { act } from 'react-test-renderer'
-import { SETBARBER, SETBARBERID, SETSERVICE, SETSLOT, SETTOTAL, SETUSERID, SETORGANISATIONID, SETUSER,SETAUTHENTICATION} from './actionTypes'
-
+import { ActivityIndicatorComponent } from 'react-native';
+import { act } from 'react-test-renderer';
+import { SETBARBER, SETBARBERID, SETSERVICE, SETSLOT, SETTOTAL, SETUSERID, SETORGANISATIONID, SETUSER,SETAUTHENTICATION,SETUSERCACHE,SETUPDATE} from './actionTypes';
+import { Cache } from "react-native-cache";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const initialState = {
     service: [],
     barber: '',
@@ -10,6 +11,11 @@ const initialState = {
     barberId: '',
     userId: '',
     organisationId: ''
+}
+
+const updateState =
+{
+    update:false
 }
 
 
@@ -22,6 +28,49 @@ const userState = {
     radius: 0,
     isAuthenticated:false
 }
+
+const memberCache = new Cache({
+    namespace: "MuniBook",
+    policy: {
+        maxEntries: 50000
+    },
+    backend: AsyncStorage
+});
+
+
+const userCache = async (cache = memberCache, action) => 
+ {
+
+
+
+    console.log(data);
+
+    switch(action.type)
+    {
+        case SETUSERCACHE:
+              await cache.set("user",action.data)
+              break
+        
+            
+        default: 
+        return data
+    }
+
+}
+
+
+const updateReducer = (state=updateState,action) =>
+{
+    switch(action.type){
+        case SETUPDATE:
+            return {...state,
+                update:state.update = action.update
+            }
+            default:
+            return state
+    }
+}
+
 
 
 const userReducer = (state = userState, action) => {
@@ -91,4 +140,4 @@ const orderReducer = (state = initialState, action) => {
 }
 
 
-export { orderReducer, userReducer }
+export { orderReducer, userReducer,userCache,updateReducer}
