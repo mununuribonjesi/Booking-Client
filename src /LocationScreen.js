@@ -137,6 +137,8 @@ setOrganisation(response)
           {
             this.setOrganisation(response)
 
+            console.log(response);
+
           }).catch(error => {
             if(error.response)
             {

@@ -35,7 +35,10 @@ class AppointmentScreen extends Component
 
       async componentDidMount() {
 
+
         var response = await this.getCustomerAppointments();
+
+
         if (response.status === 200) {     
         var customerAppointments = response.data.customerApp;
         var upcomingAppointments = customerAppointments.filter(ua => {
@@ -73,9 +76,10 @@ class AppointmentScreen extends Component
       {
         const token = await AsyncStorage.getItem('token');
         
+
         var res;
 
-        await axios({
+       await axios({
           method: 'get',
           url: config.Availability_URL +'/api/customerAppointments',
           headers: {
@@ -87,7 +91,6 @@ class AppointmentScreen extends Component
           
         }).then(response => 
           {
-
             res = response
 
           }).catch(error => {

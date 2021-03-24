@@ -92,6 +92,8 @@ class CreateAccountScreen extends Component {
         }).catch (error =>{
           if(error.response)
           {
+
+            console.log(error.response);
             if(error.response.status==400)
             {
               this.setState({emailerror:"* user already exists",isemailError:true});
