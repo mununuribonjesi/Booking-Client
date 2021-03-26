@@ -15,7 +15,7 @@ import {
   SCLAlert,
   SCLAlertButton
 } from 'fork-react-native-scl-alert';
-
+import axiosRetry from 'axios-retry';
 
 class AppointmentScreen extends Component
 {
@@ -78,6 +78,8 @@ class AppointmentScreen extends Component
         
 
         var res;
+
+        axiosRetry(axios,{retries:3});
 
        await axios({
           method: 'get',

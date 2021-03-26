@@ -26,6 +26,7 @@ import {
   SCLAlertButton
 } from 'fork-react-native-scl-alert';
 
+import axiosRetry from 'axios-retry';
 
 
 class SlotScreen extends Component {
@@ -118,6 +119,8 @@ class SlotScreen extends Component {
 
     var res;
 
+    axiosRetry(axios,{retries:3});
+
      await axios({
       method: 'get',
       url: config.Availability_URL + '/api/appointments',
@@ -150,6 +153,8 @@ class SlotScreen extends Component {
     const token = await AsyncStorage.getItem('token');
 
     var res;
+
+    axiosRetry(axios,{retries:3});
 
      await axios({
       method: 'get',

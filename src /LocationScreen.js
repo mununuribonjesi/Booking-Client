@@ -17,6 +17,8 @@ import config from '../config';
 import { relative } from 'path';
 import { ScrollView } from 'react-native-gesture-handler';
 
+import axiosRetry from 'axios-retry';
+
 class LocationScreen extends Component {
   constructor(props) {
     super(props);
@@ -125,6 +127,7 @@ setOrganisation(response)
         var lat = location.lat;
         var long = location.lng;
 
+        axiosRetry(axios,{retries:3});
 
          await axios({
           method: 'get',

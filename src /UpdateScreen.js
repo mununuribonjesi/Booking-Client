@@ -107,7 +107,7 @@ class UpdateScreen extends Component
       if(label==="email")
       {
 
-        const textRE = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
+        const textRE = /^[a-zA-Z]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
 
         if(text=="")
         {
@@ -263,6 +263,11 @@ class UpdateScreen extends Component
         if (text === this.props.navigation.state.params.text)
         {
             return this.setState({text:text,save:false})
+        }
+
+        if(this.text.label==='email')
+        {
+          text.toLowerCase();
         }
 
       

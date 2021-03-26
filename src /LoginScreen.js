@@ -145,7 +145,7 @@ async login(response)
                 value={this.state.username}
                 onChangeText={(username) => this.setState({ username })}
                 returnKeyType="next"
-                placeholder={'Username'}
+                placeholder={'Email'}
                 placeholderTextColor='black'
                 style={styles.loginFormTextInput}
                 placeholderColor="#3897f1"

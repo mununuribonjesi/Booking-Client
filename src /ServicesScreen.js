@@ -58,6 +58,7 @@ class ServicesScreen extends Component {
     var organisationId = this.props.orders.organisationId
 
     if (this.isGetByService()) {
+
       response = await axios({
         method: 'get',
         url: config.Availability_URL + '/api/skills',

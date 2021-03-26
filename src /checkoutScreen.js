@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { PaymentsStripe as Stripe } from 'expo-payments-stripe';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {UIActivityIndicator} from 'react-native-indicators';
+import axiosRetry from 'axios-retry';
 
 import {
   SCLAlert,
@@ -98,6 +99,8 @@ class CheckoutScreen extends Component {
     var token;
     await Stripe.paymentRequestWithCardFormAsync().then((value) => { token = value  }) .catch((error) => {  return  this.setState({ isLoading: false }); })
 
+
+    axiosRetry(axios,{retries:3});
 
     await axios({
       method: 'post',

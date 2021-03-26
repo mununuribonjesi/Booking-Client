@@ -178,7 +178,7 @@ HomeScreen: {
     headerTitle: () => 
     
     <TouchableOpacity
-    onPress={()=> navigation.navigate("SplashScreen")}>
+    onPress={()=> navigation.navigate("ProfileScreen")}>
 
 
 

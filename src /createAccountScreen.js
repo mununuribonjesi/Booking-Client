@@ -120,6 +120,7 @@ class CreateAccountScreen extends Component {
   {
     const firstNameRE = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/g
 
+    
     if(this.state.firstname=="")
     {
       this.setState({firsnameerror:"* Forename field cannot be empty",isnameError:true});
@@ -212,7 +213,7 @@ class CreateAccountScreen extends Component {
   async emailValidation()
   {
 
-    const emailRE = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
+    const emailRE = /^[a-zA-Z]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
     if(this.state.email=="")
     {
@@ -415,7 +416,7 @@ class CreateAccountScreen extends Component {
               ref={(input) => { this.EmailInput = input; }}
                 value={this.state.email}
                 returnKeyType="next"
-                onChangeText={(email) => this.setState({ email })}
+                onChangeText={(email) => this.setState({ email:email.toLowerCase()})}
                 placeholder={'Email Address'}
                 placeholderTextColor='black'
                 style={styles.loginFormTextInput}
