@@ -115,7 +115,6 @@ async login(response)
 
     return (
 
-
       
       <KeyboardAvoidingView enabled behavior={ Platform.OS === 'ios'? 'padding': null}>
       <ScrollView style={{width:'100%',height:'100%',backgroundColor:'#fff44f'}}> 
