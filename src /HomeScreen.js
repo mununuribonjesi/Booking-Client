@@ -5,6 +5,7 @@ import { FontAwesome,FontAwesome5,MaterialIcons,Ionicons,AntDesign } from '@expo
 import { Octicons } from '@expo/vector-icons'; 
 import Logo from '../assets/MuniBook.png';
 import { RFValue } from "react-native-responsive-fontsize";
+import { color } from 'react-native-reanimated';
 
 
 class HomeScreen extends Component {
@@ -92,35 +93,35 @@ class HomeScreen extends Component {
 
         <View style={styles.wrapper}>
         <View style={styles.item}>
-        <TouchableOpacity 
+        <TouchableOpacity disabled={true}
   style={styles.iconWrapper
   }
   onPress={() => this.props.navigation.navigate('GalleryScreen')}
   >
-        <FontAwesome name="picture-o" size={RFValue(30)} color="black" />
-  <Text style={styles.itemtext}>Gallery</Text>
+        <FontAwesome name="picture-o" size={RFValue(30)} color="#d3d3d3" />
+  <Text style={styles.itemDisabled}>Gallery</Text>
   </TouchableOpacity>
   </View>
   <View style={styles.item}>
-  <TouchableOpacity 
+  <TouchableOpacity disabled={true}
   style={styles.iconWrapper
   }
   onPress={() => this.props.navigation.navigate('AboutUsScreen')}
   >
     
-  <Octicons name="info" size={RFValue(30)} color="black" />
-  <Text style={styles.itemtext}>About US</Text>
+  <Octicons name="info" size={RFValue(30)} color="#d3d3d3" />
+  <Text style={styles.itemDisabled}>About US</Text>
   </TouchableOpacity>
   </View>
 
   <View style={styles.item}>
-  <TouchableOpacity 
+  <TouchableOpacity disabled={true}
   onPress={() => this.props.navigation.navigate('OurTeamScreen')}
   style={styles.iconWrapper
   }
   >
-  <Ionicons name="ios-people" size={RFValue(30)} color="black" />
-  <Text style={styles.itemtext}>Our Team</Text>
+  <Ionicons name="ios-people" size={RFValue(30)} color="#d3d3d3" />
+  <Text style={styles.itemDisabled}>Our Team</Text>
   </TouchableOpacity>
   </View>
         </View>
@@ -169,6 +170,18 @@ const styles = StyleSheet.create({
 
   },
 
+  iconWrapperDisabled:{
+    borderWidth:1,
+    borderColor:'rgba(0,0,0,0.2)',
+    alignItems:'center',
+    justifyContent:'center',
+    width:75,
+    height:75,
+    backgroundColor:'#d3d3d3',
+    borderRadius:10
+
+  },
+
   wrapper:{
     marginTop:50,
     width: '33%',
@@ -194,6 +207,14 @@ const styles = StyleSheet.create({
     textAlign:'left',
     fontSize:RFValue(10),
     marginTop: 10
+
+  },
+
+  itemDisabled:{
+    textAlign:'left',
+    fontSize:RFValue(10),
+    marginTop: 10,
+    color:'#d3d3d3'
 
   },
 

@@ -387,7 +387,7 @@ class CreateAccountScreen extends Component {
           <Text style={styles.validation}>{this.state.firsnameerror}</Text>
           <TextInput
           value={this.state.firstname}
-          onChangeText={(firstname) => this.setState({ firstname })}
+          onChangeText={(firstname) => this.setState({ firstname:firstname.trim() })}
           placeholder={'Forename'}
           placeholderTextColor='black'
           style={styles.loginFormTextInput}
@@ -402,7 +402,7 @@ class CreateAccountScreen extends Component {
         <TextInput
           ref={(input) => { this.lastNameInput = input; }}
           value={this.state.lastname}
-          onChangeText={(lastname) => this.setState({ lastname })}
+          onChangeText={(lastname) => this.setState({ lastname:lastname.trim() })}
           placeholder={'Surname'}
           placeholderTextColor='black'
           style={styles.loginFormTextInput}
@@ -416,7 +416,7 @@ class CreateAccountScreen extends Component {
               ref={(input) => { this.EmailInput = input; }}
                 value={this.state.email}
                 returnKeyType="next"
-                onChangeText={(email) => this.setState({ email:email.toLowerCase()})}
+                onChangeText={(email) => this.setState({ email:email.toLowerCase().trim()})}
                 placeholder={'Email Address'}
                 placeholderTextColor='black'
                 style={styles.loginFormTextInput}
@@ -446,7 +446,7 @@ class CreateAccountScreen extends Component {
                 value={this.state.password}
                 returnKeyType="next"
                 placeholderTextColor='black'
-                onChangeText={(password) => this.setState({ password })}
+                onChangeText={(password) => this.setState({ password:password.trim() })}
                 placeholder={'Password'}
                 secureTextEntry={true}
                 placeholderColor="#c4c3cb"
@@ -462,7 +462,7 @@ class CreateAccountScreen extends Component {
                 value={this.state.confirmPassword}
                 returnKeyType="done"
                 placeholderTextColor='black'
-                onChangeText={(confirmPassword) => this.setState({ confirmPassword })}
+                onChangeText={(confirmPassword) => this.setState({ confirmPassword:confirmPassword.trim()})}
                 placeholder={'Confrim Password'}
                 secureTextEntry={true}
                 placeholderColor="#c4c3cb"

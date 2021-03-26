@@ -321,7 +321,6 @@ const mapStatetoProps = (state) => {
 
 
   
-  
   export default connect(mapStatetoProps, mapDispatchToProps)(LoginScreen);
 
   
