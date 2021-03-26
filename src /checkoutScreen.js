@@ -108,8 +108,6 @@ class CheckoutScreen extends Component {
 
     operation.attempt(async (currentAttempt) => 
     {
-
-      console.log('sending request: ', currentAttempt, ' attempt');
 try{
     
       var  response = await axios({
@@ -129,7 +127,7 @@ try{
       }
     })
 
-    console.log(response);
+
 
 
     if (response.status === 200 && token) {
@@ -142,7 +140,6 @@ try{
   } catch (error) {
     if(operation.retry(error.response.status===502))
     {
-      console.log(error.response);
       {return; }
     }
 

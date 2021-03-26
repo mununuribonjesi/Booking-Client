@@ -10,6 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setBarber, setBarberId } from './store/actions'
 import { connect } from 'react-redux';
 import { TabView, SceneMap } from 'react-native-tab-view';
+import {UIActivityIndicator} from 'react-native-indicators';
 import {FontAwesome5 } from '@expo/vector-icons';
 import {
   SCLAlert,
@@ -28,13 +29,16 @@ class AppointmentScreen extends Component
           recentAppointments:[],
           index:0,
           isError:false,
-          errorMessage:''
+          errorMessage:'',
+          isLoading:false
         };
       }
 
 
       async componentDidMount() {
 
+
+        this.setState({isLoading:true});
 
         var response = await this.getCustomerAppointments();
 
@@ -62,6 +66,8 @@ class AppointmentScreen extends Component
         });
           this.setState({upcomingAppointments:upcomingAppointments,recentAppointments:recentAppointments});
         }
+
+        this.setState({isLoading:false});
      }
 
 
@@ -149,6 +155,8 @@ class AppointmentScreen extends Component
 
         return (
           <View style={{backgroundColor:'black'}}>
+
+          <View>
           <ListItem>
           <ListItem.Content>
           <Text style={{textAlign:"center",fontSize:RFValue(25)}}>{item.companyName +", "+ item.addressLine1 +", "+ item.town +", "+ item.postCode}
@@ -197,6 +205,10 @@ class AppointmentScreen extends Component
               </Text>
             </ListItem>
 
+            </View>
+
+          
+
         
             
           </View>)
@@ -223,7 +235,7 @@ class AppointmentScreen extends Component
      
     return (
 
-        <View styles={styles.container}>
+        <View style={styles.container}>
         <SCLAlert
       show={this.state.isError}
       onRequestClose={this.isError}
@@ -234,6 +246,17 @@ class AppointmentScreen extends Component
     >
       <SCLAlertButton theme="danger" onPress={this.isError}>OK</SCLAlertButton>
     </SCLAlert>
+
+    
+    {this.state.isLoading ?
+
+      <View style={styles.loading}>
+      <UIActivityIndicator name="Saving" size={80} color="black" />
+      <Text style={styles.loadingText}> Getting Appointments</Text>
+    </View>
+    :
+
+    <View>
 
         <View style={styles.subHeader}>
                   <Text style={styles.textStyle}>
@@ -267,6 +290,9 @@ class AppointmentScreen extends Component
                   </Text>
                   </TouchableOpacity>
                 </View>
+
+</View> 
+                      }
            </View>
     )
     }   
@@ -274,9 +300,11 @@ class AppointmentScreen extends Component
 
 export const styles = StyleSheet.create({
   container: {
-    justifyContent:'center',
-    height:'100%',
-    flex:1
+    flex: 1,
+    position: 'relative',
+    height: '100%',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor:'#fff44f'
   },
 
   subHeader: {
@@ -287,6 +315,24 @@ export const styles = StyleSheet.create({
   FlatList:
   {
 
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:'#4285F4'
+  },
+
+  loadingText: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: RFValue(30),
+    color: 'white'
   },
 
   textStyle: {
