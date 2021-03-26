@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { FlatList, Text, View, StyleSheet, TouchableOpacity, } from 'react-native';
 import { ListItem, Avatar } from 'react-native-elements'
 import { setBarber, setBarberId, setOrganisationId } from './store/actions'
+import { RFValue } from "react-native-responsive-fontsize";
 import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
@@ -67,6 +68,9 @@ class BookScreen extends Component {
     if (this.props.navigation.state.params.isGetByService) {
       var service = Object.values(this.props.service);
       var skillId = service[0].skillId.toString();
+
+      
+  
      
       await axios({
         method: 'get',
@@ -119,10 +123,9 @@ class BookScreen extends Component {
   
       (this.state.isLoading == true ?
 
-
         <View style={styles.loading}>
-        <UIActivityIndicator size={80} color="black" />
-
+        <UIActivityIndicator name="Saving" size={80} color="black" />
+        <Text style={styles.loadingText}> Getting Professionals</Text>
       </View>
   :[
     <View> 
@@ -177,8 +180,17 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     alignItems: 'center',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+    backgroundColor:'#fff44f'
+  },
+
+  loadingText: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: RFValue(30),
+    color: '#0D5916'
+  },
   })
 
 export default connect(mapStatetoProps, mapDispatchToProps)(BookScreen);

@@ -25,7 +25,7 @@ class VerificationScreen extends Component {
     resend = () =>
     {
         this.setState({isResend:!this.state.isResend});
-        console.log('resend');
+
     }
 
 
@@ -46,11 +46,10 @@ class VerificationScreen extends Component {
         if (response.status === 200) {
 
           this.setState({isResend:!this.state.isResend});
-          console.log('confirmation resent');
+
         }
   
       } catch (error) {
-        console.log('There has been a problem with your fetch operation: ' + error.message);
         throw error;
       }
     }

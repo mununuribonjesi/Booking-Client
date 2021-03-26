@@ -236,8 +236,10 @@ class SlotScreen extends Component {
     return (
 
       (this.state.isLoading == true ?
+      
         <View style={styles.loading}>
-        <UIActivityIndicator size={80} color="black" />
+        <UIActivityIndicator name="Saving" size={80} color="black" />
+        <Text style={styles.loadingText}> Generating Slots</Text>
       </View>
   :[
 
@@ -432,7 +434,16 @@ export const styles  = StyleSheet.create({
     top: 0,
     bottom: 0,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    backgroundColor:'#fff44f'
+  },
+
+  loadingText: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: RFValue(30),
+    color: '#0D5916'
   },
   horizontal: {
     flexDirection: "row",

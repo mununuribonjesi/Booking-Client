@@ -310,8 +310,6 @@ class UpdateScreen extends Component
                 var firstTwo = text.substring(0,4) + '-';
                 var thirdOne = text.substring(2,4);
       
-                console.log(thirdOne);
-                
                 text = firstTwo + thirdOne;
       
                 if(tripleDash.test(text))

@@ -29,10 +29,10 @@ class ProfileScreen extends Component
 
       var authenticatedUser = await AsyncStorage.getItem('user');
       var data = JSON.parse(authenticatedUser);
-      console.log(data);
+
       this.setState({data:data})
 
-      console.log(this.state.data);
+
 
     }
 
@@ -44,7 +44,6 @@ class ProfileScreen extends Component
       var authenticatedUser = await AsyncStorage.getItem('user');
       var data = JSON.parse(authenticatedUser);
       this.setState({data:data});
-      console.log(this.state.data);
       this.props.setUpdate(false);
       }
 

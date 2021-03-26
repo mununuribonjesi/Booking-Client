@@ -92,8 +92,6 @@ class CreateAccountScreen extends Component {
         }).catch (error =>{
           if(error.response)
           {
-
-            console.log(error.response);
             if(error.response.status==400)
             {
               this.setState({emailerror:"* user already exists",isemailError:true});
@@ -108,9 +106,7 @@ class CreateAccountScreen extends Component {
 
     else
     {
-      console.log('set is alert');
       this.setState({isAlertError:true});
-      console.log(this.state.isAlertError);
     }
 }
 
@@ -271,8 +267,6 @@ class CreateAccountScreen extends Component {
           
           var firstTwo = text.substring(0,4) + '-';
           var thirdOne = text.substring(2,4);
-
-          console.log(thirdOne);
           
           text = firstTwo + thirdOne;
 

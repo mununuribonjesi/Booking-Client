@@ -10,7 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { PaymentsStripe as Stripe } from 'expo-payments-stripe';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {UIActivityIndicator} from 'react-native-indicators';
-import axiosRetry from 'axios-retry';
+import retry from 'retry';
 
 import {
   SCLAlert,
@@ -91,18 +91,28 @@ class CheckoutScreen extends Component {
       cvc:this.state.cvv,
     }
 
-
-
-    console.log('muni')
-
-
     var token;
+
     await Stripe.paymentRequestWithCardFormAsync().then((value) => { token = value  }) .catch((error) => {  return  this.setState({ isLoading: false }); })
 
+    this.setState({ isLoading: true });
 
-    axiosRetry(axios,{retries:3});
+    const operation = retry.operation({
+      retries: 3,
+      factor: 3,
+      minTimeout: 1 * 100,
+      maxTimeout: 60 * 100,
+      randomize: true,
+    });
 
-    await axios({
+
+    operation.attempt(async (currentAttempt) => 
+    {
+
+      console.log('sending request: ', currentAttempt, ' attempt');
+try{
+    
+      var  response = await axios({
       method: 'post',
       url: config.Stripe_URL + '/api/payment',
       data: {
@@ -117,30 +127,36 @@ class CheckoutScreen extends Component {
       headers: {
         'Authorization': `Bearer ${authToken}`
       }
-    }).then(response => {
-
-
-
-      res = response
-
-
-    }).catch(error => {
-      if (error.response) {
-        res = error.response;
-        console.log(error.response);
-        this.setState({ errorMessage: res.data.message, isError: true });
-      }
     })
 
-    if (res.status === 200 && token) {
+    console.log(response);
+
+
+    if (response.status === 200 && token) {
 
       this.setState({ isSuccessfull: true, isPayment: true });
+      this.setState({ isLoading: false });
+      return;
     }
 
-    this.setState({ isLoading: false });
+  } catch (error) {
+    if(operation.retry(error.response.status===502))
+    {
+      console.log(error.response);
+      {return; }
+    }
 
+    else
+    {
+      res = error.response;
+      this.setState({ isLoading: false });
+      this.setState({ errorMessage: res.data.message, isError: true });
 
+    }
   }
+
+  });
+ }
 
 
 
@@ -173,7 +189,7 @@ class CheckoutScreen extends Component {
 
 
   onChangeForm = (form) => {
-    console.log(form)
+
   }
 
   renderItem = ({ item }) => {
@@ -236,10 +252,6 @@ class CheckoutScreen extends Component {
       "total":order.total
     }]
     
-    
-
-    console.log(data);
-
     return (
 
       <View style={styles.container}>

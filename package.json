@@ -80,7 +80,8 @@
     "react-redux": "^7.2.2",
     "react-rounded-image": "^2.0.11",
     "react-side-effect": "^2.1.1",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "retry": "^0.12.0"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
