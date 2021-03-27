@@ -253,13 +253,19 @@ try{
 
       <View style={styles.container}>
 
-      {this.state.isLoading ?
+      {this.state.isLoading &&
 
         <View style={styles.loading}>
         <UIActivityIndicator name="Saving" size={80} color="black" />
         <Text style={styles.loadingText}> Processing Payment</Text>
       </View>
-      :
+
+      }
+
+      {!this.state.isError && !this.state.isSuccessfull && !this.state.isLoading &&
+
+        <View> 
+   
 <View> 
       <View style={styles.subHeader}>
       <Text style={styles.textStyle}>
@@ -288,7 +294,9 @@ try{
     
       </View>
 
-        }
+      
+        </View>
+      }
        
 
         <SCLAlert

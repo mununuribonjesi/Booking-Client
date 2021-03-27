@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import {FontAwesome5 } from '@expo/vector-icons';
 import { LogBox } from 'react-native';
 import config from '../config';
+import {BallIndicator} from 'react-native-indicators';
 import moment from 'moment';
 import {
   SCLAlert,
@@ -25,6 +26,7 @@ class LoginScreen extends Component {
       password: '',
       isFailed: false,
       isError:false,
+      isLoading:false,
       errorMessage:''
     };
 
@@ -53,6 +55,8 @@ isError = () =>
 
 
   async onLogin() {
+    this.setState({isLoading:true});
+
     await axios({
       method: 'post',
       url: config.Authentication_URL+'/api/login',
@@ -63,9 +67,11 @@ isError = () =>
     }).then(response =>
       {
         this.login(response);
+        this.setState({isLoading:false});
       }).catch (error =>{
         if(error.response)
         {
+            this.setState({isLoading:false});
             this.setState({errorMessage:JSON.stringify(error.response.data.message),isError:true});
         }
     })
@@ -75,6 +81,9 @@ isError = () =>
 
 async login(response)
 {
+
+
+
   const token = response.data.token;
   if (response.status === 200 && token) {
     this.setState({ isAuthenticated: true });
@@ -83,19 +92,17 @@ async login(response)
     var userId = user._id;
     this.props.setUserId(userId);
 
-   
-
-
-
     if(user.isVerified)
     {
       await AsyncStorage.setItem('user', JSON.stringify(user));
+      this.setState({isLoading:false});
       this.props.navigation.navigate('HomeScreen');
       this.setState(this.baseState);
     }
     else 
     {
       this.setState(this.baseState);
+
       this.props.navigation.navigate('VerificationScreen',{
         email:user.email
       });
@@ -142,7 +149,7 @@ async login(response)
 
               <TextInput
                 value={this.state.username}
-                onChangeText={(username) => this.setState({ username })}
+                onChangeText={(username) => this.setState({ username:username.toLowerCase()})}
                 returnKeyType="next"
                 placeholder={'Email'}
                 placeholderTextColor='black'
@@ -161,9 +168,20 @@ async login(response)
                 placeholderColor="#c4c3cb"
                 style={styles.loginFormTextInput}
               />
+
+              {this.state.isLoading ?
+
+                <View>
+                <BallIndicator name="Saving" size={80} color="green" />
+              </View> :
+
+
+               <View>
+
               <TouchableOpacity
                 onPress={this.onLogin.bind(this)}
               >
+
 
                 <View style={styles.loginButton}> 
                <Text style={styles.buttonText}>           
@@ -185,6 +203,10 @@ async login(response)
               </Text>
               </View>
               </TouchableOpacity>
+              </View>
+
+              }
+
               </KeyboardAvoidingView>
           </View>
           </View>
@@ -294,6 +316,25 @@ const styles = StyleSheet.create({
     height: 45,
     marginTop: 10,
     backgroundColor: 'transparent',
+  },
+
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:'#fff44f'
+  },
+
+  loadingText: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: RFValue(30),
+    color: '#0D5916'
   },
 });
 
