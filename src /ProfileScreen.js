@@ -11,6 +11,7 @@ import config from '../config';
 import { ScrollView } from 'react-native-gesture-handler';
 import moment from 'moment';
 import Slider from '@react-native-community/slider';
+import TermsAndConditions from './functionalComponents/TermsAndConditions';
 
 class ProfileScreen extends Component
 {
@@ -228,6 +229,9 @@ title="Terms & Conditions"
 <TouchableOpacity> 
 <List.Item title={<Text  style={{color:'black'}} ></Text>}/>
 </TouchableOpacity>
+
+<TermsAndConditions />
+
 </List.Accordion>
 
 

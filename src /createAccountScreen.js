@@ -15,6 +15,7 @@ import {
 import { LogBox } from 'react-native';
 import moment from 'moment';
 import TermsAndConditions from './functionalComponents/TermsAndConditions';
+import PrivacyPolicy from './functionalComponents/PrivacyPolicy';
 
 class CreateAccountScreen extends Component {
   constructor(props) {
@@ -44,10 +45,12 @@ class CreateAccountScreen extends Component {
       isAlertError:false,
       isDobError:true,
       date:new Date(),
-      termsAndConditions:false
+      termsAndConditions:false,
+      privacyPolicy:false
     };
 
     this.isTermsAndConditions = this.isTermsAndConditions.bind(this);
+    this.isPrivacyPolicy = this.isPrivacyPolicy.bind(this);
 
     this.baseState = this.state
   }
@@ -77,6 +80,11 @@ class CreateAccountScreen extends Component {
 
     this.setState({termsAndConditions:!this.state.termsAndConditions})
 
+  }
+
+  isPrivacyPolicy()
+  {
+    this.setState({privacyPolicy:!this.state.privacyPolicy})
   }
 
   async Submit()
@@ -221,7 +229,7 @@ class CreateAccountScreen extends Component {
   async emailValidation()
   {
 
-    const emailRE = /^[a-zA-Z]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+    const emailRE = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     if(this.state.email=="")
     {
@@ -376,21 +384,54 @@ class CreateAccountScreen extends Component {
       <View style={[{flex: 1,backgroundColor:'#fff44f',top:'10%',marginBottom:'30%'}]}>
 
       <View style={{flex : 1, justifyContent : 'center', alignItems: 'center'}}>
-      <TouchableWithoutFeedback onPress={() => {}}>
-      <Modal  
-      
-      onRequestClose={() => {this.isTermsAndConditions()}}
-      onTouchCancel={()=>{this.isTermsAndConditions()}}
-      onMagicTap={()=>{this.isTermsAndConditions()}}
-      visible={this.state.termsAndConditions}>
+
+      <Modal
+      visible={this.state.termsAndConditions}
+      >
           <View style={styles.modal}>
+          <View style={styles.modalHeader}> 
+          <View style={styles.modalClose}> 
+          <TouchableOpacity onPress={() =>{this.isTermsAndConditions()} }> 
+          <Text style={styles.modalButtonText}>           
+            Close          
+          </Text>
+          </TouchableOpacity>
+          </View>
+          </View>
+
               <View style={styles.modalContainer}>
+
+            
               <TermsAndConditions />
-         
+
               </View>
           </View>
       </Modal>
-      </TouchableWithoutFeedback>
+
+
+      <Modal
+      visible={this.state.privacyPolicy}
+      >
+          <View style={styles.modal}>
+          <View style={styles.modalHeader}> 
+          <View style={styles.modalClose}> 
+          <TouchableOpacity onPress={() =>{this.isPrivacyPolicy()} }> 
+          <Text style={styles.modalButtonText}>           
+            Close          
+          </Text>
+          </TouchableOpacity>
+          </View>
+          </View>
+
+              <View style={styles.modalContainer}>
+
+            
+              <PrivacyPolicy />
+
+              </View>
+          </View>
+      </Modal>
+
   </View>
 
 
@@ -499,11 +540,6 @@ class CreateAccountScreen extends Component {
               <TouchableOpacity
               onPress={()=> this.Submit()}>
 
-
-
-
-
-
                 <View style={styles.loginButton}> 
                <Text style={styles.buttonText}>           
                  Create Account            
@@ -514,7 +550,7 @@ class CreateAccountScreen extends Component {
               <View style={styles.TermsView}> 
               <Text style={styles.TermsText}>           
                 By creating an account,
-                you agree to our  {""} 
+                you agree to our{" "} 
                 
                 <Text style={styles.TermsTextHighlight} 
                 
@@ -525,7 +561,9 @@ class CreateAccountScreen extends Component {
                   
                   <Text style={{color:'black'}}>and that you have read our</Text> {""}  
                 </Text>
-                <Text style={styles.TermsTextHighlight}> 
+                <Text style={styles.TermsTextHighlight}
+                onPress={() => this.isPrivacyPolicy()}
+                > 
                Privacy Policy 
               </Text>
               </Text>
@@ -637,11 +675,28 @@ const styles = StyleSheet.create({
     
   },
 
+
   TermsTextHighlight:{
     color:'blue',
     fontSize:RFValue(14),
-    textAlign:'center',
+    textAlign:'left',
     fontWeight:'600',
+  },
+
+  modalBody:{
+    backgroundColor:"#fff",
+    paddingVertical:20,
+    paddingHorizontal:10
+  },
+
+  modalHeader:{
+    height:'15%'
+
+  },
+
+  modal:{
+    backgroundColor:'#d3d3d3'
+
   },
   
 
@@ -656,7 +711,7 @@ const styles = StyleSheet.create({
     fontSize:RFValue(20),
     textAlign:'center',
     fontWeight:'600',
-    marginTop:'5%'
+    marginBottom:'5%',
   },
 
   loginView:{
@@ -705,20 +760,14 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     width:'100%',
     alignSelf:'center',
-    margin:-10
+    marginBottom:10
     
 
   },
 
-  modal : {
-    flex : 1,
-    justifyContent : 'center',
-    alignItems : 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)'
-},
 modalContainer : {
     backgroundColor : 'white',
-    width : '90%',
+    width : '100%',
     height : '90%',
 },
 ActivityIndicatorStyle: {
@@ -726,6 +775,32 @@ ActivityIndicatorStyle: {
     justifyContent: 'center',
 },
 
+modalClose:
+{
+
+
+    backgroundColor: '#d3d3d3',
+    height: 60,
+    marginTop: 10,
+    textAlign:'center',
+    justifyContent:'center',
+    width:'100%',
+    alignSelf:'center',
+    marginTop:'9%',
+    paddingLeft:15
+
+
+
+},
+
+
+
+modalButtonText:{
+  color:'black',
+  fontSize:20,
+  fontWeight:'600'
+  
+},
 
 
   loginButton: {

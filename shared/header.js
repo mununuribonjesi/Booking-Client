@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
 
     item:
     {
-        left:60,
-        marginBottom:40
+        left:70,
+        marginBottom:5
 
     }
     ,
