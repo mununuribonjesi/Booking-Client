@@ -8,6 +8,7 @@ import config from '../config';
 import moment from 'moment';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUpdate } from './store/actions';
+import {BallIndicator} from 'react-native-indicators';
 
 class UpdateScreen extends Component
 {
@@ -24,7 +25,8 @@ class UpdateScreen extends Component
             confirmPassword:"",
             isInputError:false,
             inputError:"",
-            passwordError:""
+            passwordError:"",
+            isSaving:false
         }
     }
 
@@ -204,6 +206,8 @@ class UpdateScreen extends Component
 
     async updateChanges()
     {
+
+      this.setState({isSaving:true});
       label = this.state.label.toLowerCase();
       text = this.state.text;
 
@@ -229,6 +233,7 @@ class UpdateScreen extends Component
              AsyncStorage.removeItem('user');
              AsyncStorage.setItem('user', JSON.stringify(response.data.update));
              this.props.setUpdate(true);
+             this.setState({isSaving:false});
              this.props.navigation.navigate("ProfileScreen");
 
           }).catch (error =>{
@@ -237,6 +242,8 @@ class UpdateScreen extends Component
                 this.setState({errorMessage:JSON.stringify(error.response.data.message),isError:true});
             }
         })
+
+        this.setState({isSaving:false});
     }
 
     
@@ -265,7 +272,7 @@ class UpdateScreen extends Component
             return this.setState({text:text,save:false})
         }
 
-        if(this.text.label==='email')
+        if(this.state.label==='email')
         {
           text.toLowerCase();
         }
@@ -427,6 +434,15 @@ class UpdateScreen extends Component
         }
       }
       >
+
+      {this.state.isSaving &&
+
+        <View style={{marginTop:30}}>
+        <BallIndicator name="Saving" size={80} color="green" />
+      </View>
+      }
+
+      {!this.state.isSaving &&
       <View style={styles.saveButton}> 
  
 
@@ -434,9 +450,11 @@ class UpdateScreen extends Component
   
        <Text style={{paddingLeft:20,marginTop:50}}>Save</Text>          
      </Text>
+      
 
 
     </View>
+      }
     </TouchableOpacity>
     :[
         isDelete &&
