@@ -198,7 +198,7 @@ HomeScreen: {
 
 const Navigation = createStackNavigator(screens,
   {
-    initialRouteName:'CreateAccountScreen',
+    initialRouteName:'LoginScreen',
 
       defaultNavigationOptions:{
       headerStyle: {backgroundColor:'black', height:100},

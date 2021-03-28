@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {View, Text, StyleSheet, TouchableOpacity,Image,Animated} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity,AppRegistry,Animated,Modal} from 'react-native';
 import { RFValue } from "react-native-responsive-fontsize";
 import { setAuthentication, setUpdate, setUser,setUserCache,setUserId} from './store/actions';
 import { connect } from 'react-redux';
@@ -7,12 +7,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import {Divider,List,} from 'react-native-paper';
 import { Feather,AntDesign,Entypo} from '@expo/vector-icons'; 
+import {BallIndicator} from 'react-native-indicators';
 import config from '../config';
 import { ScrollView } from 'react-native-gesture-handler';
 import moment from 'moment';
 import Slider from '@react-native-community/slider';
 import TermsAndConditions from './functionalComponents/TermsAndConditions';
-
+import PrivacyPolicy from './functionalComponents/PrivacyPolicy';
+import { Ionicons } from '@expo/vector-icons'; 
 class ProfileScreen extends Component
 {
 
@@ -20,9 +22,27 @@ class ProfileScreen extends Component
         super(props);
 
         this.state ={
-            value:20,
-            data:""
+            value:'',
+            data:"",
+            termsAndConditions:false,
+            privacyPolicy:false,
+            isSaving:false,
         }
+        this.isTermsAndConditions = this.isTermsAndConditions.bind(this);
+        this.isPrivacyPolicy = this.isPrivacyPolicy.bind(this);
+    }
+
+
+    isTermsAndConditions()
+    {
+  
+      this.setState({termsAndConditions:!this.state.termsAndConditions})
+  
+    }
+  
+    isPrivacyPolicy()
+    {
+      this.setState({privacyPolicy:!this.state.privacyPolicy})
     }
 
     async componentDidMount()
@@ -31,10 +51,8 @@ class ProfileScreen extends Component
       var authenticatedUser = await AsyncStorage.getItem('user');
       var data = JSON.parse(authenticatedUser);
 
-      this.setState({data:data})
-
-
-
+      this.setState({data:data});
+      this.setState({value:data.radius});
     }
 
     async componentDidUpdate()
@@ -45,18 +63,26 @@ class ProfileScreen extends Component
       var authenticatedUser = await AsyncStorage.getItem('user');
       var data = JSON.parse(authenticatedUser);
       this.setState({data:data});
+      this.setState({value:data.radius});
       this.props.setUpdate(false);
       }
 
     }
 
+
+
     async updateChanges()
     {
+
+      this.setState({isSaving:true})
       label = 'radius'
       text = this.state.value;
       
       const update = {[label]:text};
-      const userId = {_id:this.props.user.userId};
+      const userId = {_id:this.props.order.userId};
+
+      console.log(userId);
+
 
         await axios({
           method: 'POST',
@@ -69,13 +95,19 @@ class ProfileScreen extends Component
           }
         }).then(response =>
           { 
-            this.props.navigation.navigate("ProfileScreen");
+
+            AsyncStorage.removeItem('user');
+            AsyncStorage.setItem('user', JSON.stringify(response.data.update));
+            this.props.setUpdate(true);
+            this.setState({isSaving:false});
           }).catch (error =>{
             if(error.response)
             {
                 this.setState({errorMessage:JSON.stringify(error.response.data.message),isError:true});
             }
         })
+
+        this.setState({isSaving:false});
     }
 
     setValue(value)
@@ -101,7 +133,63 @@ class ProfileScreen extends Component
     return (
 
         <ScrollView> 
+
+
+        <View style={{flex : 1, justifyContent : 'center', alignItems: 'center'}}>
+
+        <Modal
+        visible={this.state.termsAndConditions}
+        >
+            <View style={styles.modal}>
+            <View style={styles.modalHeader}> 
+            <View style={styles.modalClose}> 
+            <TouchableOpacity onPress={() =>{this.isTermsAndConditions()} }> 
+            <Text style={styles.modalButtonText}>           
+              Close          
+            </Text>
+            </TouchableOpacity>
+            </View>
+            </View>
+  
+                <View style={styles.modalContainer}>
+  
+              
+                <TermsAndConditions />
+  
+                </View>
+            </View>
+        </Modal>
+  
+  
+        <Modal
+        visible={this.state.privacyPolicy}
+        >
+            <View style={styles.modal}>
+            <View style={styles.modalHeader}> 
+            <View style={styles.modalClose}> 
+            <TouchableOpacity onPress={() =>{this.isPrivacyPolicy()} }> 
+            <Text style={styles.modalButtonText}>           
+              Close          
+            </Text>
+            </TouchableOpacity>
+            </View>
+            </View>
+  
+                <View style={styles.modalContainer}>
+  
+              
+                <PrivacyPolicy />
+  
+                </View>
+            </View>
+        </Modal>
+  
+    </View>
         <View style={styles.containerView}> 
+
+
+
+
         <View style={styles.profile}> 
         <List.Section title={<AntDesign name="profile" size={24} color="black"><Text style={{right:15}}> Profile</Text></AntDesign>}>
         <List.Accordion
@@ -217,20 +305,88 @@ class ProfileScreen extends Component
 
         <Divider style={{color:'black'}}/>
 
+        <List.Accordion
+        title="Location Settings"
+        >
+
+        <View style={styles.container}>
+        <Slider
+          value={this.state.value}
+          useNativeDriver={true}
+          onValueChange={value => this.setState({ value })}
+          step={1}
+          maximumValue={100}
+          minimumValue={5}
+        />
+        <Text style={{marginTop:20}}>
+          Radius: {this.state.value} miles
+        </Text>
+        <TouchableOpacity
+      
+        onPress= {
+          () => {
+            this.updateChanges()
+          }
+        }
+        >
+        <View style={styles.saveButton}> 
+
+        {this.state.isSaving &&
+
+          <View>
+          <BallIndicator name="Saving" size={80} color="green" />
+        </View> }
+
+        {this.state.value!=this.state.data.radius && !this.state.isSaving &&    
+
+        <View style={styles.saveBackgroundColor}>
+       <Text style={styles.buttonText}>      
+    
+         <Text style={{paddingLeft:20,marginTop:50}}>Save</Text>          
+       </Text>
+       </View>
+   
+      }
+  
+      </View>
+
+      </TouchableOpacity>
+      </View>
+
+        </List.Accordion>
+
+        
+
 
 
   
 
    <Divider style={{color:'black'}}/>
    <List.Accordion
-title="Terms & Conditions"
+title="Terms & Policies"
 >
 <Divider style={{color:'black'}}/>
-<TouchableOpacity> 
-<List.Item title={<Text  style={{color:'black'}} ></Text>}/>
+
+<TouchableOpacity 
+onPress={() => this.isTermsAndConditions()}
+>
+
+<List.Item
+title="Terms & Conditions"
+left={props => <List.Icon {...props} icon="file" />}
+/>
 </TouchableOpacity>
 
-<TermsAndConditions />
+<TouchableOpacity 
+onPress={() => this.isPrivacyPolicy()}
+>
+
+<Divider style={{color:'black'}}/>
+<List.Item 
+title="Privacy Policy"
+left={props => <List.Icon style={{fontSize:20}}{...props} icon="file" />}
+/>
+</TouchableOpacity>
 
 </List.Accordion>
 
@@ -298,15 +454,25 @@ export const styles = StyleSheet.create({
   },
 
 
-  saveButton: {
+  saveBackgroundColor:{
     backgroundColor: 'green',
+    height: 50,
     borderRadius: 5,
-    height: 40,
     textAlign:'center',
     justifyContent:'center',
+
+  },
+
+
+  saveButton: {
+
+    height: 40,
+
+
     width:'20%',
     alignSelf:'center',
-    marginBottom:20
+    marginBottom:20,
+    marginTop:20
   },
 
   buttonText:{
@@ -319,6 +485,11 @@ export const styles = StyleSheet.create({
 
   footer:{
     height:'15%'
+
+  },
+
+  modal:{
+    backgroundColor:'#d3d3d3'
 
   },
 
@@ -335,13 +506,78 @@ export const styles = StyleSheet.create({
 
   },
 
+
+  TermsView: {
+    borderRadius: 5,
+    height: 45,
+    marginTop: 10,
+    textAlign:'center',
+    justifyContent:'center',
+    width:'100%',
+    alignSelf:'center',
+    marginBottom:10,
+    width:'20%',
+    
+
+  },
+
+modalContainer : {
+    backgroundColor : 'white',
+    width : '100%',
+    height : '90%',
+},
+ActivityIndicatorStyle: {
+    flex: 1,
+    justifyContent: 'center',
+},
+
+modalClose:
+{
+
+
+    backgroundColor: '#d3d3d3',
+    height: 60,
+    marginTop: 10,
+    textAlign:'center',
+    justifyContent:'center',
+    width:'100%',
+    alignSelf:'center',
+    marginTop:'9%',
+    paddingLeft:15
+
+
+
+},
+container: {
+  flex: 1,
+  marginLeft: 10,
+  marginRight: 10,
+  alignItems: "stretch",
+  justifyContent: "center"
+},
+modalHeader:{
+  height:'13%'
+
+},
+
+
+
+modalButtonText:{
+  color:'black',
+  fontSize:20,
+  fontWeight:'600'
+  
+},
+
+
 })
 
 const mapStatetoProps = (state) => {
 
   return {
     user: state.userReducer,
-    update: state.updateReducer.update
+    update: state.updateReducer.update,
+    order: state.orderReducer
   }
 }
 
@@ -353,5 +589,7 @@ const mapDispatchToProps = (dispatch) => {
         setUpdate:(update)=> dispatch(setUpdate(update))
   }
 }
+
+AppRegistry.registerComponent("ProfileScreen",()=> ProfileScreen);
 
 export default connect(mapStatetoProps,mapDispatchToProps)(ProfileScreen);
