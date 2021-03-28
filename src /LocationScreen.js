@@ -32,12 +32,18 @@ class LocationScreen extends Component {
       city:'',
       ImgToBase64:'',
       errorMessage:'',
-      isError:false
+      isError:false,
+      radius:''
       
     };
   }
 
   async componentDidMount() {
+
+    var authenticatedUser = await AsyncStorage.getItem('user');
+    var data = JSON.parse(authenticatedUser);
+
+    this.setState({radius:data.radius});
 
 
   }
@@ -134,7 +140,8 @@ setOrganisation(response)
           url: config.Availability_URL + '/api/organisation',
           params: {
             'lat':lat,
-            'long':long
+            'long':long,
+            'radius':this.state.radius
           }
         }).then(response => 
           {
