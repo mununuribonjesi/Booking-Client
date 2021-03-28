@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'react-native-axios';
-import {Text, View, StyleSheet, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { RFValue } from "react-native-responsive-fontsize";
+import {Text, View, StyleSheet, TextInput, ScrollView, TouchableOpacity,TouchableWithoutFeedback, KeyboardAvoidingView,Modal } from 'react-native';
+import { CheckBox,ListItem} from 'react-native-elements';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUserId} from './store/actions';
 import { connect } from 'react-redux';
@@ -12,6 +14,7 @@ import {
 } from 'react-native-scl-alert'
 import { LogBox } from 'react-native';
 import moment from 'moment';
+import TermsAndConditions from './functionalComponents/TermsAndConditions';
 
 class CreateAccountScreen extends Component {
   constructor(props) {
@@ -40,8 +43,11 @@ class CreateAccountScreen extends Component {
       isconfirmError:true,
       isAlertError:false,
       isDobError:true,
-      date:new Date()
+      date:new Date(),
+      termsAndConditions:false
     };
+
+    this.isTermsAndConditions = this.isTermsAndConditions.bind(this);
 
     this.baseState = this.state
   }
@@ -66,6 +72,12 @@ class CreateAccountScreen extends Component {
 
   }
 
+  isTermsAndConditions()
+  {
+
+    this.setState({termsAndConditions:!this.state.termsAndConditions})
+
+  }
 
   async Submit()
   {
@@ -362,7 +374,24 @@ class CreateAccountScreen extends Component {
     </Text>
 
       <View style={[{flex: 1,backgroundColor:'#fff44f',top:'10%',marginBottom:'30%'}]}>
+
+      <View style={{flex : 1, justifyContent : 'center', alignItems: 'center'}}>
+      <TouchableWithoutFeedback onPress={() => {}}>
+      <Modal  
       
+      onRequestClose={() => {this.isTermsAndConditions()}}
+      onTouchCancel={()=>{this.isTermsAndConditions()}}
+      onMagicTap={()=>{this.isTermsAndConditions()}}
+      visible={this.state.termsAndConditions}>
+          <View style={styles.modal}>
+              <View style={styles.modalContainer}>
+              <TermsAndConditions />
+         
+              </View>
+          </View>
+      </Modal>
+      </TouchableWithoutFeedback>
+  </View>
 
 
     <SCLAlert
@@ -376,7 +405,7 @@ class CreateAccountScreen extends Component {
     <SCLAlertButton theme="danger" onPress={this.alertClose}>OK</SCLAlertButton>
   </SCLAlert>
 
-
+  <View> 
   <View style={styles.TextInputWrapper}>
           <Text style={styles.validation}>{this.state.firsnameerror}</Text>
           <TextInput
@@ -463,11 +492,17 @@ class CreateAccountScreen extends Component {
                 style={styles.loginFormTextInput}
                 onBlur={()=> this.confirmPasswordValidation()}
               />
+
+              </View>
+              
      
               <TouchableOpacity
-              onPress={()=> this.Submit()}
+              onPress={()=> this.Submit()}>
 
-              >
+
+
+
+
 
                 <View style={styles.loginButton}> 
                <Text style={styles.buttonText}>           
@@ -475,6 +510,26 @@ class CreateAccountScreen extends Component {
                </Text>
                </View>
               </TouchableOpacity>
+
+              <View style={styles.TermsView}> 
+              <Text style={styles.TermsText}>           
+                By creating an account,
+                you agree to our  {""} 
+                
+                <Text style={styles.TermsTextHighlight} 
+                
+                onPress={() => this.isTermsAndConditions()}
+                > 
+               
+                  Terms {""} 
+                  
+                  <Text style={{color:'black'}}>and that you have read our</Text> {""}  
+                </Text>
+                <Text style={styles.TermsTextHighlight}> 
+               Privacy Policy 
+              </Text>
+              </Text>
+              </View>
 
               <TouchableOpacity
               onPress={() => { this.props.navigation.navigate('LoginScreen')}}
@@ -490,6 +545,13 @@ class CreateAccountScreen extends Component {
               </View>
               </TouchableOpacity>
 
+
+              <TouchableOpacity
+              onPress={() => { this.props.navigation.navigate('LoginScreen')}}
+              >
+     
+              </TouchableOpacity>
+
       </View>
       </ScrollView>
       </KeyboardAvoidingView>
@@ -503,6 +565,15 @@ const styles = StyleSheet.create({
     flex: 1,
     position:'relative',
     marginTop:20
+  },
+
+  terms:{
+
+
+    marginTop:10,
+    alignSelf:'center',
+    justifyContent:'center',
+
   },
 
     top:{
@@ -565,11 +636,24 @@ const styles = StyleSheet.create({
     fontWeight:'600'
     
   },
+
+  TermsTextHighlight:{
+    color:'blue',
+    fontSize:RFValue(14),
+    textAlign:'center',
+    fontWeight:'600',
+  },
   
 
+  TermsText:{
+    color:'black',
+    fontSize:RFValue(15),
+    textAlign:'center',
+    fontWeight:'600',
+  },
   signUpButtonText:{
     color:'black',
-    fontSize:15,
+    fontSize:RFValue(20),
     textAlign:'center',
     fontWeight:'600',
     marginTop:'5%'
@@ -595,14 +679,16 @@ const styles = StyleSheet.create({
   signUpText:
   {
 
-    color:'blue'
+    color:'blue',
+    fontSize:RFValue(20),
 
   },
 
   createButton: {
     borderRadius: 5,
     height: 45,
-    marginTop: 10,
+    marginTop: 5,
+    marginBottom:15,
     textAlign:'center',
     justifyContent:'center',
     width:'100%',
@@ -610,6 +696,37 @@ const styles = StyleSheet.create({
     
 
   },
+
+  TermsView: {
+    borderRadius: 5,
+    height: 45,
+    marginTop: 10,
+    textAlign:'center',
+    justifyContent:'center',
+    width:'100%',
+    alignSelf:'center',
+    margin:-10
+    
+
+  },
+
+  modal : {
+    flex : 1,
+    justifyContent : 'center',
+    alignItems : 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)'
+},
+modalContainer : {
+    backgroundColor : 'white',
+    width : '90%',
+    height : '90%',
+},
+ActivityIndicatorStyle: {
+    flex: 1,
+    justifyContent: 'center',
+},
+
+
 
   loginButton: {
     backgroundColor: 'black',

@@ -198,7 +198,7 @@ HomeScreen: {
 
 const Navigation = createStackNavigator(screens,
   {
-    initialRouteName:'GalleryScreen',
+    initialRouteName:'SplashScreen',
 
       defaultNavigationOptions:{
       headerStyle: {backgroundColor:'black', height:100},
