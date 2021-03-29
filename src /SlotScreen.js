@@ -218,6 +218,8 @@ class SlotScreen extends Component {
 
   onChangeDate(date) {
 
+    this.setState({isGeneratingSlots:true});
+
     var selectedDate = Moment(new Date(date)).format("YYYY-MM-DD");
     this.generateSlots(selectedDate);
     var timeSlots = [];
@@ -229,6 +231,7 @@ class SlotScreen extends Component {
     })
 
     this.setState({ date: date, availableTimeSlots: timeSlots, ischecked: [], confirm: false });
+    this.setState({isGeneratingSlots:true});
   
   }
 

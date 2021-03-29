@@ -69,7 +69,7 @@ class CheckoutScreen extends Component {
   {
 
     this.setState({ isBack: false });
-    this.setState({ isLoading: true });
+
 
     const authToken = await AsyncStorage.getItem('token');
     const slot = this.props.orders.slot;
@@ -92,8 +92,18 @@ class CheckoutScreen extends Component {
     }
 
     var token;
+    var error;
 
-    await Stripe.paymentRequestWithCardFormAsync().then((value) => { token = value  }) .catch((error) => {  return  this.setState({ isLoading: false }); })
+    await Stripe.paymentRequestWithCardFormAsync().then((value) => { token = value  }) .catch((err) => {  
+      
+            error = err;
+    })
+
+    
+    if(error)
+    {
+      return;
+    }
 
     this.setState({ isLoading: true });
 
