@@ -53,7 +53,8 @@ const styles = StyleSheet.create({
         fontWeight:'bold',
         fontSize:20,
         color:'white',
-        marginBottom:30
+        marginBottom:30,
+        marginTop:25,
     },
 
     icon:

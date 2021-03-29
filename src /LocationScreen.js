@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList,View, Text, StyleSheet, TouchableOpacity,Image} from 'react-native';
+import { FlatList,View, Text, StyleSheet, TouchableOpacity,SafeAreaView} from 'react-native';
 import { RFValue } from "react-native-responsive-fontsize";
 import {ListItem } from 'react-native-elements';
 import { setOrganisationId, setService, setTotal } from './store/actions'
@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'react-native-axios';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import {UIActivityIndicator} from 'react-native-indicators';
 import UserAvatar from 'react-native-user-avatar';
 import {FontAwesome5 } from '@expo/vector-icons';
 import {
@@ -80,7 +81,9 @@ navigateToScreen()
 
 setOrganisation(response)
 {
-  this.setState({data:response.data.organisation})
+
+  this.setState({data:response.data.organisation});
+  this.setState({isLoading:false});
 }
 
 
@@ -118,7 +121,8 @@ setOrganisation(response)
       <GooglePlacesAutocomplete
       placeholder='Enter Location'
       minLength={2}
-      autoFocus={false}
+      currentLocation={true}
+      autoFocus={true}
       returnKeyType={'default'}
       fetchDetails={true}
       query={{
@@ -133,7 +137,7 @@ setOrganisation(response)
         var lat = location.lat;
         var long = location.lng;
 
-        axiosRetry(axios,{retries:3});
+        this.setState({isLoading:true});
 
          await axios({
           method: 'get',
@@ -145,15 +149,18 @@ setOrganisation(response)
           }
         }).then(response => 
           {
-            this.setOrganisation(response)
-
+            this.setOrganisation(response);
 
           }).catch(error => {
             if(error.response)
             {
+              this.setState({isLoading:false});
               this.setState({errorMessage:JSON.stringify(error.response.status),isError:true});
+
             }
           })
+
+          this.setState({isLoading:false});
       }}
     
       styles={{
@@ -164,7 +171,7 @@ setOrganisation(response)
         
         textInput: {
           height: 40,
-          color: '#black',
+          color: 'black',
           fontSize: 16,
         },
         predefinedPlacesDescription: {
@@ -175,10 +182,21 @@ setOrganisation(response)
     </View>
 
 
-<ScrollView
+    {this.state.isLoading &&
 
-style={styles.ScrollView}
->
+
+        
+      <View style={styles.loading}>
+      <UIActivityIndicator name="Saving" size={80} color="black" />
+      <Text style={styles.loadingText}> Fetching Locations</Text>
+    </View>
+    }
+
+
+    {!this.state.isLoading &&
+ 
+
+      <SafeAreaView style={{flex: 1}}>
 
 
     <FlatList
@@ -238,7 +256,8 @@ style={styles.ScrollView}
         
       )}
     />
-    </ScrollView>
+    </SafeAreaView>
+      }
     </View>
     
     )
@@ -355,7 +374,26 @@ itemtext: {
   marginTop: 10,
   fontSize: 20
 
-}
+},
+
+loading: {
+  position: 'absolute',
+  left: 0,
+  right: 0,
+  top: 0,
+  bottom: 0,
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor:'white'
+},
+
+loadingText: {
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: RFValue(30),
+  color: '#4285F4'
+},
 })
 
 const mapStatetoProps = (state) => {

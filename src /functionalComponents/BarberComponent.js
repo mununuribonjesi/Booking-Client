@@ -67,13 +67,19 @@ const BarberComponent = (props) => {
 
     <FlatList
       data={props.stylists}
-      keyExtractor={(x,i) => i.toString()}
+      keyExtractor={(item,index) => index}
       renderItem={({ item,index }) => (
+
+
+
     
           <ListItem
+          key={index} 
           onPress={() => isCheckBox(index)}
+
+        
           
-            style={styles.list} key={item._id} bottomDivider>
+            style={styles.list} bottomDivider>
          
 
             <UserAvatar size={100} name={item.name} src={item.uri} />
