@@ -24,6 +24,8 @@ class LocationScreen extends Component {
   constructor(props) {
     super(props);
 
+    this.ref = React.createRef();
+
     this.state = {
       ischecked: [],
       total: 0.00,
@@ -38,6 +40,12 @@ class LocationScreen extends Component {
       
     };
   }
+
+  componentDidUpdate()
+  {
+    this.ref.current.blur();
+  }
+
 
   async componentDidMount() {
 
@@ -117,13 +125,13 @@ setOrganisation(response)
     </SCLAlert>
 
       <View style={styles.searchbar} pointerEvents='box-none'> 
-      
+
       <GooglePlacesAutocomplete
+      ref={this.ref}
       placeholder='Enter Location'
       minLength={2}
       currentLocation={true}
       autoFocus={true}
-      returnKeyType={'default'}
       fetchDetails={true}
       query={{
         key: config.PLACES_KEY,
@@ -179,6 +187,7 @@ setOrganisation(response)
         },
       }}
     />
+
     </View>
 
 
@@ -196,7 +205,9 @@ setOrganisation(response)
     {!this.state.isLoading &&
  
 
+
       <SafeAreaView style={{flex: 1}}>
+
 
 
     <FlatList
@@ -256,7 +267,9 @@ setOrganisation(response)
         
       )}
     />
+  
     </SafeAreaView>
+
       }
     </View>
     
@@ -289,6 +302,12 @@ scrollView:{
 flatlist:{
   top:40,
   marginBottom:40,
+},
+
+listView:{
+  position: 'absolute',
+  backgroundColor: '#FFF',
+  zIndex: 10,//Forcing it to front
 },
 
 searchbar:{

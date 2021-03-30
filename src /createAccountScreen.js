@@ -8,6 +8,7 @@ import { setUserId} from './store/actions';
 import { connect } from 'react-redux';
 import config from '../config';
 import {FontAwesome5 } from '@expo/vector-icons';
+import {BallIndicator} from 'react-native-indicators';
 import {
   SCLAlert,
   SCLAlertButton
@@ -46,7 +47,8 @@ class CreateAccountScreen extends Component {
       isDobError:true,
       date:new Date(),
       termsAndConditions:false,
-      privacyPolicy:false
+      privacyPolicy:false,
+      isLoading:false
     };
 
     this.isTermsAndConditions = this.isTermsAndConditions.bind(this);
@@ -91,6 +93,7 @@ class CreateAccountScreen extends Component {
   {
     if(!this.state.isnameError&&!this.state.issurnameError&&!this.state.isemailError&&!this.state.ispasswordError&&!this.state.isconfirmError&&!this.state.isDobError)
     {
+      this.setState({isLoading:true})
       const response = await axios({
         method: 'post',
         url: config.Authentication_URL+'/api/register',
@@ -105,6 +108,7 @@ class CreateAccountScreen extends Component {
       }).then(response =>
         {
           this.setState(this.baseState);
+          this.setState({isLoading:false})
           this.props.navigation.navigate('VerificationScreen',{
             email:response.data
           });
@@ -118,6 +122,10 @@ class CreateAccountScreen extends Component {
             }
 
             this.setState({isAlertError:true});
+            this.setState({isLoading:false})
+          
+            
+            
 
           }
       })
@@ -128,6 +136,8 @@ class CreateAccountScreen extends Component {
     {
       this.setState({isAlertError:true});
     }
+
+    this.setState({isLoading:false})
 }
 
 
@@ -535,10 +545,19 @@ class CreateAccountScreen extends Component {
               />
 
               </View>
+
+              {this.state.isLoading ?
+
+                <View style={{marginTop:25}}>
+                <BallIndicator name="Saving" size={80} color="green" />
+              </View> :
               
-     
+     <View>
               <TouchableOpacity
               onPress={()=> this.Submit()}>
+
+       
+
 
                 <View style={styles.loginButton}> 
                <Text style={styles.buttonText}>           
@@ -546,6 +565,8 @@ class CreateAccountScreen extends Component {
                </Text>
                </View>
               </TouchableOpacity>
+
+              
 
               <View style={styles.TermsView}> 
               <Text style={styles.TermsText}>           
@@ -558,9 +579,9 @@ class CreateAccountScreen extends Component {
                 > 
                
                   Terms {""} 
-                  
+                  </Text>
                   <Text style={{color:'black'}}>and that you have read our</Text> {""}  
-                </Text>
+               
                 <Text style={styles.TermsTextHighlight}
                 onPress={() => this.isPrivacyPolicy()}
                 > 
@@ -583,12 +604,10 @@ class CreateAccountScreen extends Component {
               </View>
               </TouchableOpacity>
 
+              
+</View>
+              }
 
-              <TouchableOpacity
-              onPress={() => { this.props.navigation.navigate('LoginScreen')}}
-              >
-     
-              </TouchableOpacity>
 
       </View>
       </ScrollView>
@@ -690,7 +709,7 @@ const styles = StyleSheet.create({
   },
 
   modalHeader:{
-    height:'15%'
+    height:'14%'
 
   },
 
